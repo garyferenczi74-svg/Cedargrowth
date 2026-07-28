@@ -65,10 +65,13 @@ module.exports = {
       chip: 'var(--radius-chip)',
     },
 
+    // Families are loaded by next/font in the root layout, which sets the
+    // --font-* variables. The literal fallbacks keep raw CSS and pre hydration
+    // paint sane.
     fontFamily: {
-      display: ['Newsreader', 'Georgia', 'Times New Roman', 'serif'],
-      sans: ['Inter Tight', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
-      mono: ['IBM Plex Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+      display: ['var(--font-newsreader)', 'Georgia', 'Times New Roman', 'serif'],
+      sans: ['var(--font-inter-tight)', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif'],
+      mono: ['var(--font-ibm-plex-mono)', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
     },
 
     /*

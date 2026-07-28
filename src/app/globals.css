@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Base surface. Parchment paper, ink type, interface face by default. Data and
+  editorial faces are opted into per element. Depth is hairlines, tone, and
+  space, never shadow.
+*/
+@layer base {
+  html {
+    background-color: theme('colors.parchment');
+    color: theme('colors.primary');
+  }
+
+  body {
+    font-family: theme('fontFamily.sans');
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular numerals on every data and specimen figure. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}

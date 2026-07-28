@@ -8,4 +8,6 @@ build/
 .DS_Store
 Thumbs.db
 *.log
+*.tsbuildinfo
+next-env.d.ts
 screenshots/
