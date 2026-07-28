@@ -9,6 +9,8 @@ import { useReservation } from './ReservationProvider';
 export function ReserveClient() {
   const { items, count, hydrated, setQty, remove, clear } = useReservation();
   const [submitted, setSubmitted] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!hydrated) {
     return (
@@ -126,12 +128,56 @@ export function ReserveClient() {
       <div>
         <Eyebrow className="mb-6">Reservation request</Eyebrow>
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
-            setSubmitted(true);
+            if (pending) return;
+            setError(null);
+            setPending(true);
+            const form = e.currentTarget;
+            const value = (id: string) =>
+              (form.elements.namedItem(id) as HTMLInputElement | HTMLTextAreaElement | null)
+                ?.value ?? '';
+            const payload = {
+              name: value('res-name'),
+              email: value('res-email'),
+              location: value('res-postal'),
+              note: value('res-note'),
+              company: value('company'),
+              items: items.map((i) => ({
+                slug: i.slug,
+                name: i.name,
+                spec: i.spec,
+                qty: i.qty,
+              })),
+            };
+            try {
+              const res = await fetch('/api/reserve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              });
+              if (!res.ok) {
+                const data = (await res.json().catch(() => ({}))) as { error?: string };
+                setError(data.error || 'Something went wrong. Please try again.');
+                setPending(false);
+                return;
+              }
+              setSubmitted(true);
+            } catch {
+              setError('Could not reach the server. Please try again.');
+              setPending(false);
+            }
           }}
           className="flex flex-col gap-6"
         >
+          <input
+            type="text"
+            name="company"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
           <Field id="res-name" label="Name" type="text" autoComplete="name" />
           <Field
             id="res-email"
@@ -159,11 +205,17 @@ export function ReserveClient() {
               className="border-b border-hairline bg-transparent py-2 text-body-m-m md:text-body-m text-primary focus-visible:border-cedar focus-visible:outline-none"
             />
           </div>
+          {error ? (
+            <p className="text-caption-m md:text-caption text-fail" role="alert">
+              {error}
+            </p>
+          ) : null}
           <button
             type="submit"
-            className="self-start bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse"
+            disabled={pending}
+            className="self-start bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse disabled:opacity-60"
           >
-            Prepare reservation request
+            {pending ? 'Sending' : 'Prepare reservation request'}
           </button>
           <p className="text-caption-m md:text-caption text-tertiary">
             Your postal code or city is used only to match the nearest dispensary
