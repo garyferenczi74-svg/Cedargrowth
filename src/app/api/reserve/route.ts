@@ -51,7 +51,11 @@ export async function POST(request: Request) {
       typeof it.name !== 'string' ||
       typeof it.spec !== 'string' ||
       !Number.isInteger(it.qty) ||
-      (it.qty as number) < 1
+      (it.qty as number) < 1 ||
+      it.slug.length > 200 ||
+      it.name.length > 200 ||
+      it.spec.length > 200 ||
+      (it.qty as number) > 999
     ) {
       return badRequest('Invalid item in reservation');
     }
