@@ -24,3 +24,29 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+@layer components {
+  /*
+    Hover and focus underline that draws left to right over 240ms (Section
+    4.5). No lift, no color flood. Under reduced motion it appears without the
+    draw. currentColor keeps it tied to the link color.
+  */
+  .cedar-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size var(--dur-hover) var(--ease-cedar);
+  }
+
+  .cedar-underline:hover,
+  .cedar-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cedar-underline {
+      transition: none;
+    }
+  }
+}

@@ -123,6 +123,22 @@ module.exports = {
         hairline: '1px',
       },
 
+      // Default any bare border to the light hairline, so a stray border
+      // utility can never fall back to an off palette gray.
+      borderColor: ({ theme }) => ({
+        ...theme('colors'),
+        DEFAULT: theme('colors.hairline'),
+      }),
+
+      // Nav and specimen tracking (Section 4.2 and 5.2). The type scale bakes
+      // its own tracking, these cover the plain nav row and standalone labels.
+      letterSpacing: {
+        nav: '0.02em',
+        eyebrow: '0.14em',
+        caption: '0.01em',
+        specimen: '0.04em',
+      },
+
       transitionTimingFunction: {
         cedar: 'var(--ease-cedar)',
       },
@@ -154,11 +170,17 @@ module.exports = {
           '0%': { transform: 'scale(1.06)' },
           '100%': { transform: 'scale(1)' },
         },
+        // Mega panel and toast, opacity only, no movement (Section 5.2, 240ms).
+        fade: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
 
       animation: {
         reveal: 'reveal 500ms cubic-bezier(0.22, 1, 0.36, 1) both',
         'image-settle': 'image-settle 900ms cubic-bezier(0.22, 1, 0.36, 1) both',
+        fade: 'fade 240ms cubic-bezier(0.22, 1, 0.36, 1) both',
       },
     },
   },

@@ -2,9 +2,9 @@
 // shell is approved and built.
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-content px-page-margin-mobile py-24 md:px-page-margin">
-      <p className="font-mono text-specimen uppercase tracking-[0.04em] text-tertiary">
-        Scaffold ready
+    <section className="mx-auto max-w-content px-page-margin-mobile py-24 md:px-page-margin">
+      <p className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
+        Shell in place
       </p>
       <h1 className="mt-4 font-display text-display-l-m md:text-display-xl">
         CedarGrowth Organics
@@ -12,6 +12,6 @@ export default function HomePage() {
       <p className="mt-6 max-w-editorial text-body-m-m md:text-body-l text-secondary">
         Cured trim. Ice. Pressure. Nothing else.
       </p>
-    </main>
+    </section>
   );
 }
