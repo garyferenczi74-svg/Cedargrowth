@@ -13,7 +13,7 @@ export function Placeholder({
   bordered = true,
   className = '',
 }: {
-  family: ImageFamily | 'map still';
+  family: ImageFamily | 'map still' | 'thin line diagram';
   alt: string;
   tone?: 'bone' | 'ink';
   label?: boolean;
