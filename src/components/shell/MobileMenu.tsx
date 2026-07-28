@@ -172,6 +172,15 @@ export function MobileMenu({
               Account
             </Link>
           </li>
+          <li>
+            <Link
+              href="/reserve"
+              onClick={onClose}
+              className="cedar-underline text-body-m-m uppercase tracking-eyebrow text-tertiary"
+            >
+              Reserve
+            </Link>
+          </li>
         </ul>
       </nav>
     </div>

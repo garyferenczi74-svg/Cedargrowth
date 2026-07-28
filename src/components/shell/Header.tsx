@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Menu, Search, User, ShoppingBag } from 'lucide-react';
 import { PRIMARY_NAV, UTILITY_LEFT, type NavItem } from '@/lib/nav';
+import { useReservation } from '@/components/reserve/ReservationProvider';
 import { Wordmark } from './Wordmark';
 import { MegaPanel } from './MegaPanel';
 import { MobileMenu } from './MobileMenu';
@@ -16,6 +17,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchNotice, setSearchNotice] = useState('');
+  const { count, hydrated } = useReservation();
+  const reserveCount = hydrated ? count : 0;
 
   const navWrapRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -124,13 +127,13 @@ export function Header() {
               </li>
               <li>
                 <Link
-                  href="/cart"
+                  href="/reserve"
                   className="flex items-center gap-2 text-caption uppercase tracking-eyebrow text-tertiary cedar-underline"
                 >
                   <ShoppingBag size={16} strokeWidth={1.5} aria-hidden="true" />
-                  Cart
+                  Reserve
                   <span className="font-mono text-data lowercase tracking-normal">
-                    (0)
+                    ({reserveCount})
                   </span>
                 </Link>
               </li>
@@ -234,8 +237,15 @@ export function Header() {
             >
               <Search size={20} strokeWidth={1.5} aria-hidden="true" />
             </button>
-            <Link href="/cart" aria-label="Cart, 0 items" className="p-1 text-primary">
+            <Link
+              href="/reserve"
+              aria-label={`Reservations, ${reserveCount} items`}
+              className="relative p-1 text-primary"
+            >
               <ShoppingBag size={20} strokeWidth={1.5} aria-hidden="true" />
+              <span className="ml-1 font-mono text-specimen text-tertiary">
+                ({reserveCount})
+              </span>
             </Link>
           </div>
         </div>

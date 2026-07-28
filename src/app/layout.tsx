@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Newsreader, Inter_Tight, IBM_Plex_Mono } from 'next/font/google';
 import { Shell } from '@/components/shell/Shell';
+import { ReservationProvider } from '@/components/reserve/ReservationProvider';
 import '../../tokens.css';
 import './globals.css';
 
@@ -48,7 +49,9 @@ export default function RootLayout({
       className={`${newsreader.variable} ${interTight.variable} ${ibmPlexMono.variable}`}
     >
       <body className="bg-parchment text-primary font-sans">
-        <Shell>{children}</Shell>
+        <ReservationProvider>
+          <Shell>{children}</Shell>
+        </ReservationProvider>
       </body>
     </html>
   );
