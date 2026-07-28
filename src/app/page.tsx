@@ -27,7 +27,11 @@ export default function HomePage() {
           <div className="reveal flex max-w-editorial flex-col gap-6">
             <Eyebrow tone="inverse">A study in subtraction</Eyebrow>
             <h1 className="font-display text-display-l-m md:text-display-xl text-inverse">
-              Premium Fresh Frozen. Ice. Pressure. Nothing else.
+              Premium Fresh Frozen.
+              <br />
+              Ice. Pressure.
+              <br />
+              Nothing else.
             </h1>
             <p className="text-body-m-m md:text-body-l text-inverse/70">
               CedarGrowth produces solventless live rosin in Buffalo, New York,
