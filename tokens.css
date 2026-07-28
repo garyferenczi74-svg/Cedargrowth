@@ -1,0 +1,139 @@
+/*
+  CedarGrowth Organics, semantic design tokens.
+  Reconstructed from the build prompt canon (Section 4.1 color, 4.2 type,
+  4.3 space, 4.5 motion) and the Foundations prototype.
+
+  Semantic names are canonical and must not be renamed. tailwind.config.js
+  mirrors these names exactly.
+
+  Colors are stored as space separated RGB channels so Tailwind can apply
+  alpha through rgb(var(--token) / <alpha-value>). The hex on each line is a
+  reference only. Light mode only, no dark theme (the ink sections are
+  compositional, not a color scheme).
+*/
+
+:root {
+  /* Surface and ink */
+  --surface-parchment: 243 238 231; /* #F3EEE7 default page background */
+  --surface-bone: 232 225 215;      /* #E8E1D7 alternating sections, product plates */
+  --surface-clinical: 255 255 255;  /* #FFFFFF data panels, COA tables, app cards */
+  --surface-ink: 28 27 25;          /* #1C1B19 dark sections, announcement bar, footer, solid buttons */
+
+  /* Text */
+  --text-primary: 28 27 25;         /* #1C1B19 headlines and body on light */
+  --text-secondary: 58 56 53;       /* #3A3835 supporting paragraphs */
+  --text-tertiary: 111 106 98;      /* #6F6A62 captions, specimen lines, form hints */
+  --text-inverse: 243 238 231;      /* #F3EEE7 type on ink */
+
+  /*
+    Section 393 accessibility gate: the spec primitive for text/tertiary is
+    #8C877E, which measures 3.15:1 on parchment and fails WCAG 2.2 AA. For
+    body sized use it is darkened to #6F6A62 (4.73:1). The primitive is kept
+    below for the rare decorative case that does not carry copy.
+  */
+  --text-tertiary-spec: 140 135 126; /* #8C877E specimen primitive, decorative only, never body copy */
+
+  /* Lines and hairlines */
+  --line-hairline: 216 209 198;      /* #D8D1C6 all 1px rules and borders on light */
+  --line-hairline-inverse: 58 56 53; /* #3A3835 1px rules on ink */
+
+  /* Accent and signal */
+  --accent-cedar: 156 74 30;         /* #9C4A1E eyebrow labels, inline links, new markers. Max four per screen */
+  --accent-verdant: 46 64 52;        /* #2E4034 method and laboratory sections, verified state */
+  --signal-pass: 63 107 74;          /* #3F6B4A COA pass, batch verified */
+  --signal-attention: 168 118 28;    /* #A8761C pending result, awaiting lab */
+  --signal-fail: 140 47 31;          /* #8C2F1F failed or expired batch, data layer only, never marketing */
+
+  /*
+    Wellness line pigments. Used only as a 3px marker rule, a tinted plate, or
+    a single line of text. Never a full bleed background, never a button.
+  */
+  --line-rest: 59 68 87;             /* #3B4457 REST, myrcene anchor */
+  --line-relief: 156 91 69;          /* #9C5B45 RELIEF, beta caryophyllene, linalool */
+  --line-focus: 160 139 60;          /* #A08B3C FOCUS, pinene, limonene */
+  --line-calm: 124 138 114;          /* #7C8A72 CALM, balanced profile */
+  --line-restore: 107 83 64;         /* #6B5340 RESTORE, full spectrum */
+
+  /* Type faces (Section 4.2). Three faces, no more. All on Google Fonts. */
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Tight", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale, desktop values (Section 4.2). Mobile values live in the
+     tailwind fontSize map under the -m suffix. Tabular numerals on data styles. */
+  --size-display-xl: 76px;  --lh-display-xl: 1.05;  --track-display-xl: -0.02em;
+  --size-display-l: 56px;   --lh-display-l: 1.10;   --track-display-l: -0.015em;
+  --size-heading-m: 34px;   --lh-heading-m: 1.20;   --track-heading-m: -0.01em;
+  --size-heading-s: 20px;   --lh-heading-s: 1.35;   --track-heading-s: 0;
+  --size-body-l: 18px;      --lh-body-l: 1.65;      --track-body-l: 0;
+  --size-body-m: 16px;      --lh-body-m: 1.65;      --track-body-m: 0;
+  --size-eyebrow: 12px;     --lh-eyebrow: 1.20;     --track-eyebrow: 0.14em;
+  --size-caption: 13px;     --lh-caption: 1.45;     --track-caption: 0.01em;
+  --size-specimen: 12px;    --lh-specimen: 1.40;    --track-specimen: 0.04em;
+  --size-data: 15px;        --lh-data: 1.30;        --track-data: 0;
+
+  /* Space (Section 4.3). Base unit 8. Ramp: 8, 16, 24, 32, 48, 64, 96, 128, 160, 200. */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 128px;
+  --space-9: 160px;
+  --space-10: 200px;
+
+  /* Grid and layout (Section 4.3) */
+  --page-margin: 64px;      /* desktop */
+  --page-margin-mobile: 20px;
+  --gutter: 24px;           /* desktop */
+  --gutter-mobile: 16px;
+  --max-content: 1280px;
+  --max-editorial: 720px;   /* body copy capped at 68 characters */
+
+  /* Radius. Square geometry. 0 everywhere, 2px only on data layer status chips. */
+  --radius-none: 0px;
+  --radius-chip: 2px;
+
+  /* Motion (Section 4.5) */
+  --ease-cedar: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-reveal: 500ms;      /* range 400 to 600ms */
+  --dur-image: 900ms;       /* first reveal image settle, scale 1.06 to 1.0 */
+  --dur-hover: 240ms;       /* border darken or underline draw */
+  --dur-page: 240ms;        /* content column crossfade, nav never moves */
+  --dur-reduced: 120ms;     /* opacity only under reduced motion */
+  --reveal-rise: 16px;      /* opacity 0 to 1 plus a 16px rise */
+
+  /* Focus (Section 393). 2px accent cedar outline at 2px offset, every surface. */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+/*
+  Baseline focus ring. Every interactive element keeps a visible cedar ring on
+  keyboard focus, on any surface. Components may restate this, they may not
+  remove it.
+*/
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: var(--focus-ring-width) solid rgb(var(--accent-cedar));
+  outline-offset: var(--focus-ring-offset);
+}
+
+/*
+  Reduced motion branch (Section 4.5). Removes every transform and leaves
+  opacity transitions at 120ms. This is a global safety net, components should
+  still gate their own motion.
+*/
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--dur-reduced) !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: var(--dur-reduced) !important;
+    transition-property: opacity !important;
+    transform: none !important;
+    scroll-behavior: auto !important;
+  }
+}
