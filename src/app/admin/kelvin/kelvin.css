@@ -1,0 +1,207 @@
+/* KELVIN admin console theme. Dark operator token map. Every rule is scoped
+   under .kelvin-root so nothing leaks into the marketing site. Fonts reuse the
+   CSS variables the root layout already loads through next/font. No em dash or
+   en dash appears anywhere. */
+
+.kelvin-root {
+  --k-surface: #100F0C;
+  --k-parchment: #17150F;
+  --k-bone: #201C14;
+  --k-hairline: #332E23;
+  --k-primary: #F2ECE1;
+  --k-secondary: #C7BFAF;
+  --k-tertiary: #98907E;
+  --k-pass: #5FA772;
+  --k-attention: #CDA24C;
+  --k-fail: #C85B44;
+  --k-cedar: #C56A3C;
+  --k-command: #F2ECE1;
+  --k-production: #5E9469;
+  --k-evidence: #C56A3C;
+  --k-genomics: #7481A0;
+  --k-security: #CDA24C;
+  --k-editorial: #A98C6E;
+  --k-font-title: var(--font-newsreader), Georgia, serif;
+  --k-font-ui: var(--font-inter-tight), system-ui, sans-serif;
+  --k-font-mono: var(--font-ibm-plex-mono), ui-monospace, Menlo, monospace;
+  --k-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  z-index: 9999;
+  background: var(--k-surface);
+  color: var(--k-primary);
+  font-family: var(--k-font-ui);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+.kelvin-root *,
+.kelvin-root *::before,
+.kelvin-root *::after { box-sizing: border-box; }
+.kelvin-root .mono { font-family: var(--k-font-mono); font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+.kelvin-root button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+.kelvin-root input, .kelvin-root textarea, .kelvin-root select {
+  font-family: inherit; font-size: 14px; color: var(--k-primary);
+  background: var(--k-surface); border: 1px solid var(--k-hairline); border-radius: 0; padding: 10px 12px; width: 100%;
+}
+.kelvin-root input:focus, .kelvin-root textarea:focus, .kelvin-root select:focus,
+.kelvin-root button:focus-visible, .kelvin-root a:focus-visible, .kelvin-root [tabindex]:focus-visible {
+  outline: 2px solid var(--k-cedar); outline-offset: 2px;
+}
+.kelvin-root a { color: inherit; text-decoration: none; }
+
+.kelvin-root .sq { display: inline-block; width: 6px; height: 6px; vertical-align: middle; }
+.kelvin-root .sq.pass { background: var(--k-pass); }
+.kelvin-root .sq.attention { background: var(--k-attention); }
+.kelvin-root .sq.fail { background: var(--k-fail); }
+.kelvin-root .chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--k-hairline); border-radius: 2px; padding: 2px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
+.kelvin-root .chip.pass { color: var(--k-pass); border-color: rgba(95,167,114,0.5); }
+.kelvin-root .chip.attention { color: var(--k-attention); border-color: rgba(205,162,76,0.5); }
+.kelvin-root .chip.fail { color: var(--k-fail); border-color: rgba(200,91,68,0.5); }
+
+.kelvin-root .shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+.kelvin-root .sidebar { background: var(--k-parchment); border-right: 1px solid var(--k-hairline); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+.kelvin-root .brand { padding: 24px 20px 20px; }
+.kelvin-root .brand .wordmark { font-family: var(--k-font-title); font-size: 20px; letter-spacing: 0.02em; }
+.kelvin-root .brand .sys { font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.28em; color: var(--k-tertiary); margin-top: 4px; }
+.kelvin-root .wings { list-style: none; padding: 8px 0; margin: 0; flex: 1; overflow: auto; }
+.kelvin-root .wing-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 20px 11px 17px; border-left: 3px solid transparent; color: var(--k-secondary); width: 100%; text-align: left; }
+.kelvin-root .wing-link:hover { color: var(--k-primary); background: rgba(255,255,255,0.02); }
+.kelvin-root .wing-link.active { color: var(--k-primary); border-left-color: var(--k-accent, var(--k-primary)); }
+.kelvin-root .badge { font-family: var(--k-font-mono); font-size: 11px; min-width: 20px; height: 20px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--k-attention); color: var(--k-attention); border-radius: 2px; }
+.kelvin-root .badge.zero { border-color: var(--k-hairline); color: var(--k-tertiary); }
+.kelvin-root .sidefoot { border-top: 1px solid var(--k-hairline); padding: 14px 20px; }
+.kelvin-root .signout { display: flex; align-items: center; gap: 8px; color: var(--k-tertiary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
+.kelvin-root .signout:hover { color: var(--k-primary); }
+
+.kelvin-root .main { min-width: 0; display: flex; flex-direction: column; }
+.kelvin-root .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; padding: 28px 40px 0; }
+.kelvin-root .wing-title { font-family: var(--k-font-title); font-size: 28px; line-height: 1.1; }
+.kelvin-root .wing-rule { height: 3px; width: 44px; background: var(--k-accent, var(--k-primary)); margin-top: 14px; }
+.kelvin-root .status-cluster { display: flex; align-items: center; gap: 18px; padding-top: 6px; flex-shrink: 0; }
+.kelvin-root .live-ind { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
+.kelvin-root .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k-tertiary); }
+.kelvin-root .live-ind.on .live-dot { background: var(--k-pass); box-shadow: 0 0 0 3px rgba(95,167,114,0.18); }
+.kelvin-root .preview-toggle { border: 1px solid var(--k-hairline); padding: 6px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
+.kelvin-root .preview-toggle.on { color: var(--k-attention); border-color: rgba(205,162,76,0.5); }
+.kelvin-root .session-id { font-family: var(--k-font-mono); font-size: 11px; color: var(--k-tertiary); }
+
+.kelvin-root .section-nav { display: flex; gap: 24px; padding: 22px 40px 0; border-bottom: 1px solid var(--k-hairline); flex-wrap: wrap; }
+.kelvin-root .section-nav button { padding-bottom: 14px; color: var(--k-tertiary); font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.kelvin-root .section-nav button:hover { color: var(--k-secondary); }
+.kelvin-root .section-nav button.active { color: var(--k-primary); border-bottom-color: var(--k-accent, var(--k-primary)); }
+.kelvin-root .view { padding: 32px 40px 80px; animation: k-enter 500ms var(--k-ease); }
+@keyframes k-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.kelvin-root .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.kelvin-root .filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.kelvin-root .pill { border: 1px solid var(--k-hairline); padding: 6px 11px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); }
+.kelvin-root .pill:hover { color: var(--k-primary); }
+.kelvin-root .pill.active { color: var(--k-surface); background: var(--k-primary); border-color: var(--k-primary); }
+.kelvin-root .btn { border: 1px solid var(--k-hairline); padding: 8px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--k-secondary); }
+.kelvin-root .btn:hover { color: var(--k-primary); border-color: var(--k-tertiary); }
+.kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-surface); border-color: var(--k-primary); }
+.kelvin-root .btn.solid:hover { opacity: 0.9; }
+.kelvin-root .btn.active { color: var(--k-primary); border-color: var(--k-primary); }
+.kelvin-root .btn.disabled { opacity: 0.45; cursor: not-allowed; }
+
+.kelvin-root .feed { border-top: 1px solid var(--k-hairline); }
+.kelvin-root .row { border-bottom: 1px solid var(--k-hairline); padding: 12px 0; }
+.kelvin-root .row-head { display: flex; gap: 14px; align-items: baseline; cursor: pointer; }
+.kelvin-root .row-meta { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); white-space: nowrap; display: flex; gap: 8px; align-items: center; }
+.kelvin-root .row-agent { color: var(--k-primary); }
+.kelvin-root .row-type { color: var(--k-secondary); }
+.kelvin-root .row-sum { flex: 1; color: var(--k-primary); min-width: 0; }
+.kelvin-root .row-detail { margin-top: 14px; padding: 16px; background: var(--k-parchment); border: 1px solid var(--k-hairline); }
+.kelvin-root .kv { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; }
+.kelvin-root .kv .k { width: 130px; color: var(--k-tertiary); flex-shrink: 0; }
+.kelvin-root .reflink { color: var(--k-cedar); font-family: var(--k-font-mono); font-size: 12px; }
+.kelvin-root .copybtn { border: 1px solid var(--k-hairline); padding: 1px 7px; font-size: 11px; color: var(--k-tertiary); font-family: var(--k-font-mono); }
+
+.kelvin-root .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.kelvin-root .tbl th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); font-weight: 500; padding: 0 16px 12px 0; border-bottom: 1px solid var(--k-hairline); }
+.kelvin-root .tbl td { padding: 0 16px 0 0; height: 44px; border-bottom: 1px solid var(--k-hairline); vertical-align: middle; color: var(--k-secondary); }
+.kelvin-root .tbl-wrap { overflow-x: auto; }
+.kelvin-root .tbl tr.clickable { cursor: pointer; }
+.kelvin-root .tbl tr.clickable:hover td { background: rgba(255,255,255,0.02); }
+.kelvin-root .tbl tr.sel td { background: var(--k-bone); color: var(--k-primary); }
+
+.kelvin-root .grid { display: grid; gap: 1px; background: var(--k-hairline); border: 1px solid var(--k-hairline); }
+.kelvin-root .grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+.kelvin-root .card { background: var(--k-parchment); padding: 20px; }
+.kelvin-root .card h3 { font-family: var(--k-font-mono); font-size: 15px; letter-spacing: 0.04em; display: flex; align-items: center; justify-content: space-between; margin: 0; }
+.kelvin-root .card .fn { color: var(--k-tertiary); font-size: 12px; margin: 4px 0 14px; }
+.kelvin-root .card .task { color: var(--k-secondary); font-size: 13px; margin-bottom: 14px; }
+.kelvin-root .card .stat-row { display: flex; gap: 20px; border-top: 1px solid var(--k-hairline); padding-top: 12px; font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); }
+.kelvin-root .card .stat-row b { color: var(--k-primary); font-weight: 500; }
+.kelvin-root .recs .rec { font-size: 12px; color: var(--k-secondary); padding: 6px 0 6px 12px; border-left: 2px solid var(--k-attention); margin-top: 6px; }
+.kelvin-root .mini .mini-e { font-family: var(--k-font-mono); font-size: 11px; color: var(--k-tertiary); padding: 5px 0; border-top: 1px solid var(--k-hairline); display: flex; gap: 8px; }
+
+.kelvin-root .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--k-hairline); border: 1px solid var(--k-hairline); margin-bottom: 24px; }
+.kelvin-root .kpi { background: var(--k-parchment); padding: 16px 18px; }
+.kelvin-root .kpi .k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
+.kelvin-root .kpi .v { font-family: var(--k-font-mono); font-variant-numeric: tabular-nums; font-size: 26px; color: var(--k-primary); margin-top: 8px; line-height: 1; }
+.kelvin-root .kpi .m { font-size: 12px; color: var(--k-tertiary); margin-top: 6px; }
+
+.kelvin-root .detailpanel { border: 1px solid var(--k-hairline); background: var(--k-parchment); padding: 20px; margin-top: 20px; }
+.kelvin-root .detailpanel h3 { font-family: var(--k-font-mono); font-size: 15px; margin: 0 0 14px; }
+.kelvin-root .keyfield { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--k-hairline); padding: 12px 0; font-size: 13px; }
+.kelvin-root .keyfield:last-child { border-bottom: none; }
+.kelvin-root .keyfield .kf-k { color: var(--k-tertiary); }
+.kelvin-root .keyfield .kf-v { font-family: var(--k-font-mono); color: var(--k-primary); }
+.kelvin-root .gate { display: inline-flex; align-items: center; gap: 6px; font-family: var(--k-font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; }
+.kelvin-root .gate.ok { color: var(--k-pass); }
+.kelvin-root .gate.wait { color: var(--k-attention); }
+.kelvin-root .gate.no { color: var(--k-fail); }
+.kelvin-root .privacy { margin-top: 20px; border-left: 3px solid var(--k-genomics); background: var(--k-bone); padding: 18px 20px; max-width: 70ch; color: var(--k-primary); font-size: 14px; line-height: 1.6; }
+.kelvin-root .stepper { display: flex; align-items: center; gap: 0; margin: 12px 0; flex-wrap: wrap; }
+.kelvin-root .step { display: flex; align-items: center; gap: 8px; font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); }
+.kelvin-root .step .dot { width: 10px; height: 10px; border: 1px solid var(--k-tertiary); border-radius: 50%; }
+.kelvin-root .step.done .dot { background: var(--k-pass); border-color: var(--k-pass); }
+.kelvin-root .step.done { color: var(--k-secondary); }
+.kelvin-root .step.current .dot { background: var(--k-attention); border-color: var(--k-attention); }
+.kelvin-root .step.current { color: var(--k-primary); }
+.kelvin-root .step-sep { width: 26px; height: 1px; background: var(--k-hairline); margin: 0 10px; }
+.kelvin-root .alert-row { display: flex; gap: 14px; align-items: flex-start; border-bottom: 1px solid var(--k-hairline); padding: 14px 0; }
+.kelvin-root .alert-row .stripe { width: 3px; align-self: stretch; flex-shrink: 0; }
+.kelvin-root .alert-row .stripe.attention { background: var(--k-attention); }
+.kelvin-root .alert-row .stripe.fail { background: var(--k-fail); }
+.kelvin-root .alert-row .body { flex: 1; }
+.kelvin-root .alert-row .a-sub { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); margin-bottom: 4px; }
+.kelvin-root .alert-row .a-det { font-size: 13px; color: var(--k-secondary); }
+.kelvin-root .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.kelvin-root .col h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); margin: 0 0 14px; }
+
+.kelvin-root .item { background: var(--k-parchment); border: 1px solid var(--k-hairline); padding: 20px; margin-bottom: 16px; }
+.kelvin-root .item h3 { font-size: 16px; margin: 0 0 4px; }
+.kelvin-root .item .from { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); margin-bottom: 12px; }
+.kelvin-root .item .body { color: var(--k-secondary); font-size: 14px; margin-bottom: 16px; }
+.kelvin-root .actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.kelvin-root .note-in { margin-top: 12px; }
+.kelvin-root .form-grid { display: grid; gap: 16px; max-width: 640px; }
+.kelvin-root .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.kelvin-root .frame { border: 1px solid var(--k-hairline); background: var(--k-parchment); padding: 40px; }
+.kelvin-root .frame .routes { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 28px; }
+.kelvin-root .frame .routes .r { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); border: 1px solid var(--k-hairline); padding: 6px 10px; }
+.kelvin-root .frame .msg { font-size: 15px; color: var(--k-secondary); max-width: 60ch; }
+.kelvin-root .lead { color: var(--k-secondary); max-width: 70ch; margin-bottom: 24px; font-size: 14px; }
+.kelvin-root .empty { color: var(--k-tertiary); font-size: 14px; padding: 40px 0; text-align: center; }
+
+.kelvin-root .door { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.kelvin-root .door-card { width: 100%; max-width: 380px; }
+.kelvin-root .door .wm { font-family: var(--k-font-title); font-size: 26px; text-align: center; }
+.kelvin-root .door .sys { font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.3em; color: var(--k-tertiary); text-align: center; margin-top: 6px; }
+.kelvin-root .door form { margin-top: 32px; display: grid; gap: 14px; }
+.kelvin-root .door .neutral { color: var(--k-fail); font-size: 12px; font-family: var(--k-font-mono); min-height: 16px; }
+.kelvin-root .door .foot { margin-top: 26px; border-top: 1px solid var(--k-hairline); padding-top: 16px; font-size: 11px; color: var(--k-tertiary); line-height: 1.7; }
+.kelvin-root .field label { display: block; margin-bottom: 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--k-tertiary); }
+
+.kelvin-root .toast { position: fixed; left: 50%; bottom: 32px; transform: translateX(-50%) translateY(12px); background: var(--k-bone); border: 1px solid var(--k-hairline); color: var(--k-primary); padding: 12px 20px; font-family: var(--k-font-mono); font-size: 12px; opacity: 0; pointer-events: none; transition: opacity 300ms var(--k-ease), transform 300ms var(--k-ease); z-index: 60; }
+.kelvin-root .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 900px) { .kelvin-root .kpis { grid-template-columns: repeat(2, 1fr); } .kelvin-root .grid.cols3 { grid-template-columns: 1fr; } .kelvin-root .two-col { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .kelvin-root *, .kelvin-root *::before, .kelvin-root *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 760px) { .kelvin-root .shell { grid-template-columns: 1fr; } .kelvin-root .sidebar { position: static; height: auto; } .kelvin-root .topbar, .kelvin-root .section-nav, .kelvin-root .view { padding-left: 20px; padding-right: 20px; } }
