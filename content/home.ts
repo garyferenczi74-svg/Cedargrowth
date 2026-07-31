@@ -22,6 +22,24 @@ export const home = {
   fiveLines: {
     eyebrow: 'The five lines',
   },
+  twoInputs: {
+    eyebrow: 'Two inputs',
+    headline: 'One method. Two materials.',
+    body: 'Dried and cured trim gives depth. Fresh frozen keeps the aromatics that drying takes away. We do not blend the distinction away, and we do not price it as though it does not exist.',
+    cta: 'Read the method',
+    entries: [
+      {
+        heading: 'Dried. Cured. Then washed.',
+        body: 'Resin matured on the plant and in the cure, washed cold and pressed.',
+        specimen: 'Input: dried and cured sugar trim',
+      },
+      {
+        heading: 'Frozen at harvest. Never dried.',
+        body: 'Whole plant taken to freezing within hours, washed cold, pressed.',
+        specimen: 'Input: fresh frozen whole plant',
+      },
+    ],
+  },
   absences: {
     trailing:
       'Ice water hash and rosin, pressed from 100 percent dried sugar trim.',

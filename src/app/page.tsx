@@ -5,6 +5,7 @@ import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { SectionHeader } from '@/components/atoms/SectionHeader';
 import { ButtonLink } from '@/components/atoms/ButtonLink';
 import { BatchTeaser } from '@/components/home/BatchTeaser';
+import { TwoInputsBand } from '@/components/home/TwoInputsBand';
 import { LINES, ABSENCES, PIGMENT_MARK } from '@/lib/lines';
 import { home } from '@/content/home';
 
@@ -93,6 +94,9 @@ export default function HomePage() {
           </ul>
         </div>
       </section>
+
+      {/* Section A, the two inputs band */}
+      <TwoInputsBand />
 
       {/* Block 4, the five absences */}
       <section className="bg-ink py-16 md:py-24">
