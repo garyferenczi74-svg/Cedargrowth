@@ -21,7 +21,8 @@ export const home = {
   },
   position: {
     headline: 'We are a wellness company that produces solventless premium cannabis extracts',
-    sub: 'Every formulation begins with an intended state, not a strain name. Five lines, eight products, one extraction standard.',
+    sub: 'Every formulation begins with an intended state, not a strain name.',
+    subDetail: 'Five lines, eight products, one extraction standard.',
   },
   fiveLines: {
     eyebrow: 'The five lines',

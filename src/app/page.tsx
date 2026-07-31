@@ -85,7 +85,13 @@ export default function HomePage() {
           <SectionHeader
             className="reveal mx-auto"
             headline={home.position.headline}
-            sub={home.position.sub}
+            sub={
+              <>
+                {home.position.sub}
+                <br />
+                {home.position.subDetail}
+              </>
+            }
           />
         </div>
       </section>
