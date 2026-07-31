@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Fragment } from 'react';
 import { Placeholder } from '@/components/shell/Placeholder';
@@ -8,7 +9,35 @@ import { BatchTeaser } from '@/components/home/BatchTeaser';
 import { TwoInputsBand } from '@/components/home/TwoInputsBand';
 import { TeamSection } from '@/components/home/TeamSection';
 import { LINES, ABSENCES, PIGMENT_MARK } from '@/lib/lines';
+import { SITE_URL } from '@/lib/site';
 import { home } from '@/content/home';
+
+// Home page metadata (spec Section C item 2). Title is absolute so it does
+// not run through the root layout's "%s, CedarGrowth Organics" template.
+// The Open Graph image is a documented placeholder path, not a real asset:
+// see task-4-report.md for the outstanding-asset note.
+export const metadata: Metadata = {
+  title: { absolute: home.meta.title },
+  description: home.meta.description,
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    title: home.meta.title,
+    description: home.meta.description,
+    url: SITE_URL,
+    siteName: home.meta.title,
+    type: 'website',
+    images: [
+      {
+        url: `${SITE_URL}${home.meta.ogImagePath}`,
+        width: 1200,
+        height: 630,
+        alt: home.meta.ogImageAlt,
+      },
+    ],
+  },
+};
 
 export default function HomePage() {
   return (

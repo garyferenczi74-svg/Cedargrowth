@@ -7,6 +7,9 @@ export const ANNOUNCEMENT =
 
 export const FACILITY_ADDRESS = '998 Broadway, Buffalo, NY 14212';
 
+// Deployment domain, used to build absolute canonical and Open Graph URLs.
+export const SITE_URL = 'https://cedargrowth-dxxt.vercel.app';
+
 export const AGE_LINE =
   'You must be 21 or older to purchase. Keep out of the reach of children and pets.';
 

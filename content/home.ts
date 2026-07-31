@@ -3,6 +3,11 @@
 // without an explicit content-review pass. The hero body sentence is pinned
 // by ruling D-LIVEROSIN: it must keep the words "live rosin" exactly.
 
+// Reused verbatim for the page metadata description (D-LIVEROSIN) so the
+// meta description and the on-page hero copy never drift apart.
+const heroBody =
+  'CedarGrowth produces solventless live rosin in Buffalo, New York, formulated for outcome rather than potency.';
+
 export const home = {
   hero: {
     eyebrow: 'A study in subtraction',
@@ -11,7 +16,7 @@ export const home = {
       'Ice. Pressure.',
       'Nothing else.',
     ],
-    body: 'CedarGrowth produces solventless live rosin in Buffalo, New York, formulated for outcome rather than potency.',
+    body: heroBody,
     cta: 'Read the method',
   },
   position: {
@@ -70,6 +75,16 @@ export const home = {
     eyebrow: 'Availability',
     headline: 'Available across New York State.',
     cta: 'Find a dispensary',
+  },
+  meta: {
+    // Home page metadata (spec Section C item 2). Title is absolute, not run
+    // through the layout's "%s, CedarGrowth Organics" template, since Home is
+    // the brand default already. Description reuses heroBody verbatim.
+    title: 'CedarGrowth Organics',
+    description: heroBody,
+    ogImagePath: '/og/home.png',
+    ogImageAlt:
+      'Placeholder, specimen plate composition for CedarGrowth Organics',
   },
   placeholders: {
     hero: {
