@@ -84,7 +84,6 @@ export default function HomePage() {
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
           <SectionHeader
             className="reveal mx-auto"
-            eyebrow={home.position.eyebrow}
             headline={home.position.headline}
             sub={home.position.sub}
           />

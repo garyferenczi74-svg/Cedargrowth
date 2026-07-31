@@ -20,8 +20,7 @@ export const home = {
     cta: 'Read the method',
   },
   position: {
-    eyebrow: 'Position',
-    headline: 'A wellness company that produces cannabis.',
+    headline: 'We are a wellness company that produces solventless premium cannabis extracts',
     sub: 'Every formulation begins with an intended state, not a strain name. Five lines, eight products, one extraction standard.',
   },
   fiveLines: {
