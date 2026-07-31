@@ -47,6 +47,11 @@ export function TeamSection() {
               ) : (
                 <Unknown label="Role" caption="Role pending." />
               )}
+              {member.credential ? (
+                <p className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
+                  {member.credential}
+                </p>
+              ) : null}
               {member.bio ? (
                 <p className="max-w-[480px] text-body-m-m md:text-body-m text-secondary">
                   {member.bio}
