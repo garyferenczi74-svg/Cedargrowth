@@ -3,15 +3,16 @@ import { ButtonLink } from '@/components/atoms/ButtonLink';
 import { home } from '@/content/home';
 
 // Home Section A, the two inputs band (Section 6.1 spec addendum). Sits
-// between the five lines and the five absences, stepping the surface from
-// parchment to ink. Left column, columns 1-5, carries the eyebrow, headline,
+// between the five lines (bone) and the five absences (ink), on parchment so
+// no two adjacent sections share a surface. Left column, columns 1-5, carries
+// the eyebrow, headline,
 // body, and ghost link. Right column, columns 7-12, carries two comparison
 // entries as hairline-separated rows, never cards: no border box, no fill,
 // no shadow around either entry.
 
 export function TwoInputsBand() {
   return (
-    <section className="bg-bone py-16 md:py-40">
+    <section className="bg-parchment py-16 md:py-40">
       <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-0">
           <div className="reveal flex flex-col items-start gap-6 md:col-span-5">

@@ -6,7 +6,7 @@ import { home } from '@/content/home';
 import { team } from '@/content/team';
 
 // Home Section B, the team section (spec Section B). Sits between the
-// transparency band and the research teaser, on parchment. A museum wall
+// transparency band and the research teaser, on bone. A museum wall
 // label, not a startup team grid: no cards, no rounded avatars, no bordered
 // boxes around an entry, no hover lifts, no social icons, no email
 // addresses, no job title chips. Role and bio are pending for both entries
@@ -16,7 +16,7 @@ import { team } from '@/content/team';
 
 export function TeamSection() {
   return (
-    <section className="bg-parchment py-16 md:py-40">
+    <section className="bg-bone py-16 md:py-40">
       <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
         <div className="reveal flex flex-col gap-6 border-b border-hairline pb-8 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-4">
