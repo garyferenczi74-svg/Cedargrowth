@@ -47,7 +47,7 @@ export const home = {
   },
   absences: {
     trailing:
-      'Ice water hash and rosin, pressed from 100 percent dried sugar trim.',
+      'Ice water hash and rosin, pressed from premium cannabis.',
   },
   dna: {
     eyebrow: 'Precision',
