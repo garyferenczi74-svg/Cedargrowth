@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import ProductionWing from './wings/ProductionWing';
 import EvidenceWing from './wings/EvidenceWing';
+import GenomicsWing from './wings/GenomicsWing';
 import {
   AGENTS,
   EVENT_TYPES,
@@ -203,6 +204,8 @@ export default function KelvinConsole() {
             <ProductionWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : wing === 'evidence' ? (
             <EvidenceWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
+          ) : wing === 'genomics' ? (
+            <GenomicsWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : (
             <WingFrame wingId={wing} routes={(wingDef.routes as string[]) || []} view={view} />
           )}
