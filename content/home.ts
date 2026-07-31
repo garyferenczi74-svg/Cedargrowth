@@ -12,7 +12,7 @@ export const home = {
   hero: {
     eyebrow: 'A study in subtraction',
     headlineLines: [
-      'Premium Fresh Frozen.',
+      'Premium Cannabis.',
       'Ice. Pressure.',
       'Nothing else.',
     ],
