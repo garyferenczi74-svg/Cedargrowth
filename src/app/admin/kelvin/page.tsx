@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import ProductionWing from './wings/ProductionWing';
 import EvidenceWing from './wings/EvidenceWing';
 import GenomicsWing from './wings/GenomicsWing';
+import SecurityWing from './wings/SecurityWing';
+import EditorialWing from './wings/EditorialWing';
 import {
   AGENTS,
   EVENT_TYPES,
@@ -206,6 +208,10 @@ export default function KelvinConsole() {
             <EvidenceWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : wing === 'genomics' ? (
             <GenomicsWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
+          ) : wing === 'security' ? (
+            <SecurityWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
+          ) : wing === 'editorial' ? (
+            <EditorialWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : (
             <WingFrame wingId={wing} routes={(wingDef.routes as string[]) || []} view={view} />
           )}
