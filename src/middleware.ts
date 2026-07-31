@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { KELVIN_COOKIE, verifySessionToken } from '@/lib/kelvinAuth';
+import { KELVIN_COOKIE, readSession } from '@/lib/kelvinAuth';
 
 // Gate for the KELVIN admin console. Every route under /admin/kelvin requires a
 // valid signed session, with one exception: the login page itself. Without a
@@ -14,8 +14,8 @@ export async function middleware(req: NextRequest) {
   }
 
   const token = req.cookies.get(KELVIN_COOKIE)?.value;
-  const ok = await verifySessionToken(token, process.env.KELVIN_SESSION_SECRET);
-  if (!ok) {
+  const email = await readSession(token, process.env.KELVIN_SESSION_SECRET);
+  if (!email) {
     return new NextResponse('Not found', {
       status: 404,
       headers: { 'content-type': 'text/plain; charset=utf-8' },

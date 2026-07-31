@@ -11,7 +11,7 @@ export async function POST() {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    path: '/admin/kelvin',
+    path: '/',
     maxAge: 0,
   });
   return res;

@@ -113,6 +113,54 @@ export const SEED_REVIEW: ReviewItem[] = [
   { id: 'rv-3', from: 'CODEX . KNOWLEDGE', title: 'Approve terpene index v2 for canon', body: 'Fourteen entries, nine citations, one citation still thin on limonene. Approval versions the canon and publishes to the transparency source.', status: 'open' },
 ];
 
+export type QueueRc = { id: string; title: string; stage: number; note: string };
+export type QueueDraft = { id: string; title: string; blocker: string };
+export type TuningItem = { id: string; from: string; title: string; detail: string; affects: string; status: 'proposed' | 'applied' | 'rejected'; note?: string };
+export type CanonVersion = { v: string; note: string; content: string };
+export type CanonDoc = { id: string; title: string; versions: CanonVersion[] };
+
+export const RELEASE_CHAIN = ['LITMUS', 'SENTINEL', 'VERNIER', 'Owner'];
+
+export const QUEUE_RCS: QueueRc[] = [
+  { id: 'rc-003', title: 'Home surface rhythm and hero copy', stage: 2, note: 'Held at the release gate on the contrast tuning decision.' },
+  { id: 'rc-004', title: 'Reservation flow and confirmation copy', stage: 3, note: 'Endorsed by SENTINEL. At owner review.' },
+];
+export const QUEUE_DRAFTS: QueueDraft[] = [
+  { id: 'dr-11', title: 'Cold cure, dried and washed', blocker: 'Held by APERTURE for a SENTINEL originality check.' },
+  { id: 'dr-12', title: 'The thirteen traits, plain language', blocker: 'Blocked on trait matrix v2 sign off from CODEX.' },
+];
+
+export const SEED_TUNING: TuningItem[] = [
+  { id: 'tn-1', from: 'VERNIER', title: 'Tertiary text contrast to AA', detail: 'Raise tertiary ink one step and restate the semantic token. Affects six components at body sizes.', affects: '6 components', status: 'proposed' },
+];
+
+export const CANON: CanonDoc[] = [
+  { id: 'design-canon', title: 'Design Canon', versions: [
+    { v: 'v1.0', note: 'First ratified canon.', content: 'Section 2.3. Temperature.\nThe system runs daylight and paper. No nocturnal register on public surfaces.\nSection 4. Density.\nOperator surfaces may compress spacing. Marketing surfaces may not.' },
+    { v: 'v1.1', note: 'Operator density clause added.', content: 'Section 2.3. Temperature.\nThe system runs daylight and paper on public surfaces. Operator consoles may run dark by owner decision.\nSection 4. Density.\nOperator surfaces compress to 12px row padding. Marketing surfaces hold 40px section padding.\nSection 4.2. Figures.\nEvery figure sets in IBM Plex Mono with tabular numerals.' },
+  ] },
+  { id: 'dual-input-copy-pack', title: 'Dual Input Copy Pack', versions: [
+    { v: 'v1.0', note: 'Dried and fresh frozen language.', content: 'Two inputs. One method.\nDried and cured trim gives depth.\nFresh frozen keeps the aromatics that drying takes away.\nWe do not blend the distinction away.' },
+    { v: 'v1.1', note: 'Owner override on live rosin term.', content: 'Two inputs. One method.\nDried and cured trim gives depth.\nFresh frozen keeps the aromatics that drying takes away.\nLive rosin term preserved verbatim by owner decision.' },
+  ] },
+  { id: 'brand-tokens', title: 'Brand Tokens', versions: [
+    { v: 'v1.0', note: 'Light clinical token set.', content: 'surface/clinical #FFFFFF\nsurface/parchment #F3EEE7\nink/primary #1C1B19\nForty one semantic variables total.' },
+    { v: 'v1.1', note: 'Dark operator map appended.', content: 'surface/clinical light #FFFFFF, dark #100F0C\nink/primary light #1C1B19, dark #F2ECE1\nOperator dark map derived, not invented. Same hues, retuned for a dark ground.' },
+  ] },
+  { id: 'method-sop', title: 'Method SOP', versions: [
+    { v: 'v0.9', note: 'Draft. Values pending.', content: 'Wash temperature UNKNOWN.\nAgitation time UNKNOWN.\nPress temperature UNKNOWN.\nCure duration UNKNOWN.\nValues arrive with Prompt 04.' },
+    { v: 'v0.9b', note: 'Structure fixed, values still pending.', content: 'Wash. Ice water hash, cold.\nPress. Rosin, controlled.\nCure. Matured, timed.\nEvery numeric value renders UNKNOWN until owner supplies the SOP figures.' },
+  ] },
+  { id: 'claims-guardrails', title: 'Claims Guardrails', versions: [
+    { v: 'v1.0', note: 'Wellness policy baseline.', content: 'No claim to diagnose, treat, cure, or prevent any disease.\nGeneral wellness policy, federal posture January 2026.\nNo compound named on a public surface without clinical validation.' },
+    { v: 'v1.1', note: 'Dictionary scan clause.', content: 'No claim to diagnose, treat, cure, or prevent any disease.\nEvery public copy change runs a dictionary scan before delivery.\nA single banned term is a hard block.' },
+  ] },
+  { id: 'trait-matrix', title: 'Trait Matrix', versions: [
+    { v: 'v1.0', note: 'Thirteen traits, first pass.', content: 'Thirteen traits. One protocol.\nEach trait maps to a format, a ratio, and a starting protocol.\nGenotype is never displayed. Readout only.' },
+    { v: 'v2.0', note: 'Format and ratio columns added.', content: 'Thirteen traits. One protocol.\nColumns: trait, format, ratio, starting protocol.\nGenotype is never displayed from any context, including admin. Readout only.' },
+  ] },
+];
+
 export function nowTime(): string {
   const d = new Date();
   return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;

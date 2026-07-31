@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 
 export default function KelvinLogin() {
   const router = useRouter();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
@@ -22,7 +23,7 @@ export default function KelvinLogin() {
       const res = await fetch('/api/admin/kelvin/login', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
       if (res.ok) {
         router.replace('/admin/kelvin');
@@ -43,6 +44,16 @@ export default function KelvinLogin() {
         <div className="wm">CEDARGROWTH</div>
         <div className="sys">KELVIN</div>
         <form onSubmit={submit} noValidate>
+          <div className="field">
+            <label htmlFor="em">Admin email</label>
+            <input
+              id="em"
+              type="email"
+              autoComplete="username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
           <div className="field">
             <label htmlFor="pw">Access key</label>
             <input

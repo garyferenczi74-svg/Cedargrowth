@@ -7,6 +7,16 @@
 export const KELVIN_COOKIE = 'kelvin_session';
 export const KELVIN_MAX_AGE = 28800; // eight hours in seconds
 
+// The site admin allowlist. Access is restricted to these emails. Adding an
+// email here makes it a site admin. Removing one revokes access on the next
+// request even if a session cookie still exists, because the allowlist is
+// checked on every read, not only at login.
+export const KELVIN_ADMINS = ['gary@cedargrowthco.com'];
+
+export function isAdmin(email: string | undefined | null): boolean {
+  return !!email && KELVIN_ADMINS.indexOf(email.trim().toLowerCase()) >= 0;
+}
+
 const encoder = new TextEncoder();
 
 function bytesToB64url(bytes: ArrayBuffer): string {
@@ -38,31 +48,35 @@ async function sign(payload: string, secret: string): Promise<string> {
   return bytesToB64url(sig);
 }
 
-export async function createSessionToken(secret: string): Promise<string> {
+export async function createSessionToken(secret: string, email: string): Promise<string> {
   const payload = bytesToB64url(
-    encoder.encode(JSON.stringify({ iat: Math.floor(Date.now() / 1000) })).buffer,
+    encoder.encode(JSON.stringify({ iat: Math.floor(Date.now() / 1000), email: email.trim().toLowerCase() })).buffer,
   );
   const sig = await sign(payload, secret);
   return `${payload}.${sig}`;
 }
 
-export async function verifySessionToken(
+// Returns the admin email if the token is well signed, unexpired, and its email
+// is still on the allowlist. Returns null otherwise. This is the single read
+// path the middleware and the session route both use.
+export async function readSession(
   token: string | undefined,
   secret: string | undefined,
   maxAgeSec: number = KELVIN_MAX_AGE,
-): Promise<boolean> {
-  if (!token || !secret) return false;
+): Promise<string | null> {
+  if (!token || !secret) return null;
   const parts = token.split('.');
-  if (parts.length !== 2) return false;
+  if (parts.length !== 2) return null;
   const [payload, sig] = parts;
   const expected = await sign(payload, secret);
-  if (sig !== expected) return false;
+  if (sig !== expected) return null;
   try {
     const data = JSON.parse(new TextDecoder().decode(b64urlToBytes(payload)));
-    if (typeof data.iat !== 'number') return false;
-    if (Math.floor(Date.now() / 1000) - data.iat > maxAgeSec) return false;
-    return true;
+    if (typeof data.iat !== 'number') return null;
+    if (Math.floor(Date.now() / 1000) - data.iat > maxAgeSec) return null;
+    if (!isAdmin(data.email)) return null;
+    return String(data.email);
   } catch {
-    return false;
+    return null;
   }
 }

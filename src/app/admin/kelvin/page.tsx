@@ -7,6 +7,7 @@ import EvidenceWing from './wings/EvidenceWing';
 import GenomicsWing from './wings/GenomicsWing';
 import SecurityWing from './wings/SecurityWing';
 import EditorialWing from './wings/EditorialWing';
+import CommandExtras from './CommandExtras';
 import {
   AGENTS,
   EVENT_TYPES,
@@ -37,6 +38,7 @@ export default function KelvinConsole() {
   const [mode, setMode] = useState<'live' | 'preview'>('live');
   const [openRow, setOpenRow] = useState<number | null>(null);
   const [toast, setToast] = useState('');
+  const [sessionEmail, setSessionEmail] = useState('');
   const nextId = useRef(100);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -54,6 +56,15 @@ export default function KelvinConsole() {
     nextId.current += 1;
     const id = nextId.current;
     setEvents((prev) => [{ id, ...e }, ...prev]);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/admin/kelvin/session')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => { if (active && d && typeof d.email === 'string') setSessionEmail(d.email); })
+      .catch(() => {});
+    return () => { active = false; };
   }, []);
 
   const filtered = useMemo(
@@ -169,7 +180,7 @@ export default function KelvinConsole() {
             >
               Design Preview
             </button>
-            <span className="session-id">owner session</span>
+            <span className="session-id">{sessionEmail || 'admin session'}</span>
           </div>
         </div>
 
@@ -201,6 +212,9 @@ export default function KelvinConsole() {
               setFilterType={setFilterType}
               setOpenRow={setOpenRow}
               resolveReview={resolveReview}
+              addEvent={addEvent}
+              flash={flash}
+              now={nowTime}
             />
           ) : wing === 'production' ? (
             <ProductionWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
@@ -237,8 +251,11 @@ function CommandView(props: {
   setFilterType: (v: EventType | null) => void;
   setOpenRow: (v: number | null) => void;
   resolveReview: (id: string, d: ReviewItem['status'], title: string) => void;
+  addEvent: (e: Omit<KEvent, 'id'>) => void;
+  flash: (m: string) => void;
+  now: () => string;
 }) {
-  const { view, events, filtered, review, filterAgent, filterType, openRow, setFilterAgent, setFilterType, setOpenRow, resolveReview } = props;
+  const { view, events, filtered, review, filterAgent, filterType, openRow, setFilterAgent, setFilterType, setOpenRow, resolveReview, addEvent, flash, now } = props;
 
   if (view === 'live-feed') {
     return (
@@ -385,13 +402,7 @@ function CommandView(props: {
     );
   }
 
-  return (
-    <div className="frame">
-      <div className="msg">
-        This Command section is wired in the next increment. Live Feed, Agents, and Review are live now.
-      </div>
-    </div>
-  );
+  return <CommandExtras view={view} addEvent={addEvent} flash={flash} now={now} />;
 }
 
 function WingFrame({ wingId, routes, view }: { wingId: string; routes: string[]; view: string }) {

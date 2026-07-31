@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { KELVIN_COOKIE, KELVIN_MAX_AGE, createSessionToken } from '@/lib/kelvinAuth';
+import { KELVIN_COOKIE, KELVIN_MAX_AGE, createSessionToken, isAdmin } from '@/lib/kelvinAuth';
 
 // Accepts a password, compares it to the configured access password, and on a
 // match sets the signed session cookie scoped to the console path. Every failure
@@ -17,27 +17,28 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: NEUTRAL }, { status: 400 });
   }
-  const password =
-    body && typeof (body as Record<string, unknown>).password === 'string'
-      ? ((body as Record<string, unknown>).password as string)
-      : '';
+  const b = (body ?? {}) as Record<string, unknown>;
+  const email = typeof b.email === 'string' ? b.email : '';
+  const password = typeof b.password === 'string' ? b.password : '';
 
   const expected = process.env.KELVIN_ACCESS_PASSWORD;
   const secret = process.env.KELVIN_SESSION_SECRET;
   if (!expected || !secret) {
     return NextResponse.json({ error: 'Access is not configured.' }, { status: 503 });
   }
-  if (!password || password !== expected) {
+  // The same neutral line for a non admin email and for a wrong key, so the
+  // screen enumerates nothing. Only an allowlisted email with the key resolves.
+  if (!isAdmin(email) || !password || password !== expected) {
     return NextResponse.json({ error: NEUTRAL }, { status: 401 });
   }
 
-  const token = await createSessionToken(secret);
+  const token = await createSessionToken(secret, email);
   const res = NextResponse.json({ ok: true });
   res.cookies.set(KELVIN_COOKIE, token, {
     httpOnly: true,
     secure: true,
     sameSite: 'lax',
-    path: '/admin/kelvin',
+    path: '/',
     maxAge: KELVIN_MAX_AGE,
   });
   return res;

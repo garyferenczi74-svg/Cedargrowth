@@ -67,9 +67,17 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="mt-16 text-caption-m md:text-caption text-inverse/60">
-          {BRAND.full}. Buffalo, New York.
-        </p>
+        <div className="mt-16 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-caption-m md:text-caption text-inverse/60">
+            {BRAND.full}. Buffalo, New York.
+          </p>
+          <Link
+            href="/admin/kelvin/login"
+            className="cedar-underline font-mono text-specimen uppercase tracking-specimen text-inverse/40"
+          >
+            Admin
+          </Link>
+        </div>
       </div>
     </footer>
   );
