@@ -54,6 +54,11 @@ export const home = {
     eyebrow: 'Transparency',
     body: 'Every batch we release is tested by a third-party laboratory. Enter a batch number to read its full profile.',
   },
+  team: {
+    eyebrow: 'People',
+    headline: 'The work has names on it.',
+    cta: 'The full team',
+  },
   research: {
     eyebrow: 'Research',
     headline: 'Written like a laboratory, read like a library.',

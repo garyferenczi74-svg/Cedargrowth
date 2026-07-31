@@ -6,6 +6,7 @@ import { SectionHeader } from '@/components/atoms/SectionHeader';
 import { ButtonLink } from '@/components/atoms/ButtonLink';
 import { BatchTeaser } from '@/components/home/BatchTeaser';
 import { TwoInputsBand } from '@/components/home/TwoInputsBand';
+import { TeamSection } from '@/components/home/TeamSection';
 import { LINES, ABSENCES, PIGMENT_MARK } from '@/lib/lines';
 import { home } from '@/content/home';
 
@@ -155,6 +156,9 @@ export default function HomePage() {
           <BatchTeaser />
         </div>
       </section>
+
+      {/* Section B, the team section */}
+      <TeamSection />
 
       {/* Block 7, research teaser */}
       <section className="bg-parchment py-16 md:py-40">
