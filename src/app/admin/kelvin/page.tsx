@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ProductionWing from './wings/ProductionWing';
 import {
   AGENTS,
   EVENT_TYPES,
@@ -43,6 +44,12 @@ export default function KelvinConsole() {
     setToast(msg);
     if (toastTimer.current) clearTimeout(toastTimer.current);
     toastTimer.current = setTimeout(() => setToast(''), 2200);
+  }, []);
+
+  const addEvent = useCallback((e: Omit<KEvent, 'id'>) => {
+    nextId.current += 1;
+    const id = nextId.current;
+    setEvents((prev) => [{ id, ...e }, ...prev]);
   }, []);
 
   const filtered = useMemo(
@@ -191,6 +198,8 @@ export default function KelvinConsole() {
               setOpenRow={setOpenRow}
               resolveReview={resolveReview}
             />
+          ) : wing === 'production' ? (
+            <ProductionWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : (
             <WingFrame wingId={wing} routes={(wingDef.routes as string[]) || []} view={view} />
           )}
