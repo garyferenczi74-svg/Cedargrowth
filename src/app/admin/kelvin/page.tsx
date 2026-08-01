@@ -39,6 +39,7 @@ export default function KelvinConsole() {
   const [openRow, setOpenRow] = useState<number | null>(null);
   const [toast, setToast] = useState('');
   const [sessionEmail, setSessionEmail] = useState('');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const nextId = useRef(100);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -66,6 +67,23 @@ export default function KelvinConsole() {
       .catch(() => {});
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    try {
+      const t = localStorage.getItem('kelvin-theme');
+      if (t === 'dark' || t === 'light') setTheme(t);
+    } catch {
+      // ignore, default light
+    }
+  }, []);
+
+  useEffect(() => {
+    const root = document.querySelector('.kelvin-root');
+    if (root) root.setAttribute('data-theme', theme);
+    try { localStorage.setItem('kelvin-theme', theme); } catch {
+      // ignore storage failures
+    }
+  }, [theme]);
 
   const filtered = useMemo(
     () =>
@@ -154,6 +172,10 @@ export default function KelvinConsole() {
           ))}
         </ul>
         <div className="sidefoot">
+          <div className="theme-switch" role="group" aria-label="Theme">
+            <button className={theme === 'light' ? 'active' : ''} onClick={() => setTheme('light')}>Light</button>
+            <button className={theme === 'dark' ? 'active' : ''} onClick={() => setTheme('dark')}>Dark</button>
+          </div>
           <button className="signout" onClick={signOut}>
             Sign Out
           </button>
