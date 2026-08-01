@@ -19,10 +19,11 @@ export const home = {
     body: heroBody,
     cta: 'The Method',
     // Real hero background asset (a live rosin press clip) hosted in the
-    // project's public Supabase storage bucket. Replaces the marked hero
-    // placeholder now that a real asset has landed.
+    // project's public Supabase storage bucket. The ?v tag is a cache buster:
+    // the file is re-uploaded in place at the same path, so bump the date
+    // whenever the clip is replaced to force browsers and edges past the old copy.
     videoSrc:
-      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/video_of_the_rosin.mp4',
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/video_of_the_rosin.mp4?v=20260801',
   },
   position: {
     headline: 'We are a wellness company that produces solventless premium cannabis extracts',
