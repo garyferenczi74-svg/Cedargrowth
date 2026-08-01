@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import { HeroVideo } from '@/components/home/HeroVideo';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { Unknown } from '@/components/atoms/Unknown';
@@ -45,13 +45,11 @@ export default function MethodPage() {
                 className="reveal grid grid-cols-1 gap-6 border-t border-hairline py-10 md:grid-cols-12 md:gap-16 md:py-16"
               >
                 <div className="md:col-span-5">
-                  {step.image ? (
-                    <div className="relative aspect-[5/4] border border-hairline bg-bone">
-                      <Image
-                        src={step.image.src}
-                        alt={step.image.alt}
-                        fill
-                        className="object-cover"
+                  {step.video ? (
+                    <div className="relative aspect-[5/4] overflow-hidden border border-hairline bg-bone">
+                      <HeroVideo
+                        src={step.video.src}
+                        className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
                   ) : (
