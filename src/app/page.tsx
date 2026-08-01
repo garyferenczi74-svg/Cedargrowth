@@ -6,6 +6,7 @@ import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { SectionHeader } from '@/components/atoms/SectionHeader';
 import { ButtonLink } from '@/components/atoms/ButtonLink';
 import { BatchTeaser } from '@/components/home/BatchTeaser';
+import { HeroVideo } from '@/components/home/HeroVideo';
 import { TwoInputsBand } from '@/components/home/TwoInputsBand';
 import { TeamSection } from '@/components/home/TeamSection';
 import { LINES, ABSENCES, PIGMENT_MARK } from '@/lib/lines';
@@ -44,18 +45,11 @@ export default function HomePage() {
     <>
       {/* Block 1, hero */}
       <section className="relative flex min-h-[82vh] flex-col justify-end overflow-hidden bg-ink">
-        <Placeholder
-          family={home.placeholders.hero.family}
-          alt={home.placeholders.hero.alt}
-          tone="ink"
-          label={false}
-          bordered={false}
-          className="settle absolute inset-0"
+        <HeroVideo
+          src={home.hero.videoSrc}
+          className="settle absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-ink/20" aria-hidden="true" />
-        <span className="pointer-events-none absolute left-page-margin-mobile top-6 font-mono text-specimen uppercase tracking-specimen text-inverse/40 md:left-page-margin">
-          {`Placeholder, ${home.placeholders.hero.family}`}
-        </span>
+        <div className="absolute inset-0 bg-ink/30" aria-hidden="true" />
         <div className="relative mx-auto w-full max-w-content px-page-margin-mobile pb-16 md:px-page-margin md:pb-24">
           <div className="reveal flex max-w-editorial flex-col gap-6">
             <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
