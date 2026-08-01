@@ -49,11 +49,14 @@ export default function HomePage() {
           src={home.hero.videoSrc}
           className="settle absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-ink/40" aria-hidden="true" />
+        <div
+          className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/45 to-transparent"
+          aria-hidden="true"
+        />
         <div className="relative mx-auto w-full max-w-content px-page-margin-mobile pb-16 md:px-page-margin md:pb-24">
           <div className="reveal flex max-w-editorial flex-col gap-6">
             <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
-            <h1 className="font-display text-display-l-m md:text-display-xl text-inverse">
+            <h1 className="font-display text-display-l-m md:text-display-xl text-inverse [text-shadow:0_1px_18px_rgb(28_27_25_/_0.5)]">
               {home.hero.headlineLines.map((line, index) => (
                 <Fragment key={line}>
                   {index > 0 && <br />}
@@ -61,11 +64,16 @@ export default function HomePage() {
                 </Fragment>
               ))}
             </h1>
-            <p className="text-body-m-m md:text-body-l text-inverse/70">
+            <p className="text-body-m-m md:text-body-l text-inverse/90 [text-shadow:0_1px_14px_rgb(28_27_25_/_0.55)]">
               {home.hero.body}
             </p>
             <div>
-              <ButtonLink href="/method" variant="outline" tone="inverse">
+              <ButtonLink
+                href="/method"
+                variant="outline"
+                tone="inverse"
+                className="!border-inverse bg-ink/25 backdrop-blur-sm hover:!bg-inverse hover:!text-primary"
+              >
                 {home.hero.cta}
               </ButtonLink>
             </div>
