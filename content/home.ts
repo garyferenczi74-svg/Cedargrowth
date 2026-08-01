@@ -17,7 +17,7 @@ export const home = {
       'Nothing else.',
     ],
     body: heroBody,
-    cta: 'Read the method',
+    cta: 'The Method',
     // Real hero background asset (a live rosin press clip) hosted in the
     // project's public Supabase storage bucket. Replaces the marked hero
     // placeholder now that a real asset has landed.
