@@ -11,14 +11,13 @@ import CommandExtras from './CommandExtras';
 import {
   AGENTS,
   EVENT_TYPES,
-  SEED_EVENTS,
-  SEED_REVIEW,
   WINGS,
   mintEvent,
   nowTime,
   type EventType,
   type KEvent,
   type ReviewItem,
+  type TuningItem,
 } from './store';
 
 // The KELVIN console. Increment one: the shell plus the Command wing wired end to
@@ -31,8 +30,9 @@ export default function KelvinConsole() {
   const router = useRouter();
   const [wing, setWing] = useState('command');
   const [view, setView] = useState('live-feed');
-  const [events, setEvents] = useState<KEvent[]>(SEED_EVENTS);
-  const [review, setReview] = useState<ReviewItem[]>(SEED_REVIEW);
+  const [events, setEvents] = useState<KEvent[]>([]);
+  const [review, setReview] = useState<ReviewItem[]>([]);
+  const [tuning, setTuning] = useState<TuningItem[]>([]);
   const [filterAgent, setFilterAgent] = useState<string | null>(null);
   const [filterType, setFilterType] = useState<EventType | null>(null);
   const [mode, setMode] = useState<'live' | 'preview'>('live');
@@ -40,7 +40,7 @@ export default function KelvinConsole() {
   const [toast, setToast] = useState('');
   const [sessionEmail, setSessionEmail] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const nextId = useRef(100);
+  const nextId = useRef(1000000);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const wingDef = WINGS.find((w) => w.id === wing) || WINGS[0];
@@ -53,11 +53,30 @@ export default function KelvinConsole() {
     toastTimer.current = setTimeout(() => setToast(''), 2200);
   }, []);
 
-  const addEvent = useCallback((e: Omit<KEvent, 'id'>) => {
+  const addEvent = useCallback((e: Omit<KEvent, 'id'>, persist = true) => {
     nextId.current += 1;
     const id = nextId.current;
     setEvents((prev) => [{ id, ...e }, ...prev]);
+    if (persist) {
+      fetch('/api/admin/kelvin/command/event', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(e) }).catch(() => {});
+    }
   }, []);
+
+  const loadCommand = useCallback(async () => {
+    try {
+      const r = await fetch('/api/admin/kelvin/command');
+      if (r.ok) {
+        const d = await r.json();
+        setEvents(d.events || []);
+        setReview(d.review || []);
+        setTuning(d.tuning || []);
+      }
+    } catch {
+      // keep current
+    }
+  }, []);
+
+  useEffect(() => { loadCommand(); }, [loadCommand]);
 
   useEffect(() => {
     let active = true;
@@ -127,23 +146,20 @@ export default function KelvinConsole() {
     router.replace('/admin/kelvin/login');
   }
 
-  function resolveReview(id: string, decision: ReviewItem['status'], title: string) {
+  async function resolveReview(id: string, decision: ReviewItem['status'], title: string) {
     setReview((prev) => prev.map((r) => (r.id === id ? { ...r, status: decision } : r)));
-    nextId.current += 1;
     const verb = decision === 'approved' ? 'approved' : decision === 'rejected' ? 'rejected' : 'sent back';
-    setEvents((prev) => [
-      {
-        id: nextId.current,
-        agent: 'MERIDIAN',
-        time: nowTime(),
-        type: 'DECISION',
-        summary: `Owner ${verb}: ${title}`,
-        sub: `Review item ${id} resolved. Queue count updated.`,
-      },
-      ...prev,
-    ]);
+    addEvent(
+      { agent: 'MERIDIAN', time: nowTime(), type: 'DECISION', summary: `Owner ${verb}: ${title}`, sub: `Review item ${id} resolved. Queue count updated.` },
+      false,
+    );
     const remaining = review.filter((r) => r.status === 'open' && r.id !== id).length;
     flash(remaining === 0 ? 'Queue clear. Badge at zero.' : `Recorded. ${String(remaining).padStart(2, '0')} remaining.`);
+    try {
+      await fetch('/api/admin/kelvin/command/review', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, decision }) });
+    } catch {
+      // local state already updated
+    }
   }
 
   return (
@@ -238,6 +254,8 @@ export default function KelvinConsole() {
               addEvent={addEvent}
               flash={flash}
               now={nowTime}
+              tuning={tuning}
+              reloadCommand={loadCommand}
             />
           ) : wing === 'production' ? (
             <ProductionWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
@@ -277,8 +295,10 @@ function CommandView(props: {
   addEvent: (e: Omit<KEvent, 'id'>) => void;
   flash: (m: string) => void;
   now: () => string;
+  tuning: TuningItem[];
+  reloadCommand: () => Promise<void>;
 }) {
-  const { view, events, filtered, review, filterAgent, filterType, openRow, setFilterAgent, setFilterType, setOpenRow, resolveReview, addEvent, flash, now } = props;
+  const { view, events, filtered, review, filterAgent, filterType, openRow, setFilterAgent, setFilterType, setOpenRow, resolveReview, addEvent, flash, now, tuning, reloadCommand } = props;
 
   if (view === 'live-feed') {
     return (
@@ -425,7 +445,7 @@ function CommandView(props: {
     );
   }
 
-  return <CommandExtras view={view} addEvent={addEvent} flash={flash} now={now} />;
+  return <CommandExtras view={view} addEvent={addEvent} flash={flash} now={now} tuning={tuning} reloadCommand={reloadCommand} />;
 }
 
 function WingFrame({ wingId, routes, view }: { wingId: string; routes: string[]; view: string }) {

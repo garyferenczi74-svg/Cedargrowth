@@ -7,19 +7,18 @@ import {
   QUEUE_DRAFTS,
   QUEUE_RCS,
   RELEASE_CHAIN,
-  SEED_TUNING,
   type KEvent,
   type TuningItem,
 } from './store';
 
-// The remaining Command sections: Queue, Steering, Evolution, Knowledge. Local
-// state holds the tuning proposals and the knowledge selection. Actions emit
-// events into the Command feed through addEvent.
+// The remaining Command sections: Queue, Steering, Evolution, Knowledge. Tuning
+// proposals are persisted (passed in and mutated through the command tuning
+// route); queue and canon are static reference. Actions emit events into the
+// Command feed through addEvent.
 
-type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string };
+type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string; tuning: TuningItem[]; reloadCommand: () => Promise<void> };
 
-export default function CommandExtras({ view, addEvent, flash, now }: Props) {
-  const [tuning, setTuning] = useState<TuningItem[]>(SEED_TUNING.map((t) => ({ ...t })));
+export default function CommandExtras({ view, addEvent, flash, now, tuning, reloadCommand }: Props) {
   const [rejectOpen, setRejectOpen] = useState<Record<string, boolean>>({});
   const [rejectNote, setRejectNote] = useState<Record<string, string>>({});
   const [canonSel, setCanonSel] = useState('design-canon');
@@ -93,22 +92,26 @@ export default function CommandExtras({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'evolution') {
-    function apply(id: string) {
-      setTuning((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'applied' } : t)));
+    const tuningMutate = async (id: string, op: string, note?: string) => {
+      try { await fetch('/api/admin/kelvin/command/tuning', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id, op, note }) }); } catch { /* keep */ }
+      await reloadCommand();
+    };
+    const apply = async (id: string) => {
+      await tuningMutate(id, 'apply');
       addEvent({ agent: 'VERNIER', time: now(), type: 'TUNING', summary: 'Applied: tertiary text contrast', sub: 'Owner applied the proposal. Six components retuned to AA.' });
       flash('Applied. Rollback available.');
-    }
-    function rollback(id: string) {
-      setTuning((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'proposed' } : t)));
+    };
+    const rollback = async (id: string) => {
+      await tuningMutate(id, 'rollback');
       addEvent({ agent: 'VERNIER', time: now(), type: 'TUNING', summary: 'Rolled back: tertiary text contrast', sub: 'Owner reverted the proposal to proposed state.' });
       flash('Rolled back.');
-    }
-    function reject(id: string) {
+    };
+    const reject = async (id: string) => {
       const note = (rejectNote[id] || '').trim();
       if (!note) { flash('A reason is required to reject.'); return; }
-      setTuning((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'rejected', note } : t)));
+      await tuningMutate(id, 'reject', note);
       flash('Rejected with note.');
-    }
+    };
     return (
       <>
         <p className="lead">Tuning proposals from VERNIER and the fleet. Applying a proposal writes a tuning event and reveals a rollback control. Rejecting requires a note.</p>
