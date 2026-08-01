@@ -7,6 +7,7 @@ export type MethodStep = {
   n: string;
   title: string;
   body: string;
+  image?: { src: string; alt: string };
   unknownFigure?: { label: string; caption: string };
 };
 
@@ -20,6 +21,10 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '02',
     title: 'Cold water agitation',
     body: 'The trim is agitated in ice water. Cold keeps the resin heads intact and brittle so they separate cleanly.',
+    image: {
+      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/bio-mass-1.jpg',
+      alt: 'Sugar trim agitated in the cold water wash vessel',
+    },
   },
   {
     n: '03',

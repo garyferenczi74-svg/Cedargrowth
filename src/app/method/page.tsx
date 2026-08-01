@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { Unknown } from '@/components/atoms/Unknown';
@@ -44,12 +45,23 @@ export default function MethodPage() {
                 className="reveal grid grid-cols-1 gap-6 border-t border-hairline py-10 md:grid-cols-12 md:gap-16 md:py-16"
               >
                 <div className="md:col-span-5">
-                  <Placeholder
-                    family="process documentary"
-                    alt={`Placeholder, process documentary of ${step.title.toLowerCase()}`}
-                    className="aspect-[5/4]"
-                    label={false}
-                  />
+                  {step.image ? (
+                    <div className="relative aspect-[5/4] border border-hairline bg-bone">
+                      <Image
+                        src={step.image.src}
+                        alt={step.image.alt}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <Placeholder
+                      family="process documentary"
+                      alt={`Placeholder, process documentary of ${step.title.toLowerCase()}`}
+                      className="aspect-[5/4]"
+                      label={false}
+                    />
+                  )}
                 </div>
                 <div className="flex flex-col gap-4 md:col-span-7">
                   <span className="font-mono text-data text-tertiary">
