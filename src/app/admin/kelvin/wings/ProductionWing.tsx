@@ -1,12 +1,23 @@
 'use client';
 
-import { useReducer, useState } from 'react';
-import { THRESHOLD_PCT, Trace, type Pkg } from './production';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  THRESHOLD_PCT,
+  overThreshold,
+  releasable,
+  traceFor,
+  variance,
+  type Connection,
+  type Pkg,
+  type ProdData,
+  type Transfer,
+} from './production';
 import type { KEvent } from '../store';
 
-// The Production wing, Metrc first. Nine routes, the test gate and manifest and
-// discrepancy checks enforced in the store. Actions emit events into the Command
-// feed through addEvent, so the console stays connected.
+// The Production wing, Metrc first, now backed by Supabase. Data is fetched from
+// /api/admin/kelvin/production; the test gate and manifest requirement are
+// enforced server side when a transfer is created. Actions refetch and emit
+// events into the Command feed.
 
 type Props = {
   view: string;
@@ -16,13 +27,12 @@ type Props = {
 };
 
 function gateChip(test: string) {
-  if (Trace.releasable(test)) return <span className="gate ok"><span className="sq pass" />Releasable</span>;
+  if (releasable(test)) return <span className="gate ok"><span className="sq pass" />Releasable</span>;
   if (test === 'TestFailed') return <span className="gate no"><span className="sq fail" />Blocked</span>;
   return <span className="gate wait"><span className="sq attention" />Held</span>;
 }
 
-function ConnBanner() {
-  const c = Trace.getConnection();
+function ConnBanner({ c }: { c: Connection }) {
   return (
     <div className="conn warn" style={{ display: 'flex', alignItems: 'center', gap: 10, border: '1px solid var(--k-hairline)', background: 'var(--k-parchment)', padding: '12px 16px', marginBottom: 24, fontFamily: 'var(--k-font-mono)', fontSize: 12, color: 'var(--k-secondary)', flexWrap: 'wrap' }}>
       <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--k-attention)', flexShrink: 0 }} />
@@ -32,49 +42,80 @@ function ConnBanner() {
 }
 
 export default function ProductionWing({ view, addEvent, flash, now }: Props) {
-  const [, force] = useReducer((x: number) => x + 1, 0);
+  const [data, setData] = useState<ProdData | null>(null);
   const [selPkg, setSelPkg] = useState<string | null>(null);
   const [selTx, setSelTx] = useState<string | null>(null);
-  const [traceTag, setTraceTag] = useState<string>(Trace.listPackages()[0].tag);
+  const [traceTag, setTraceTag] = useState('');
   const [txManifest, setTxManifest] = useState('');
   const [txParty, setTxParty] = useState('');
-  const [txPkg, setTxPkg] = useState(Trace.listPackages()[0].id);
+  const [txPkg, setTxPkg] = useState('');
 
-  function ack(id: string) {
-    const a = Trace.acknowledge(id);
-    if (a) {
-      addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Acknowledged: ${a.kind} on ${a.subject}`, sub: `Production alert ${id} acknowledged by owner. Recorded to the audit chain.` });
-      force();
-      flash('Acknowledged. Recorded to the Command feed.');
+  const load = useCallback(async () => {
+    try {
+      const r = await fetch('/api/admin/kelvin/production');
+      if (r.ok) setData(await r.json());
+    } catch {
+      // leave data as is; the empty state shows
+    }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function createTransfer() {
+    if (!data) return;
+    const pkgId = txPkg || data.packages[0]?.id || '';
+    try {
+      const r = await fetch('/api/admin/kelvin/production/transfer', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ manifest: txManifest, party: txParty, pkgId }),
+      });
+      const res = await r.json().catch(() => ({ ok: false, reason: 'That did not resolve.' }));
+      if (res.ok && res.transfer) {
+        addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Transfer created on manifest ${res.transfer.manifest}`, sub: `Outbound to ${res.transfer.party}. Package cleared the test gate before departure.` });
+        setTxManifest(''); setTxParty('');
+        await load();
+        setSelTx(res.transfer.id);
+        flash(`Transfer created on manifest ${res.transfer.manifest}.`);
+      } else {
+        flash(res.reason || 'Blocked.');
+      }
+    } catch {
+      flash('That did not resolve.');
     }
   }
-  function createTransfer() {
-    const res = Trace.createTransfer({ manifest: txManifest, party: txParty, pkgId: txPkg });
-    if (res.ok && res.transfer) {
-      addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Transfer created on manifest ${res.transfer.manifest}`, sub: `Outbound to ${res.transfer.party}. Package cleared the test gate before departure.` });
-      setSelTx(res.transfer.id);
-      setTxManifest('');
-      setTxParty('');
-      force();
-      flash(`Transfer created on manifest ${res.transfer.manifest}.`);
-    } else {
-      flash(res.reason || 'Blocked.');
+
+  async function ack(id: string) {
+    if (!data) return;
+    const a = data.alerts.find((x) => x.id === id);
+    try {
+      const r = await fetch('/api/admin/kelvin/production/acknowledge', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id }),
+      });
+      if (r.ok && a) {
+        addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Acknowledged: ${a.kind} on ${a.subject}`, sub: `Production alert ${id} acknowledged by owner. Recorded to the audit chain.` });
+        await load();
+        flash('Acknowledged. Recorded to the Command feed.');
+      }
+    } catch {
+      flash('That did not resolve.');
     }
   }
+
+  if (!data) return <div className="empty">Loading Production data.</div>;
 
   if (view === 'dashboard') {
-    const pk = Trace.listPackages();
-    const rel = pk.filter((p) => Trace.releasable(p)).length;
-    const inTransit = Trace.listTransfers().filter((t) => t.status === 'In transit').length;
-    const alerts = Trace.listAlerts().filter((a) => a.status === 'open').slice(0, 4);
-    const tx = Trace.listTransfers().slice(0, 4);
+    const pk = data.packages;
+    const rel = pk.filter((p) => releasable(p)).length;
+    const inTransit = data.transfers.filter((t) => t.status === 'In transit').length;
+    const openA = data.alerts.filter((a) => a.status === 'open');
+    const tx = data.transfers.slice(0, 4);
     return (
       <>
-        <ConnBanner />
+        <ConnBanner c={data.connection} />
         <div className="kpis">
           <div className="kpi"><div className="k">Active packages</div><div className="v">{String(pk.filter((p) => p.status === 'Active').length).padStart(2, '0')}</div><div className="m">{rel} releasable</div></div>
           <div className="kpi"><div className="k">Transfers in transit</div><div className="v">{String(inTransit).padStart(2, '0')}</div><div className="m">manifest gated</div></div>
-          <div className="kpi"><div className="k">Open alerts</div><div className="v">{String(Trace.openAlertCount()).padStart(2, '0')}</div><div className="m">discrepancy and gate</div></div>
+          <div className="kpi"><div className="k">Open alerts</div><div className="v">{String(openA.length).padStart(2, '0')}</div><div className="m">discrepancy and gate</div></div>
           <div className="kpi"><div className="k">Test gate</div><div className="v">{rel}<span style={{ color: 'var(--k-tertiary)', fontSize: 16 }}> / {pk.length}</span></div><div className="m">TestPassed or RetestPassed</div></div>
         </div>
         <div className="two-col">
@@ -84,7 +125,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
             ))}
           </div>
           <div className="col"><h2>Open alerts</h2>
-            {alerts.map((a) => (
+            {openA.slice(0, 4).map((a) => (
               <div className="alert-row" key={a.id}><span className={`stripe ${a.sev}`} /><div className="body"><div className="a-sub">{a.kind} . {a.subject}</div><div className="a-det">{a.detail}</div></div></div>
             ))}
           </div>
@@ -94,14 +135,14 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'stock') {
-    const sel = selPkg ? Trace.getPackage(selPkg) : null;
+    const sel = selPkg ? data.packages.find((p) => p.id === selPkg) || null : null;
     return (
       <>
         <p className="lead">Metrc packages. The test gate decides what can move. A package is releasable only at TestPassed or RetestPassed.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Tag</th><th scope="col">Item</th><th scope="col">Category</th><th scope="col">Quantity</th><th scope="col">Test state</th><th scope="col">Gate</th><th scope="col">Location</th></tr></thead>
           <tbody>
-            {Trace.listPackages().map((p) => (
+            {data.packages.map((p) => (
               <tr key={p.id} className={`clickable${selPkg === p.id ? ' sel' : ''}`} onClick={() => setSelPkg(selPkg === p.id ? null : p.id)}>
                 <td className="mono">{p.tag}</td><td>{p.item}</td><td>{p.cat}</td><td className="mono">{p.qty} {p.uom}</td><td className="mono">{p.test}</td><td>{gateChip(p.test)}</td><td>{p.loc}</td>
               </tr>
@@ -114,16 +155,16 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'orders') {
-    const sel = selTx ? Trace.getTransfer(selTx) : null;
+    const sel = selTx ? data.transfers.find((t) => t.id === selTx) || null : null;
     return (
       <>
         <p className="lead">Metrc transfers. A transfer cannot depart without a manifest, and every package on it must clear the test gate.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Manifest</th><th scope="col">Direction</th><th scope="col">Counterparty</th><th scope="col">Packages</th><th scope="col">Status</th><th scope="col">Variance</th></tr></thead>
           <tbody>
-            {Trace.listTransfers().map((t) => {
-              const v = Trace.variance(t);
-              const over = Trace.overThreshold(t);
+            {data.transfers.map((t) => {
+              const v = variance(t);
+              const over = overThreshold(t);
               return (
                 <tr key={t.id} className={`clickable${selTx === t.id ? ' sel' : ''}`} onClick={() => setSelTx(selTx === t.id ? null : t.id)}>
                   <td className="mono">{t.manifest}</td><td>{t.dir}</td><td>{t.party}</td><td className="mono">{String(t.pkgs.length).padStart(2, '0')}</td><td className="mono">{t.status}</td>
@@ -133,7 +174,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
             })}
           </tbody>
         </table></div>
-        {sel ? <TransferDetail id={sel.id} ack={ack} /> : null}
+        {sel ? <TransferDetail t={sel} data={data} ack={ack} /> : null}
         <div className="detailpanel">
           <h3>Create outbound transfer</h3>
           <div className="form-grid">
@@ -142,8 +183,8 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
               <div className="field"><label>Counterparty</label><input value={txParty} onChange={(e) => setTxParty(e.target.value)} placeholder="Receiving dispensary" /></div>
             </div>
             <div className="field"><label>Package</label>
-              <select value={txPkg} onChange={(e) => setTxPkg(e.target.value)}>
-                {Trace.listPackages().map((p) => <option key={p.id} value={p.id}>{p.tag} . {p.item} . {p.test}</option>)}
+              <select value={txPkg || data.packages[0]?.id || ''} onChange={(e) => setTxPkg(e.target.value)}>
+                {data.packages.map((p) => <option key={p.id} value={p.id}>{p.tag} . {p.item} . {p.test}</option>)}
               </select>
             </div>
             <div className="actions"><button className="btn solid" onClick={createTransfer}>Create transfer</button><span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>The gate and manifest checks run on create.</span></div>
@@ -160,7 +201,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Run</th><th scope="col">Name</th><th scope="col">Source material</th><th scope="col">Wet</th><th scope="col">Dry</th><th scope="col">Stage</th><th scope="col">Packages</th></tr></thead>
           <tbody>
-            {Trace.listHarvests().map((h) => (
+            {data.harvests.map((h) => (
               <tr key={h.id}><td className="mono">{h.id}</td><td>{h.name}</td><td>{h.source}</td><td className="mono">{h.wet}</td><td className="mono">{h.dry}</td><td className="mono">{h.stage}</td><td className="mono">{String(h.packages.length).padStart(2, '0')}</td></tr>
             ))}
           </tbody>
@@ -170,11 +211,11 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'accounts') {
-    const c = Trace.getConnection();
+    const c = data.connection;
     return (
       <>
         <p className="lead">Metrc uses two key authentication. A vendor or software key and a per user key are both required before any package, transfer, or sale transmits.</p>
-        <ConnBanner />
+        <ConnBanner c={c} />
         <div className="detailpanel"><h3>Facility</h3>
           <div className="keyfield"><span className="kf-k">Facility</span><span className="kf-v">{c.facility}</span></div>
           <div className="keyfield"><span className="kf-k">License type</span><span className="kf-v">{c.licenseType}</span></div>
@@ -201,8 +242,8 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Receipt</th><th scope="col">Date</th><th scope="col">Counterparty</th><th scope="col">Packages</th><th scope="col">Quantity</th><th scope="col">Recorded</th></tr></thead>
           <tbody>
-            {Trace.listSales().map((s) => (
-              <tr key={s.id}><td className="mono">{s.id}</td><td className="mono">{s.date}</td><td>{s.party}</td><td className="mono">{s.pkgs.map((id) => { const p = Trace.getPackage(id); return p ? p.tag.slice(-4) : id; }).join(', ')}</td><td className="mono">{s.qty} {s.uom}</td><td>{s.recorded ? <span className="chip pass"><span className="sq pass" />Recorded</span> : <span className="chip attention">Pending</span>}</td></tr>
+            {data.sales.map((s) => (
+              <tr key={s.id}><td className="mono">{s.id}</td><td className="mono">{s.date}</td><td>{s.party}</td><td className="mono">{s.pkgs.map((id) => { const p = data.packages.find((x) => x.id === id); return p ? p.tag.slice(-4) : id; }).join(', ')}</td><td className="mono">{s.qty} {s.uom}</td><td>{s.recorded ? <span className="chip pass"><span className="sq pass" />Recorded</span> : <span className="chip attention">Pending</span>}</td></tr>
             ))}
           </tbody>
         </table></div>
@@ -216,7 +257,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Product SKUs mapped to Metrc items. Each SKU carries a category and unit and links to its live packages.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">SKU</th><th scope="col">Metrc item</th><th scope="col">Category</th><th scope="col">Unit</th><th scope="col">Packages</th></tr></thead>
-          <tbody>{Trace.listSkus().map((s) => <tr key={s.sku}><td className="mono">{s.sku}</td><td>{s.item}</td><td>{s.cat}</td><td className="mono">{s.unit}</td><td className="mono">{String(s.pkgs).padStart(2, '0')}</td></tr>)}</tbody>
+          <tbody>{data.skus.map((s) => <tr key={s.sku}><td className="mono">{s.sku}</td><td>{s.item}</td><td>{s.cat}</td><td className="mono">{s.unit}</td><td className="mono">{String(s.pkgs).padStart(2, '0')}</td></tr>)}</tbody>
         </table></div>
       </>
     );
@@ -226,7 +267,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
     return (
       <>
         <p className="lead">Discrepancies, test failures, missing manifests, and connection gaps. Acknowledging an alert records the decision to the Command feed.</p>
-        {Trace.listAlerts().map((a) => (
+        {data.alerts.map((a) => (
           <div className="alert-row" key={a.id}>
             <span className={`stripe ${a.sev}`} />
             <div className="body"><div className="a-sub">{a.kind} . {a.subject}</div><div className="a-det">{a.detail}</div></div>
@@ -238,12 +279,13 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'trace') {
-    const chain = Trace.traceFor(traceTag);
+    const tag = traceTag || (data.packages[0] ? data.packages[0].tag : '');
+    const chain = traceFor(data, tag);
     return (
       <>
         <p className="lead">Seed to sale trace. Pick a package and read its lineage from source material to the sale. This is the TraceProvider seam made visible.</p>
         <div className="field" style={{ maxWidth: 520, marginBottom: 12 }}><label>Package tag</label>
-          <select value={traceTag} onChange={(e) => setTraceTag(e.target.value)}>{Trace.listPackages().map((p) => <option key={p.id} value={p.tag}>{p.tag} . {p.item}</option>)}</select>
+          <select value={tag} onChange={(e) => setTraceTag(e.target.value)}>{data.packages.map((p) => <option key={p.id} value={p.tag}>{p.tag} . {p.item}</option>)}</select>
         </div>
         {chain ? <TraceChain c={chain} /> : <div className="empty">No package matches that tag.</div>}
       </>
@@ -254,7 +296,7 @@ export default function ProductionWing({ view, addEvent, flash, now }: Props) {
 }
 
 function PackageDetail({ p, flash }: { p: Pkg; flash: (m: string) => void }) {
-  const rel = Trace.releasable(p);
+  const rel = releasable(p);
   return (
     <div className="detailpanel">
       <h3>{p.tag}</h3>
@@ -270,12 +312,10 @@ function PackageDetail({ p, flash }: { p: Pkg; flash: (m: string) => void }) {
   );
 }
 
-function TransferDetail({ id, ack }: { id: string; ack: (id: string) => void }) {
-  const t = Trace.getTransfer(id);
-  if (!t) return null;
-  const v = Trace.variance(t);
-  const over = Trace.overThreshold(t);
-  const lines = t.pkgs.map((pid) => Trace.getPackage(pid)).filter(Boolean) as Pkg[];
+function TransferDetail({ t, data, ack }: { t: Transfer; data: ProdData; ack: (id: string) => void }) {
+  const v = variance(t);
+  const over = overThreshold(t);
+  const lines = t.pkgs.map((pid) => data.packages.find((p) => p.id === pid)).filter(Boolean) as Pkg[];
   return (
     <div className="detailpanel">
       <h3>Manifest {t.manifest}</h3>
@@ -295,7 +335,7 @@ function TransferDetail({ id, ack }: { id: string; ack: (id: string) => void }) 
   );
 }
 
-function TraceChain({ c }: { c: NonNullable<ReturnType<typeof Trace.traceFor>> }) {
+function TraceChain({ c }: { c: NonNullable<ReturnType<typeof traceFor>> }) {
   const node = (k: string, v: string, m: string) => (
     <div className="trace-node" style={{ border: '1px solid var(--k-hairline)', background: 'var(--k-parchment)', padding: '14px 16px', maxWidth: 520 }}>
       <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--k-tertiary)' }}>{k}</div>
