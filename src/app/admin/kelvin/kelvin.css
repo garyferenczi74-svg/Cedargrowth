@@ -4,23 +4,25 @@
    en dash appears anywhere. */
 
 .kelvin-root {
-  --k-surface: #100F0C;
-  --k-parchment: #17150F;
-  --k-bone: #201C14;
-  --k-hairline: #332E23;
-  --k-primary: #F2ECE1;
-  --k-secondary: #C7BFAF;
-  --k-tertiary: #98907E;
-  --k-pass: #5FA772;
-  --k-attention: #CDA24C;
-  --k-fail: #C85B44;
-  --k-cedar: #C56A3C;
-  --k-command: #F2ECE1;
-  --k-production: #5E9469;
-  --k-evidence: #C56A3C;
-  --k-genomics: #7481A0;
-  --k-security: #CDA24C;
-  --k-editorial: #A98C6E;
+  /* Light clinical operator map. Page white, parchment chrome, dark ink.
+     Matches the CedarGrowth light tokens rather than the nocturnal register. */
+  --k-surface: #FFFFFF;
+  --k-parchment: #F3EEE7;
+  --k-bone: #E8E1D7;
+  --k-hairline: #D8D1C6;
+  --k-primary: #1C1B19;
+  --k-secondary: #3A3835;
+  --k-tertiary: #6F6A62;
+  --k-pass: #3F6B4A;
+  --k-attention: #A8761C;
+  --k-fail: #8C2F1F;
+  --k-cedar: #9C4A1E;
+  --k-command: #1C1B19;
+  --k-production: #2E4034;
+  --k-evidence: #9C4A1E;
+  --k-genomics: #3B4457;
+  --k-security: #A8761C;
+  --k-editorial: #6B5340;
   --k-font-title: var(--font-newsreader), Georgia, serif;
   --k-font-ui: var(--font-inter-tight), system-ui, sans-serif;
   --k-font-mono: var(--font-ibm-plex-mono), ui-monospace, Menlo, monospace;
@@ -57,9 +59,9 @@
 .kelvin-root .sq.attention { background: var(--k-attention); }
 .kelvin-root .sq.fail { background: var(--k-fail); }
 .kelvin-root .chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--k-hairline); border-radius: 2px; padding: 2px 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; }
-.kelvin-root .chip.pass { color: var(--k-pass); border-color: rgba(95,167,114,0.5); }
-.kelvin-root .chip.attention { color: var(--k-attention); border-color: rgba(205,162,76,0.5); }
-.kelvin-root .chip.fail { color: var(--k-fail); border-color: rgba(200,91,68,0.5); }
+.kelvin-root .chip.pass { color: var(--k-pass); border-color: rgba(63,107,74,0.4); }
+.kelvin-root .chip.attention { color: var(--k-attention); border-color: rgba(168,118,28,0.4); }
+.kelvin-root .chip.fail { color: var(--k-fail); border-color: rgba(140,47,31,0.4); }
 
 .kelvin-root .shell { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
 .kelvin-root .sidebar { background: var(--k-parchment); border-right: 1px solid var(--k-hairline); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
@@ -68,7 +70,7 @@
 .kelvin-root .brand .sys { font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.28em; color: var(--k-tertiary); margin-top: 4px; }
 .kelvin-root .wings { list-style: none; padding: 8px 0; margin: 0; flex: 1; overflow: auto; }
 .kelvin-root .wing-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 20px 11px 17px; border-left: 3px solid transparent; color: var(--k-secondary); width: 100%; text-align: left; transition: color 150ms var(--k-ease), background 150ms var(--k-ease), border-color 150ms var(--k-ease); }
-.kelvin-root .wing-link:hover { color: var(--k-primary); background: rgba(255,255,255,0.02); }
+.kelvin-root .wing-link:hover { color: var(--k-primary); background: var(--k-bone); }
 .kelvin-root .wing-link.active { color: var(--k-primary); border-left-color: var(--k-accent, var(--k-primary)); }
 .kelvin-root .badge { font-family: var(--k-font-mono); font-size: 11px; min-width: 20px; height: 20px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--k-attention); color: var(--k-attention); border-radius: 2px; }
 .kelvin-root .badge.zero { border-color: var(--k-hairline); color: var(--k-tertiary); }
@@ -83,11 +85,11 @@
 .kelvin-root .status-cluster { display: flex; align-items: center; gap: 18px; padding-top: 6px; flex-shrink: 0; }
 .kelvin-root .live-ind { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
 .kelvin-root .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k-tertiary); }
-.kelvin-root .live-ind.on .live-dot { background: var(--k-pass); box-shadow: 0 0 0 3px rgba(95,167,114,0.18); }
+.kelvin-root .live-ind.on .live-dot { background: var(--k-pass); box-shadow: 0 0 0 3px rgba(63,107,74,0.18); }
 .kelvin-root .preview-toggle { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-tertiary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
 .kelvin-root .preview-toggle:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
-.kelvin-root .preview-toggle.on { color: var(--k-attention); border-color: rgba(205,162,76,0.55); background: rgba(205,162,76,0.09); }
-.kelvin-root .preview-toggle.on:hover { background: rgba(205,162,76,0.15); }
+.kelvin-root .preview-toggle.on { color: var(--k-attention); border-color: rgba(168,118,28,0.5); background: rgba(168,118,28,0.08); }
+.kelvin-root .preview-toggle.on:hover { background: rgba(168,118,28,0.13); }
 .kelvin-root .session-id { font-family: var(--k-font-mono); font-size: 11px; color: var(--k-tertiary); }
 
 .kelvin-root .section-nav { display: flex; gap: 24px; padding: 22px 40px 0; border-bottom: 1px solid var(--k-hairline); flex-wrap: wrap; }
@@ -102,19 +104,19 @@
 .kelvin-root .pill { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
 .kelvin-root .pill:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
 .kelvin-root .pill.active { color: var(--k-surface); background: var(--k-primary); border-color: var(--k-primary); }
-.kelvin-root .pill.active:hover { background: #ffffff; border-color: #ffffff; }
+.kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); }
 .kelvin-root .btn { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 110ms var(--k-ease); }
 .kelvin-root .btn:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
 .kelvin-root .btn:active { transform: translateY(1px); }
 .kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-surface); border-color: var(--k-primary); }
-.kelvin-root .btn.solid:hover { background: #ffffff; border-color: #ffffff; color: var(--k-surface); }
+.kelvin-root .btn.solid:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-surface); }
 .kelvin-root .btn.active { color: var(--k-primary); border-color: var(--k-primary); background: var(--k-bone); }
 .kelvin-root .btn.disabled { opacity: 0.4; cursor: not-allowed; }
 .kelvin-root .btn.disabled:hover { color: var(--k-secondary); background: var(--k-parchment); border-color: var(--k-hairline); transform: none; }
 
 .kelvin-root .feed { border-top: 1px solid var(--k-hairline); }
 .kelvin-root .row { border-bottom: 1px solid var(--k-hairline); padding: 13px 0; transition: background 150ms var(--k-ease); }
-.kelvin-root .row:hover { background: rgba(255,255,255,0.02); }
+.kelvin-root .row:hover { background: var(--k-parchment); }
 .kelvin-root .row-head { display: flex; gap: 14px; align-items: baseline; cursor: pointer; }
 .kelvin-root .row-sum { font-size: 14px; }
 .kelvin-root .row-meta { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); white-space: nowrap; display: flex; gap: 8px; align-items: center; }
@@ -132,7 +134,7 @@
 .kelvin-root .tbl td { padding: 0 16px 0 0; height: 44px; border-bottom: 1px solid var(--k-hairline); vertical-align: middle; color: var(--k-secondary); }
 .kelvin-root .tbl-wrap { overflow-x: auto; }
 .kelvin-root .tbl tr.clickable { cursor: pointer; }
-.kelvin-root .tbl tr.clickable:hover td { background: rgba(255,255,255,0.02); }
+.kelvin-root .tbl tr.clickable:hover td { background: var(--k-parchment); }
 .kelvin-root .tbl tr.sel td { background: var(--k-bone); color: var(--k-primary); }
 
 .kelvin-root .grid { display: grid; gap: 1px; background: var(--k-hairline); border: 1px solid var(--k-hairline); }
