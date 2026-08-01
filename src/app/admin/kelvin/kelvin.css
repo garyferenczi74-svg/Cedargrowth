@@ -67,7 +67,7 @@
 .kelvin-root .brand .wordmark { font-family: var(--k-font-title); font-size: 20px; letter-spacing: 0.02em; }
 .kelvin-root .brand .sys { font-family: var(--k-font-mono); font-size: 11px; letter-spacing: 0.28em; color: var(--k-tertiary); margin-top: 4px; }
 .kelvin-root .wings { list-style: none; padding: 8px 0; margin: 0; flex: 1; overflow: auto; }
-.kelvin-root .wing-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 20px 11px 17px; border-left: 3px solid transparent; color: var(--k-secondary); width: 100%; text-align: left; }
+.kelvin-root .wing-link { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 11px 20px 11px 17px; border-left: 3px solid transparent; color: var(--k-secondary); width: 100%; text-align: left; transition: color 150ms var(--k-ease), background 150ms var(--k-ease), border-color 150ms var(--k-ease); }
 .kelvin-root .wing-link:hover { color: var(--k-primary); background: rgba(255,255,255,0.02); }
 .kelvin-root .wing-link.active { color: var(--k-primary); border-left-color: var(--k-accent, var(--k-primary)); }
 .kelvin-root .badge { font-family: var(--k-font-mono); font-size: 11px; min-width: 20px; height: 20px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--k-attention); color: var(--k-attention); border-radius: 2px; }
@@ -84,32 +84,39 @@
 .kelvin-root .live-ind { display: flex; align-items: center; gap: 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
 .kelvin-root .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k-tertiary); }
 .kelvin-root .live-ind.on .live-dot { background: var(--k-pass); box-shadow: 0 0 0 3px rgba(95,167,114,0.18); }
-.kelvin-root .preview-toggle { border: 1px solid var(--k-hairline); padding: 6px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--k-tertiary); }
-.kelvin-root .preview-toggle.on { color: var(--k-attention); border-color: rgba(205,162,76,0.5); }
+.kelvin-root .preview-toggle { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-tertiary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
+.kelvin-root .preview-toggle:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
+.kelvin-root .preview-toggle.on { color: var(--k-attention); border-color: rgba(205,162,76,0.55); background: rgba(205,162,76,0.09); }
+.kelvin-root .preview-toggle.on:hover { background: rgba(205,162,76,0.15); }
 .kelvin-root .session-id { font-family: var(--k-font-mono); font-size: 11px; color: var(--k-tertiary); }
 
 .kelvin-root .section-nav { display: flex; gap: 24px; padding: 22px 40px 0; border-bottom: 1px solid var(--k-hairline); flex-wrap: wrap; }
-.kelvin-root .section-nav button { padding-bottom: 14px; color: var(--k-tertiary); font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.kelvin-root .section-nav button:hover { color: var(--k-secondary); }
+.kelvin-root .section-nav button { padding-bottom: 14px; color: var(--k-tertiary); font-size: 13px; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 160ms var(--k-ease), border-color 160ms var(--k-ease); }
+.kelvin-root .section-nav button:hover { color: var(--k-primary); border-bottom-color: var(--k-hairline); }
 .kelvin-root .section-nav button.active { color: var(--k-primary); border-bottom-color: var(--k-accent, var(--k-primary)); }
 .kelvin-root .view { padding: 32px 40px 80px; animation: k-enter 500ms var(--k-ease); }
 @keyframes k-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
 .kelvin-root .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
 .kelvin-root .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.kelvin-root .pill { border: 1px solid var(--k-hairline); padding: 6px 11px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); }
-.kelvin-root .pill:hover { color: var(--k-primary); }
+.kelvin-root .pill { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
+.kelvin-root .pill:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
 .kelvin-root .pill.active { color: var(--k-surface); background: var(--k-primary); border-color: var(--k-primary); }
-.kelvin-root .btn { border: 1px solid var(--k-hairline); padding: 8px 14px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--k-secondary); }
-.kelvin-root .btn:hover { color: var(--k-primary); border-color: var(--k-tertiary); }
+.kelvin-root .pill.active:hover { background: #ffffff; border-color: #ffffff; }
+.kelvin-root .btn { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 110ms var(--k-ease); }
+.kelvin-root .btn:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
+.kelvin-root .btn:active { transform: translateY(1px); }
 .kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-surface); border-color: var(--k-primary); }
-.kelvin-root .btn.solid:hover { opacity: 0.9; }
-.kelvin-root .btn.active { color: var(--k-primary); border-color: var(--k-primary); }
-.kelvin-root .btn.disabled { opacity: 0.45; cursor: not-allowed; }
+.kelvin-root .btn.solid:hover { background: #ffffff; border-color: #ffffff; color: var(--k-surface); }
+.kelvin-root .btn.active { color: var(--k-primary); border-color: var(--k-primary); background: var(--k-bone); }
+.kelvin-root .btn.disabled { opacity: 0.4; cursor: not-allowed; }
+.kelvin-root .btn.disabled:hover { color: var(--k-secondary); background: var(--k-parchment); border-color: var(--k-hairline); transform: none; }
 
 .kelvin-root .feed { border-top: 1px solid var(--k-hairline); }
-.kelvin-root .row { border-bottom: 1px solid var(--k-hairline); padding: 12px 0; }
+.kelvin-root .row { border-bottom: 1px solid var(--k-hairline); padding: 13px 0; transition: background 150ms var(--k-ease); }
+.kelvin-root .row:hover { background: rgba(255,255,255,0.02); }
 .kelvin-root .row-head { display: flex; gap: 14px; align-items: baseline; cursor: pointer; }
+.kelvin-root .row-sum { font-size: 14px; }
 .kelvin-root .row-meta { font-family: var(--k-font-mono); font-size: 12px; color: var(--k-tertiary); white-space: nowrap; display: flex; gap: 8px; align-items: center; }
 .kelvin-root .row-agent { color: var(--k-primary); }
 .kelvin-root .row-type { color: var(--k-secondary); }
