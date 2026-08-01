@@ -49,7 +49,7 @@ export default function HomePage() {
           src={home.hero.videoSrc}
           className="settle absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-ink/30" aria-hidden="true" />
+        <div className="absolute inset-0 bg-ink/40" aria-hidden="true" />
         <div className="relative mx-auto w-full max-w-content px-page-margin-mobile pb-16 md:px-page-margin md:pb-24">
           <div className="reveal flex max-w-editorial flex-col gap-6">
             <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
