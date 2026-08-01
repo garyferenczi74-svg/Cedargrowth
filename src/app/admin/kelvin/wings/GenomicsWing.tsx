@@ -1,12 +1,12 @@
 'use client';
 
-import { useReducer, useState } from 'react';
-import { Genomics, type Kit } from './genomics';
+import { useCallback, useEffect, useState } from 'react';
+import { REFUSAL, consentCounts, countsByStatus, deliveredCount, resultedCount, type GenomicsData, type Kit } from './genomics';
 import type { KEvent } from '../store';
 
-// The Genomics wing. Counts and status only. The verbatim privacy statement
-// renders on every route, results always read Sealed, and an attempt to read a
-// result returns the structural refusal. There is no owner override.
+// The Genomics wing, backed by Supabase. Counts and status only. The read route
+// selects operational columns and never a result; the client shows Sealed and,
+// on an attempt to read, the structural refusal. There is no owner override.
 
 type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string };
 
@@ -23,27 +23,36 @@ function consentChip(c: string) {
   return <span className="chip attention"><span className="sq attention" />Pending</span>;
 }
 function sealedChip(result: string) {
-  if (result === 'Sealed') return <span className="chip" style={{ color: 'var(--k-genomics)', borderColor: 'rgba(116,129,160,0.5)' }}><span className="sq" style={{ background: 'var(--k-genomics)' }} />Sealed</span>;
+  if (result === 'Sealed') return <span className="chip" style={{ color: 'var(--k-genomics)', borderColor: 'rgba(59,68,87,0.5)' }}><span className="sq" style={{ background: 'var(--k-genomics)' }} />Sealed</span>;
   return <span className="chip" style={{ color: 'var(--k-tertiary)' }}>Pending</span>;
 }
 
 export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
-  const [, force] = useReducer((x: number) => x + 1, 0);
+  const [data, setData] = useState<GenomicsData | null>(null);
   const [selKit, setSelKit] = useState<string | null>(null);
 
-  function ship(id: string) {
-    const x = Genomics.markShipped(id);
-    if (x) {
-      addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Kit ${id} marked shipped`, sub: 'Fulfillment advanced. No genetic data is touched by this action.' });
-      force();
-      flash(`Kit ${id} marked shipped.`);
-    }
+  const load = useCallback(async () => {
+    try { const r = await fetch('/api/admin/kelvin/genomics'); if (r.ok) setData(await r.json()); } catch { /* keep */ }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  async function ship(id: string) {
+    try {
+      const r = await fetch('/api/admin/kelvin/genomics/ship', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id }) });
+      if (r.ok) {
+        addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Kit ${id} marked shipped`, sub: 'Fulfillment advanced. No genetic data is touched by this action.' });
+        await load(); flash(`Kit ${id} marked shipped.`);
+      }
+    } catch { flash('That did not resolve.'); }
   }
 
   const banner = <div className="privacy" style={{ marginTop: 0, marginBottom: 24 }}>{PRIVACY}</div>;
 
+  if (!data) return <>{banner}<div className="empty">Loading Genomics data.</div></>;
+  const kits = data.kits;
+
   if (view === 'fulfillment') {
-    const rows = Genomics.listKits().filter((x) => x.status === 'Ordered' || x.status === 'Shipped');
+    const rows = kits.filter((x) => x.status === 'Ordered' || x.status === 'Shipped');
     return (
       <>
         {banner}
@@ -51,8 +60,8 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
         <div className="kpis">
           <div className="kpi"><div className="k">To ship</div><div className="v">{String(rows.filter((x) => x.status === 'Ordered').length).padStart(2, '0')}</div><div className="m">status Ordered</div></div>
           <div className="kpi"><div className="k">In transit</div><div className="v">{String(rows.filter((x) => x.status === 'Shipped').length).padStart(2, '0')}</div><div className="m">status Shipped</div></div>
-          <div className="kpi"><div className="k">At lab</div><div className="v">{String(Genomics.listKits().filter((x) => x.status === 'At lab').length).padStart(2, '0')}</div><div className="m">returned and received</div></div>
-          <div className="kpi"><div className="k">Kits total</div><div className="v">{String(Genomics.listKits().length).padStart(2, '0')}</div><div className="m">all lifecycle states</div></div>
+          <div className="kpi"><div className="k">At lab</div><div className="v">{String(kits.filter((x) => x.status === 'At lab').length).padStart(2, '0')}</div><div className="m">returned and received</div></div>
+          <div className="kpi"><div className="k">Kits total</div><div className="v">{String(kits.length).padStart(2, '0')}</div><div className="m">all lifecycle states</div></div>
         </div>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Kit</th><th scope="col">Subject</th><th scope="col">Status</th><th scope="col">Consent</th><th scope="col">Action</th></tr></thead>
@@ -63,7 +72,7 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'lab-status') {
-    const rows = Genomics.listKits().filter((x) => x.status === 'At lab' || x.status === 'Resulted' || x.status === 'Delivered');
+    const rows = kits.filter((x) => x.status === 'At lab' || x.status === 'Resulted' || x.status === 'Delivered');
     return (
       <>
         {banner}
@@ -77,8 +86,7 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'consent') {
-    const rows = Genomics.listKits();
-    const cc = Genomics.consentCounts();
+    const cc = consentCounts(kits);
     return (
       <>
         {banner}
@@ -87,18 +95,18 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
           <div className="kpi"><div className="k">Granted</div><div className="v">{String(cc.Granted).padStart(2, '0')}</div><div className="m">active consent</div></div>
           <div className="kpi"><div className="k">Pending</div><div className="v">{String(cc.Pending).padStart(2, '0')}</div><div className="m">awaiting consent</div></div>
           <div className="kpi"><div className="k">Withdrawn</div><div className="v">{String(cc.Withdrawn).padStart(2, '0')}</div><div className="m">delivery held</div></div>
-          <div className="kpi"><div className="k">Kits total</div><div className="v">{String(rows.length).padStart(2, '0')}</div><div className="m">consent tracked</div></div>
+          <div className="kpi"><div className="k">Kits total</div><div className="v">{String(kits.length).padStart(2, '0')}</div><div className="m">consent tracked</div></div>
         </div>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Kit</th><th scope="col">Subject</th><th scope="col">Consent</th><th scope="col">Delivery</th></tr></thead>
-          <tbody>{rows.map((x) => <tr key={x.id}><td className="mono">{x.id}</td><td className="mono">{x.subject}</td><td>{consentChip(x.consent)}</td><td className="mono">{x.consent === 'Withdrawn' ? 'Held' : x.delivery}</td></tr>)}</tbody>
+          <tbody>{kits.map((x) => <tr key={x.id}><td className="mono">{x.id}</td><td className="mono">{x.subject}</td><td>{consentChip(x.consent)}</td><td className="mono">{x.consent === 'Withdrawn' ? 'Held' : x.delivery}</td></tr>)}</tbody>
         </table></div>
       </>
     );
   }
 
   if (view === 'delivery') {
-    const rows = Genomics.listKits().filter((x) => x.result === 'Sealed');
+    const rows = kits.filter((x) => x.result === 'Sealed');
     return (
       <>
         {banner}
@@ -113,9 +121,9 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'metrics') {
-    const cs = Genomics.countsByStatus();
-    const cc = Genomics.consentCounts();
-    const total = Genomics.listKits().length;
+    const cs = countsByStatus(kits);
+    const cc = consentCounts(kits);
+    const total = kits.length;
     const order = ['Ordered', 'Shipped', 'At lab', 'Resulted', 'Delivered'];
     return (
       <>
@@ -123,8 +131,8 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Aggregate metrics. Counts and rates only. Nothing on this page can be traced to an individual result.</p>
         <div className="kpis">
           <div className="kpi"><div className="k">Kits total</div><div className="v">{String(total).padStart(2, '0')}</div><div className="m">all states</div></div>
-          <div className="kpi"><div className="k">Resulted</div><div className="v">{String(Genomics.resultedCount()).padStart(2, '0')}</div><div className="m">sealed and sent</div></div>
-          <div className="kpi"><div className="k">Delivered</div><div className="v">{String(Genomics.deliveredCount()).padStart(2, '0')}</div><div className="m">to the member</div></div>
+          <div className="kpi"><div className="k">Resulted</div><div className="v">{String(resultedCount(kits)).padStart(2, '0')}</div><div className="m">sealed and sent</div></div>
+          <div className="kpi"><div className="k">Delivered</div><div className="v">{String(deliveredCount(kits)).padStart(2, '0')}</div><div className="m">to the member</div></div>
           <div className="kpi"><div className="k">Consent granted</div><div className="v">{String(cc.Granted).padStart(2, '0')}<span style={{ color: 'var(--k-tertiary)', fontSize: 16 }}> / {total}</span></div><div className="m">active consent</div></div>
         </div>
         <div className="two-col">
@@ -142,14 +150,14 @@ export default function GenomicsWing({ view, addEvent, flash, now }: Props) {
   }
 
   // kits (default)
-  const sel = selKit ? Genomics.getKit(selKit) : null;
+  const sel = selKit ? kits.find((x) => x.id === selKit) || null : null;
   return (
     <>
       {banner}
       <p className="lead">DNA test kits by lifecycle status. Subjects are referenced by an anonymized token. No genotype or trait value is stored or shown here.</p>
       <div className="tbl-wrap"><table className="tbl">
         <thead><tr><th scope="col">Kit</th><th scope="col">Subject</th><th scope="col">Status</th><th scope="col">Consent</th><th scope="col">Result</th></tr></thead>
-        <tbody>{Genomics.listKits().map((x) => (
+        <tbody>{kits.map((x) => (
           <tr key={x.id} className={`clickable${selKit === x.id ? ' sel' : ''}`} onClick={() => setSelKit(selKit === x.id ? null : x.id)}>
             <td className="mono">{x.id}</td><td className="mono">{x.subject}</td><td>{statusChip(x.status)}</td><td>{consentChip(x.consent)}</td><td>{sealedChip(x.result)}</td>
           </tr>
@@ -173,7 +181,7 @@ function KitDetail({ x, ship, flash }: { x: Kit; ship: (id: string) => void; fla
       <div className="keyfield"><span className="kf-k">Result</span><span className="kf-v">{sealedChip(x.result)}</span></div>
       <div className="privacy" style={{ marginTop: 16 }}>This result is delivered directly to the member. It is unreadable from any administrative context, including this one. There is no owner override.</div>
       <div className="actions" style={{ marginTop: 16 }}>
-        <button className="btn disabled" onClick={() => flash(Genomics.readResult())}>Attempt to read result</button>
+        <button className="btn disabled" onClick={() => flash(REFUSAL)}>Attempt to read result</button>
         {x.status === 'Ordered' ? <button className="btn solid" onClick={() => ship(x.id)}>Mark shipped</button> : null}
       </div>
     </div>
