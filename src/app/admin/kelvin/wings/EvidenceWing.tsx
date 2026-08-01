@@ -1,11 +1,13 @@
 'use client';
 
-import { useReducer, useState } from 'react';
-import { Evidence, type Batch, type Coa } from './evidence';
+import { useCallback, useEffect, useState } from 'react';
+import { publicUrl, type Batch, type Coa, type EvidenceData } from './evidence';
 import type { KEvent } from '../store';
 
-// The Evidence wing. Six routes, the publish gate enforced in the store: a batch
-// publishes to the public transparency page only once its COA is Passed.
+// The Evidence wing, backed by Supabase. Data comes from /api/admin/kelvin/evidence;
+// publish, unpublish, adjudicate, and match persist through the gated mutate route,
+// where the publish gate (COA state Passed) is enforced. Actions refetch and emit
+// events into the Command feed.
 
 type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string };
 
@@ -21,55 +23,67 @@ function pubChip(p: string) {
 }
 
 export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
-  const [, force] = useReducer((x: number) => x + 1, 0);
+  const [data, setData] = useState<EvidenceData | null>(null);
   const [selBatch, setSelBatch] = useState<string | null>(null);
   const [selCoa, setSelCoa] = useState<string | null>(null);
   const [matchSel, setMatchSel] = useState<Record<string, string>>({});
 
-  function publish(id: string) {
-    const res = Evidence.publishBatch(id);
-    if (res.ok && res.batch) {
-      addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Published COA for ${id}`, sub: `Batch cleared the publish gate. Live on the public transparency page at ${Evidence.publicUrl(id)}.` });
-      setSelBatch(id);
-      force();
-      flash(`Published ${id} to transparency.`);
-    } else {
-      flash(res.reason || 'Blocked.');
-    }
-  }
-  function unpublish(id: string) {
-    Evidence.unpublishBatch(id);
-    addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Unpublished ${id}`, sub: 'Batch removed from the public transparency page by owner.' });
-    force();
-    flash(`Unpublished ${id}.`);
-  }
-  function adjudicate(id: string) {
-    const coa = Evidence.adjudicateCoa(id);
-    if (coa) {
-      addEvent({ agent: 'CODEX', time: now(), type: 'KNOWLEDGE', summary: `Adjudicated ${coa.id}: ${coa.state}`, sub: `Certificate for batch ${coa.batch} resolved from its panels. The publish gate reads this state.` });
-      force();
-      flash(`${coa.id} adjudicated: ${coa.state}.`);
-    }
-  }
-  function match(id: string) {
-    const batchId = matchSel[id];
-    if (!batchId) { flash('No open batch to match.'); return; }
-    Evidence.matchCoa(id, batchId);
-    addEvent({ agent: 'CODEX', time: now(), type: 'KNOWLEDGE', summary: `Matched ${id} to ${batchId}`, sub: 'Certificate matched to a batch and ingested. Ready to adjudicate.' });
-    force();
-    flash(`Matched ${id} to ${batchId}.`);
+  const load = useCallback(async () => {
+    try { const r = await fetch('/api/admin/kelvin/evidence'); if (r.ok) setData(await r.json()); } catch { /* keep */ }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  async function mutate(payload: Record<string, unknown>): Promise<{ ok: boolean; reason?: string; state?: string }> {
+    try {
+      const r = await fetch('/api/admin/kelvin/evidence/mutate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      return await r.json().catch(() => ({ ok: false, reason: 'That did not resolve.' }));
+    } catch { return { ok: false, reason: 'That did not resolve.' }; }
   }
 
+  async function publish(id: string) {
+    const res = await mutate({ op: 'publish', id });
+    if (res.ok) {
+      addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Published COA for ${id}`, sub: `Batch cleared the publish gate. Live on the public transparency page at ${publicUrl(id)}.` });
+      setSelBatch(id); await load(); flash(`Published ${id} to transparency.`);
+    } else { flash(res.reason || 'Blocked.'); }
+  }
+  async function unpublish(id: string) {
+    await mutate({ op: 'unpublish', id });
+    addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Unpublished ${id}`, sub: 'Batch removed from the public transparency page by owner.' });
+    await load(); flash(`Unpublished ${id}.`);
+  }
+  async function adjudicate(id: string) {
+    const res = await mutate({ op: 'adjudicate', id });
+    if (res.ok) {
+      addEvent({ agent: 'CODEX', time: now(), type: 'KNOWLEDGE', summary: `Adjudicated ${id}: ${res.state}`, sub: `Certificate resolved from its panels. The publish gate reads this state.` });
+      await load(); flash(`${id} adjudicated: ${res.state}.`);
+    } else { flash(res.reason || 'Blocked.'); }
+  }
+  async function match(id: string) {
+    const batchId = matchSel[id];
+    if (!batchId) { flash('No open batch to match.'); return; }
+    const res = await mutate({ op: 'match', id, batchId });
+    if (res.ok) {
+      addEvent({ agent: 'CODEX', time: now(), type: 'KNOWLEDGE', summary: `Matched ${id} to ${batchId}`, sub: 'Certificate matched to a batch and ingested. Ready to adjudicate.' });
+      await load(); flash(`Matched ${id} to ${batchId}.`);
+    } else { flash(res.reason || 'Blocked.'); }
+  }
+
+  if (!data) return <div className="empty">Loading Evidence data.</div>;
+
+  const publishedCount = data.batches.filter((x) => x.publish === 'Published').length;
+  const passedUnpublished = data.batches.filter((x) => x.coa === 'Passed' && x.publish === 'Unpublished').length;
+
   if (view === 'batches') {
-    const rows = Evidence.listBatches().filter((x) => x.publish !== 'Archived');
-    const sel = selBatch ? Evidence.getBatch(selBatch) : null;
+    const rows = data.batches.filter((x) => x.publish !== 'Archived');
+    const sel = selBatch ? data.batches.find((b) => b.id === selBatch) || null : null;
     return (
       <>
         <p className="lead">The batch registry. Every batch carries a COA state and a publish state. Nothing reaches the public transparency page until its COA is ingested and Passed.</p>
         <div className="kpis">
           <div className="kpi"><div className="k">Batches</div><div className="v">{String(rows.length).padStart(2, '0')}</div><div className="m">active registry</div></div>
-          <div className="kpi"><div className="k">Published</div><div className="v">{String(Evidence.publishedCount()).padStart(2, '0')}</div><div className="m">live on transparency</div></div>
-          <div className="kpi"><div className="k">Ready to publish</div><div className="v">{String(Evidence.passedUnpublished()).padStart(2, '0')}</div><div className="m">Passed and unpublished</div></div>
+          <div className="kpi"><div className="k">Published</div><div className="v">{String(publishedCount).padStart(2, '0')}</div><div className="m">live on transparency</div></div>
+          <div className="kpi"><div className="k">Ready to publish</div><div className="v">{String(passedUnpublished).padStart(2, '0')}</div><div className="m">Passed and unpublished</div></div>
           <div className="kpi"><div className="k">Awaiting COA</div><div className="v">{String(rows.filter((x) => x.coa === 'Awaiting' || x.coa === 'Ingested').length).padStart(2, '0')}</div><div className="m">intake in flight</div></div>
         </div>
         <div className="tbl-wrap"><table className="tbl">
@@ -88,15 +102,15 @@ export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'coa-intake') {
-    const sel = selCoa ? Evidence.getCoa(selCoa) : null;
-    const openBatches = Evidence.listBatches().filter((x) => x.coa === 'Awaiting');
+    const sel = selCoa ? data.coas.find((c) => c.id === selCoa) || null : null;
+    const openBatches = data.batches.filter((x) => x.coa === 'Awaiting');
     return (
       <>
         <p className="lead">Certificates of analysis arrive from the laboratories. Match an unmatched certificate to a batch, then adjudicate it. Adjudication sets the batch COA state, which the publish gate reads.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Certificate</th><th scope="col">Laboratory</th><th scope="col">Batch</th><th scope="col">State</th><th scope="col">Action</th></tr></thead>
           <tbody>
-            {Evidence.listCoas().map((coa) => (
+            {data.coas.map((coa) => (
               <tr key={coa.id} className={`clickable${selCoa === coa.id ? ' sel' : ''}`} onClick={(e) => { if ((e.target as HTMLElement).tagName === 'SELECT' || (e.target as HTMLElement).tagName === 'OPTION') return; setSelCoa(selCoa === coa.id ? null : coa.id); }}>
                 <td className="mono">{coa.id}</td><td>{coa.lab}</td><td className="mono">{coa.batch}</td><td>{coaChip(coa.state)}</td>
                 <td>
@@ -124,7 +138,7 @@ export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'publishing') {
-    const rows = Evidence.listBatches().filter((x) => x.publish !== 'Archived');
+    const rows = data.batches.filter((x) => x.publish !== 'Archived');
     return (
       <>
         <p className="lead">Publishing pushes a batch COA to the public transparency page, where a visitor enters a batch number and reads the full profile. The gate refuses anything not Passed.</p>
@@ -136,7 +150,7 @@ export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
               return (
                 <tr key={bt.id}>
                   <td className="mono">{bt.id}</td><td>{bt.item}</td><td>{coaChip(bt.coa)}</td><td>{pubChip(bt.publish)}</td>
-                  <td>{bt.publish === 'Published' ? <span className="reflink">{Evidence.publicUrl(bt.id)}</span> : <span style={{ color: 'var(--k-tertiary)' }}>UNKNOWN</span>}</td>
+                  <td>{bt.publish === 'Published' ? <span className="reflink">{publicUrl(bt.id)}</span> : <span style={{ color: 'var(--k-tertiary)' }}>UNKNOWN</span>}</td>
                   <td>
                     {bt.publish === 'Published'
                       ? <button className="btn" onClick={() => unpublish(bt.id)}>Unpublish</button>
@@ -154,7 +168,7 @@ export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'terpenes') {
-    const rows = Evidence.listBatches().filter((x) => x.terps.length);
+    const rows = data.batches.filter((x) => x.terps.length);
     return (
       <>
         <p className="lead">Terpene profiles per batch. Concentrations render UNKNOWN until a COA supplies them. The terpene names reconcile against the terpene index in Command Knowledge.</p>
@@ -172,14 +186,14 @@ export default function EvidenceWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">The laboratories that test CedarGrowth batches. Every batch we release is tested by a third party accredited laboratory.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Laboratory</th><th scope="col">Accreditation</th><th scope="col">License</th><th scope="col">Turnaround</th><th scope="col">Status</th></tr></thead>
-          <tbody>{Evidence.listLabs().map((l) => <tr key={l.name}><td>{l.name}</td><td className="mono">{l.accreditation}</td><td className="mono">{l.license}</td><td>{l.turnaround}</td><td><span className="chip pass"><span className="sq pass" />{l.status}</span></td></tr>)}</tbody>
+          <tbody>{data.labs.map((l) => <tr key={l.name}><td>{l.name}</td><td className="mono">{l.accreditation}</td><td className="mono">{l.license}</td><td>{l.turnaround}</td><td><span className="chip pass"><span className="sq pass" />{l.status}</span></td></tr>)}</tbody>
         </table></div>
       </>
     );
   }
 
   // archive
-  const rows = Evidence.listBatches().filter((x) => x.publish === 'Archived');
+  const rows = data.batches.filter((x) => x.publish === 'Archived');
   return (
     <>
       <p className="lead">Superseded and retired batches. The record is kept for traceability. It is not served on the public page.</p>
