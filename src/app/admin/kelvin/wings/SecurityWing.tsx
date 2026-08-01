@@ -1,12 +1,12 @@
 'use client';
 
-import { useReducer, useState } from 'react';
-import { Security } from './security';
+import { useCallback, useEffect, useState } from 'react';
+import { releaseGate, type SecurityData } from './security';
 import type { KEvent } from '../store';
 
-// The Security wing. Eight routes. The release clearance gate lives in the store:
-// a build clears only when every precheck passes. Actions write events to the
-// Command feed.
+// The Security wing, backed by Supabase. Data from /api/admin/kelvin/security;
+// mutations persist through the gated mutate route where the release clearance
+// gate is enforced. Actions refetch and emit events into the Command feed.
 
 type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string };
 
@@ -26,45 +26,61 @@ function stateChip(s: string) {
 }
 
 export default function SecurityWing({ view, addEvent, flash, now }: Props) {
-  const [, force] = useReducer((x: number) => x + 1, 0);
+  const [data, setData] = useState<SecurityData | null>(null);
   const [selFinding, setSelFinding] = useState<string | null>(null);
 
-  function runMon(id: string) {
-    const m = Security.runMonitor(id, now());
-    if (m) { addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Ran monitor ${id}: ${m.name}`, sub: `State ${m.state}. Recorded to the audit chain.` }); force(); flash(`Ran ${id}. State ${m.state}.`); }
+  const load = useCallback(async () => {
+    try { const r = await fetch('/api/admin/kelvin/security'); if (r.ok) setData(await r.json()); } catch { /* keep */ }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const mutate = useCallback(async (payload: Record<string, unknown>): Promise<Record<string, unknown>> => {
+    try {
+      const r = await fetch('/api/admin/kelvin/security/mutate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      return await r.json().catch(() => ({ ok: false }));
+    } catch { return { ok: false }; }
+  }, []);
+
+  async function runMon(id: string) {
+    const res = await mutate({ op: 'run-monitor', id });
+    addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Ran monitor ${id}: ${res.name || ''}`, sub: `State ${res.state || ''}. Recorded to the audit chain.` });
+    await load(); flash(`Ran ${id}. State ${res.state || ''}.`);
   }
-  function setFinding(id: string, state: string) {
-    const x = Security.setFinding(id, state);
-    if (x) { addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Finding ${id} ${state.toLowerCase()}`, sub: `${x.sev} . ${x.title}` }); force(); flash(`Finding ${id} ${state.toLowerCase()}.`); }
+  async function setFinding(id: string, state: string) {
+    const res = await mutate({ op: 'set-finding', id, value: state });
+    addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Finding ${id} ${state.toLowerCase()}`, sub: `${res.sev || ''} . ${res.title || ''}` });
+    await load(); flash(`Finding ${id} ${state.toLowerCase()}.`);
   }
-  function setIncident(id: string, status: string) {
-    Security.setIncident(id, status);
+  async function setIncident(id: string, status: string) {
+    await mutate({ op: 'set-incident', id, value: status });
     addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Incident ${id} ${status.toLowerCase()}`, sub: 'Incident status advanced by owner.' });
-    force(); flash(`Incident ${id} ${status.toLowerCase()}.`);
+    await load(); flash(`Incident ${id} ${status.toLowerCase()}.`);
   }
-  function enforce(id: string) {
-    const r = Security.enforceRule(id);
-    addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Rule ${id} enforced`, sub: `${r ? r.rule : ''} . scope ${r ? r.scope : ''}` });
-    force(); flash(`Rule ${id} enforced.`);
+  async function enforce(id: string) {
+    const res = await mutate({ op: 'enforce-rule', id });
+    addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Rule ${id} enforced`, sub: `${res.rule || ''} . scope ${res.scope || ''}` });
+    await load(); flash(`Rule ${id} enforced.`);
   }
-  function revoke(id: string) {
-    Security.revokeWaiver(id);
+  async function revoke(id: string) {
+    await mutate({ op: 'revoke-waiver', id });
     addEvent({ agent: 'SENTINEL', time: now(), type: 'DECISION', summary: `Waiver ${id} revoked`, sub: 'Accepted risk returned to enforcement.' });
-    force(); flash(`Waiver ${id} revoked.`);
+    await load(); flash(`Waiver ${id} revoked.`);
   }
-  function clearRelease() {
-    const res = Security.clearRelease();
-    if (res.ok) { addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: 'Release cleared by SENTINEL', sub: 'Every precheck passing. Passed to VERNIER on the release chain.' }); force(); flash('Release cleared. Passed to VERNIER.'); }
-    else flash(res.reason || 'Blocked.');
+  async function clearRelease() {
+    const res = await mutate({ op: 'clear-release' });
+    if (res.ok) { addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: 'Release cleared by SENTINEL', sub: 'Every precheck passing. Passed to VERNIER on the release chain.' }); await load(); flash('Release cleared. Passed to VERNIER.'); }
+    else flash((res.reason as string) || 'Blocked.');
   }
-  function reviewVendor(id: string) {
-    const v = Security.reviewVendor(id, now());
-    addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Vendor reviewed: ${v ? v.name : id}`, sub: 'Third party posture updated to Reviewed.' });
-    force(); flash(`Vendor ${v ? v.name : id} reviewed.`);
+  async function reviewVendor(id: string) {
+    const res = await mutate({ op: 'review-vendor', id });
+    addEvent({ agent: 'SENTINEL', time: now(), type: 'AUDIT', summary: `Vendor reviewed: ${res.name || id}`, sub: 'Third party posture updated to Reviewed.' });
+    await load(); flash(`Vendor ${res.name || id} reviewed.`);
   }
 
+  if (!data) return <div className="empty">Loading Security data.</div>;
+
   if (view === 'monitors') {
-    const rows = Security.listMonitors();
+    const rows = data.monitors;
     return (
       <>
         <p className="lead">The monitor catalog. Synthetic checks that run on a cadence. A failing monitor raises a finding.</p>
@@ -90,7 +106,7 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Incidents group findings under a single response. Contain limits the blast radius, close ends the incident.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Incident</th><th scope="col">Severity</th><th scope="col">Title</th><th scope="col">Opened</th><th scope="col">Findings</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-          <tbody>{Security.listIncidents().map((x) => (
+          <tbody>{data.incidents.map((x) => (
             <tr key={x.id}><td className="mono">{x.id}</td><td>{sevChip(x.sev)}</td><td>{x.title}</td><td className="mono">{x.opened}</td><td className="mono">{x.findings.join(', ')}</td><td>{stateChip(x.status)}</td>
               <td>{x.status !== 'Closed' ? (<>{x.status === 'Open' ? <button className="btn" onClick={() => setIncident(x.id, 'Contained')}>Contain</button> : null} <button className="btn solid" onClick={() => setIncident(x.id, 'Closed')}>Close</button></>) : <span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>Closed</span>}</td>
             </tr>
@@ -106,7 +122,7 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Security rules and policies. A staged rule can be enforced. Enforced rules are the guardrails the prechecks read.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Rule</th><th scope="col">Policy</th><th scope="col">Scope</th><th scope="col">State</th><th scope="col">Action</th></tr></thead>
-          <tbody>{Security.listRules().map((x) => (
+          <tbody>{data.rules.map((x) => (
             <tr key={x.id}><td className="mono">{x.id}</td><td>{x.rule}</td><td>{x.scope}</td><td>{stateChip(x.state)}</td><td>{x.state === 'Staged' ? <button className="btn solid" onClick={() => enforce(x.id)}>Enforce</button> : <span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>Enforced</span>}</td></tr>
           ))}</tbody>
         </table></div>
@@ -120,7 +136,7 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Accepted risks. Each waiver is an exception with a reason and an approver. Revoking a waiver returns the item to enforcement.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Waiver</th><th scope="col">Subject</th><th scope="col">Reason</th><th scope="col">Approver</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-          <tbody>{Security.listWaivers().map((x) => (
+          <tbody>{data.waivers.map((x) => (
             <tr key={x.id}><td className="mono">{x.id}</td><td>{x.subject}</td><td style={{ color: 'var(--k-tertiary)' }}>{x.reason}</td><td className="mono">{x.approver}</td><td>{stateChip(x.status)}</td><td>{x.status === 'Active' ? <button className="btn" onClick={() => revoke(x.id)}>Revoke</button> : <span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>Revoked</span>}</td></tr>
           ))}</tbody>
         </table></div>
@@ -134,21 +150,20 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">The audit chain. Append only. Every clearance, publish, and sign in lands here with its actor and target.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Time</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Target</th></tr></thead>
-          <tbody>{Security.listAudit().map((a, i) => <tr key={i}><td className="mono">{a.time}</td><td className="mono">{a.actor}</td><td>{a.action}</td><td style={{ color: 'var(--k-tertiary)' }}>{a.target}</td></tr>)}</tbody>
+          <tbody>{data.audit.map((a, i) => <tr key={i}><td className="mono">{a.time}</td><td className="mono">{a.actor}</td><td>{a.action}</td><td style={{ color: 'var(--k-tertiary)' }}>{a.target}</td></tr>)}</tbody>
         </table></div>
       </>
     );
   }
 
   if (view === 'precheck') {
-    const rows = Security.listPrecheck();
-    const gate = Security.clearRelease();
+    const gate = releaseGate(data.prechecks);
     return (
       <>
         <p className="lead">Release prechecks. SENTINEL sits between LITMUS and VERNIER on the release chain. A build clears only when every precheck passes.</p>
         <div className="detailpanel">
           <h3>Prechecks</h3>
-          {rows.map((p) => <div className="keyfield" key={p.id}><span className="kf-k" style={{ color: 'var(--k-secondary)' }}>{p.item}</span><span className="kf-v">{stateChip(p.state)}</span></div>)}
+          {data.prechecks.map((p) => <div className="keyfield" key={p.id}><span className="kf-k" style={{ color: 'var(--k-secondary)' }}>{p.item}</span><span className="kf-v">{stateChip(p.state)}</span></div>)}
           <div className="actions" style={{ marginTop: 18 }}>
             {gate.ok ? <button className="btn solid" onClick={clearRelease}>Clear for release</button> : <button className="btn disabled" onClick={() => flash(gate.reason || 'Blocked.')}>Clear for release</button>}
             <span className={`gate ${gate.ok ? 'ok' : 'no'}`}><span className={`sq ${gate.ok ? 'pass' : 'fail'}`} />{gate.ok ? 'All prechecks passing' : gate.reason}</span>
@@ -164,7 +179,7 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Third party posture. Every vendor that touches data or the build carries a review state.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Vendor</th><th scope="col">Type</th><th scope="col">Posture</th><th scope="col">Last review</th><th scope="col">Action</th></tr></thead>
-          <tbody>{Security.listVendors().map((v) => (
+          <tbody>{data.vendors.map((v) => (
             <tr key={v.id}><td>{v.name}</td><td>{v.type}</td><td>{stateChip(v.posture)}</td><td className="mono">{v.lastReview}</td><td>{v.posture === 'Pending' ? <button className="btn" onClick={() => reviewVendor(v.id)}>Mark reviewed</button> : <span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>Current</span>}</td></tr>
           ))}</tbody>
         </table></div>
@@ -173,8 +188,8 @@ export default function SecurityWing({ view, addEvent, flash, now }: Props) {
   }
 
   // findings (default)
-  const rows = Security.listFindings();
-  const sel = selFinding ? Security.getFinding(selFinding) : null;
+  const rows = data.findings;
+  const sel = selFinding ? rows.find((x) => x.id === selFinding) || null : null;
   return (
     <>
       <p className="lead">Security findings, most severe first. Triage moves a finding into work, resolve closes it. Actions record to the audit chain.</p>

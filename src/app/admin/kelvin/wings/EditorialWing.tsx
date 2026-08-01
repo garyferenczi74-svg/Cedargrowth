@@ -1,12 +1,13 @@
 'use client';
 
-import { useReducer, useState } from 'react';
-import { Editorial, type Draft } from './editorial';
+import { useCallback, useEffect, useState } from 'react';
+import { STAGES, stageIndex, type Draft, type EditorialData } from './editorial';
 import type { KEvent } from '../store';
 
-// The Editorial wing. Seven routes. Clearance is the dictionary scan as a hard
-// block, and the chain Draft to Clearance to Approval to Schedule to Publish is
-// enforced by stage. APERTURE drafts, SENTINEL clears, Owner approves.
+// The Editorial wing, backed by Supabase. Data from /api/admin/kelvin/editorial;
+// clearance (dictionary scan), approval, schedule, and publish persist through
+// the gated mutate route where the chain is enforced. Actions refetch and emit
+// events into the Command feed.
 
 type Props = { view: string; addEvent: (e: Omit<KEvent, 'id'>) => void; flash: (m: string) => void; now: () => string };
 
@@ -20,14 +21,13 @@ function scanChip(scan: string) {
   return <span className="chip pass"><span className="sq pass" />Scan clean</span>;
 }
 function ChainStepper({ stage }: { stage: string }) {
-  const st = Editorial.STAGES;
-  const cur = Editorial.stageIndex(stage);
+  const cur = stageIndex(stage);
   return (
     <div className="stepper">
-      {st.map((s, i) => (
+      {STAGES.map((s, i) => (
         <span key={s} style={{ display: 'contents' }}>
           <span className={`step ${i < cur ? 'done' : i === cur ? 'current' : ''}`}><span className="dot" />{s}</span>
-          {i < st.length - 1 ? <span className="step-sep" /> : null}
+          {i < STAGES.length - 1 ? <span className="step-sep" /> : null}
         </span>
       ))}
     </div>
@@ -35,54 +35,72 @@ function ChainStepper({ stage }: { stage: string }) {
 }
 
 export default function EditorialWing({ view, addEvent, flash, now }: Props) {
-  const [, force] = useReducer((x: number) => x + 1, 0);
+  const [data, setData] = useState<EditorialData | null>(null);
   const [selDraft, setSelDraft] = useState<string | null>(null);
   const [dates, setDates] = useState<Record<string, string>>({});
 
-  function clear(id: string) {
-    const res = Editorial.clearDraft(id);
-    if (res.ok && res.draft) { addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Cleared: ${res.draft.title}`, sub: `Draft ${id} passed originality and the dictionary scan. Passed to owner approval.` }); force(); flash(`Cleared ${id}.`); }
-    else flash(res.reason || 'Blocked.');
+  const load = useCallback(async () => {
+    try { const r = await fetch('/api/admin/kelvin/editorial'); if (r.ok) setData(await r.json()); } catch { /* keep */ }
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const mutate = useCallback(async (payload: Record<string, unknown>): Promise<Record<string, unknown>> => {
+    try {
+      const r = await fetch('/api/admin/kelvin/editorial/mutate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      return await r.json().catch(() => ({ ok: false }));
+    } catch { return { ok: false }; }
+  }, []);
+
+  async function clear(id: string) {
+    const res = await mutate({ op: 'clear', id });
+    if (res.ok) { addEvent({ agent: 'SENTINEL', time: now(), type: 'GATE', summary: `Cleared: ${res.title}`, sub: `Draft ${id} passed originality and the dictionary scan. Passed to owner approval.` }); await load(); flash(`Cleared ${id}.`); }
+    else flash((res.reason as string) || 'Blocked.');
   }
-  function sendBack(id: string) {
-    Editorial.sendBack(id);
+  async function sendBack(id: string) {
+    await mutate({ op: 'sendback', id });
     addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Sent back to draft: ${id}`, sub: 'Returned to APERTURE for revision.' });
-    force(); flash(`Sent ${id} back to draft.`);
+    await load(); flash(`Sent ${id} back to draft.`);
   }
-  function approve(id: string) {
-    const res = Editorial.approveDraft(id);
-    if (res.ok && res.draft) { addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Owner approved: ${res.draft.title}`, sub: `Draft ${id} approved. Ready to schedule.` }); force(); flash(`Approved ${id}.`); }
-    else flash(res.reason || 'Blocked.');
+  async function approve(id: string) {
+    const res = await mutate({ op: 'approve', id });
+    if (res.ok) { addEvent({ agent: 'MERIDIAN', time: now(), type: 'DECISION', summary: `Owner approved: ${res.title}`, sub: `Draft ${id} approved. Ready to schedule.` }); await load(); flash(`Approved ${id}.`); }
+    else flash((res.reason as string) || 'Blocked.');
   }
-  function schedule(id: string) {
+  async function schedule(id: string) {
     const raw = dates[id] || '';
     const date = raw ? raw.slice(5) : '';
-    const res = Editorial.scheduleDraft(id, date);
-    if (res.ok && res.draft) { addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Scheduled: ${res.draft.title}`, sub: `Draft ${id} scheduled to publish ${res.draft.pubDate}.` }); force(); flash(`Scheduled ${id} for ${res.draft.pubDate}.`); }
-    else flash(res.reason || 'Blocked.');
+    const res = await mutate({ op: 'schedule', id, date });
+    if (res.ok) { addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Scheduled: ${res.title}`, sub: `Draft ${id} scheduled to publish ${res.pubDate}.` }); await load(); flash(`Scheduled ${id} for ${res.pubDate}.`); }
+    else flash((res.reason as string) || 'Blocked.');
   }
-  function publish(id: string) {
-    const res = Editorial.publishDraft(id);
-    if (res.ok && res.draft) { addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Published: ${res.draft.title}`, sub: `Draft ${id} is live in the research index.` }); force(); flash(`Published ${id}.`); }
-    else flash(res.reason || 'Blocked.');
+  async function publish(id: string) {
+    const res = await mutate({ op: 'publish', id });
+    if (res.ok) { addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Published: ${res.title}`, sub: `Draft ${id} is live in the research index.` }); await load(); flash(`Published ${id}.`); }
+    else flash((res.reason as string) || 'Blocked.');
   }
-  function promote(id: string) {
-    const nd = Editorial.promoteResearch(id);
-    if (nd) { addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Draft opened: ${nd.title}`, sub: `Promoted from research ${id} into ${nd.id}.` }); force(); flash(`Opened draft ${nd.id}.`); }
+  async function promote(id: string) {
+    const res = await mutate({ op: 'promote', id });
+    if (res.ok && res.draft) { const nd = res.draft as { id: string; title: string }; addEvent({ agent: 'APERTURE', time: now(), type: 'DRAFT', summary: `Draft opened: ${nd.title}`, sub: `Promoted from research ${id} into ${nd.id}.` }); await load(); flash(`Opened draft ${nd.id}.`); }
+    else flash((res.reason as string) || 'Blocked.');
   }
 
+  if (!data) return <div className="empty">Loading Editorial data.</div>;
+  const drafts = data.drafts;
+
   if (view === 'overview') {
-    const c = Editorial.countsByStage();
-    const upcoming = Editorial.scheduled();
-    const live = Editorial.published();
+    const counts: Record<string, number> = {};
+    STAGES.forEach((s) => { counts[s] = 0; });
+    drafts.forEach((d) => { counts[d.stage] = (counts[d.stage] || 0) + 1; });
+    const upcoming = drafts.filter((d) => d.stage === 'Scheduled');
+    const live = drafts.filter((d) => d.stage === 'Published');
     return (
       <>
         <p className="lead">The editorial pipeline. APERTURE drafts, SENTINEL clears, the owner approves, then schedule and publish. Every stage is a gate.</p>
         <div className="kpis">
-          <div className="kpi"><div className="k">In clearance</div><div className="v">{String(c['In clearance']).padStart(2, '0')}</div><div className="m">SENTINEL queue</div></div>
-          <div className="kpi"><div className="k">Awaiting approval</div><div className="v">{String(c['Cleared']).padStart(2, '0')}</div><div className="m">owner queue</div></div>
-          <div className="kpi"><div className="k">Scheduled</div><div className="v">{String(c['Scheduled']).padStart(2, '0')}</div><div className="m">queued to publish</div></div>
-          <div className="kpi"><div className="k">Published</div><div className="v">{String(c['Published']).padStart(2, '0')}</div><div className="m">live</div></div>
+          <div className="kpi"><div className="k">In clearance</div><div className="v">{String(counts['In clearance']).padStart(2, '0')}</div><div className="m">SENTINEL queue</div></div>
+          <div className="kpi"><div className="k">Awaiting approval</div><div className="v">{String(counts['Cleared']).padStart(2, '0')}</div><div className="m">owner queue</div></div>
+          <div className="kpi"><div className="k">Scheduled</div><div className="v">{String(counts['Scheduled']).padStart(2, '0')}</div><div className="m">queued to publish</div></div>
+          <div className="kpi"><div className="k">Published</div><div className="v">{String(counts['Published']).padStart(2, '0')}</div><div className="m">live</div></div>
         </div>
         <div className="two-col">
           <div className="col"><h2>Upcoming schedule</h2>
@@ -102,7 +120,7 @@ export default function EditorialWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Research feeds the drafts, often handed off from the scraping intelligence. Promote a note to open a draft for APERTURE.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Note</th><th scope="col">Topic</th><th scope="col">Source</th><th scope="col">Status</th><th scope="col">Action</th></tr></thead>
-          <tbody>{Editorial.listResearch().map((r) => (
+          <tbody>{data.research.map((r) => (
             <tr key={r.id}><td className="mono">{r.id}</td><td>{r.topic}</td><td>{r.source}</td><td><span className="chip" style={{ color: r.status === 'Open' ? 'var(--k-attention)' : 'var(--k-tertiary)' }}>{r.status}</span></td><td>{r.status === 'Open' ? <button className="btn" onClick={() => promote(r.id)}>Promote to draft</button> : <span style={{ color: 'var(--k-tertiary)', fontSize: 12 }}>In draft</span>}</td></tr>
           ))}</tbody>
         </table></div>
@@ -111,7 +129,7 @@ export default function EditorialWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'clearance') {
-    const rows = Editorial.inClearance();
+    const rows = drafts.filter((x) => x.stage === 'In clearance');
     return (
       <>
         <p className="lead">SENTINEL clearance. Originality and the dictionary scan. A single banned term is a hard block, so a flagged draft cannot clear.</p>
@@ -133,7 +151,7 @@ export default function EditorialWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'approval') {
-    const rows = Editorial.cleared();
+    const rows = drafts.filter((x) => x.stage === 'Cleared');
     return (
       <>
         <p className="lead">Owner approval. Cleared drafts wait here. Approval is the owner gate before a piece can be scheduled.</p>
@@ -150,8 +168,8 @@ export default function EditorialWing({ view, addEvent, flash, now }: Props) {
   }
 
   if (view === 'schedule') {
-    const approved = Editorial.approved();
-    const scheduled = Editorial.scheduled();
+    const approved = drafts.filter((x) => x.stage === 'Approved');
+    const scheduled = drafts.filter((x) => x.stage === 'Scheduled');
     return (
       <>
         <p className="lead">Schedule approved pieces, then publish when the date arrives.</p>
@@ -182,20 +200,20 @@ export default function EditorialWing({ view, addEvent, flash, now }: Props) {
         <p className="lead">Live editorial. Written like a laboratory, read like a library.</p>
         <div className="tbl-wrap"><table className="tbl">
           <thead><tr><th scope="col">Draft</th><th scope="col">Title</th><th scope="col">Author</th><th scope="col">Published</th></tr></thead>
-          <tbody>{Editorial.published().map((x) => <tr key={x.id}><td className="mono">{x.id}</td><td>{x.title}</td><td className="mono">{x.author}</td><td className="mono">{x.pubDate}</td></tr>)}</tbody>
+          <tbody>{drafts.filter((x) => x.stage === 'Published').map((x) => <tr key={x.id}><td className="mono">{x.id}</td><td>{x.title}</td><td className="mono">{x.author}</td><td className="mono">{x.pubDate}</td></tr>)}</tbody>
         </table></div>
       </>
     );
   }
 
   // drafts (default)
-  const sel = selDraft ? Editorial.getDraft(selDraft) : null;
+  const sel = selDraft ? drafts.find((x) => x.id === selDraft) || null : null;
   return (
     <>
       <p className="lead">Every draft and where it sits in the chain. The scan state decides whether a draft can clear.</p>
       <div className="tbl-wrap"><table className="tbl">
         <thead><tr><th scope="col">Draft</th><th scope="col">Title</th><th scope="col">Author</th><th scope="col">Scan</th><th scope="col">Stage</th></tr></thead>
-        <tbody>{Editorial.listDrafts().map((x) => (
+        <tbody>{drafts.map((x) => (
           <tr key={x.id} className={`clickable${selDraft === x.id ? ' sel' : ''}`} onClick={() => setSelDraft(selDraft === x.id ? null : x.id)}>
             <td className="mono">{x.id}</td><td>{x.title}</td><td className="mono">{x.author}</td><td>{scanChip(x.scan)}</td><td>{stageChip(x.stage)}</td>
           </tr>
