@@ -95,11 +95,11 @@
 .kelvin-root .wing-link.active { color: var(--k-primary); border-left-color: var(--k-accent, var(--k-primary)); }
 .kelvin-root .badge { font-family: var(--k-font-mono); font-size: 11px; min-width: 20px; height: 20px; padding: 0 5px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--k-attention); color: var(--k-attention); border-radius: 2px; }
 .kelvin-root .badge.zero { border-color: var(--k-hairline); color: var(--k-tertiary); }
-.kelvin-root .sidefoot { border-top: 1px solid var(--k-hairline); padding: 14px 20px; }
+.kelvin-root .sidefoot { border-top: 1px solid var(--k-hairline); padding: 14px 20px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .kelvin-root .signout { display: flex; align-items: center; gap: 8px; color: var(--k-tertiary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; }
 .kelvin-root .signout:hover { color: var(--k-primary); }
-.kelvin-root .theme-switch { display: flex; border: 1px solid var(--k-hairline); border-radius: 2px; overflow: hidden; margin-bottom: 14px; }
-.kelvin-root .theme-switch button { flex: 1; padding: 6px 0; font-size: 10px; font-family: var(--k-font-mono); text-transform: uppercase; letter-spacing: 0.14em; color: var(--k-tertiary); transition: color 150ms var(--k-ease), background 150ms var(--k-ease); }
+.kelvin-root .theme-switch { display: flex; width: 116px; border: 1px solid var(--k-hairline); border-radius: 2px; overflow: hidden; }
+.kelvin-root .theme-switch button { flex: 1; padding: 3px 0; font-size: 9px; font-family: var(--k-font-mono); text-transform: uppercase; letter-spacing: 0.1em; color: var(--k-tertiary); transition: color 150ms var(--k-ease), background 150ms var(--k-ease); }
 .kelvin-root .theme-switch button + button { border-left: 1px solid var(--k-hairline); }
 .kelvin-root .theme-switch button:hover { color: var(--k-primary); }
 .kelvin-root .theme-switch button.active { color: var(--k-surface); background: var(--k-primary); }

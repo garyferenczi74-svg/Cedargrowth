@@ -176,6 +176,7 @@ export default function KelvinConsole() {
             <button className={theme === 'light' ? 'active' : ''} onClick={() => setTheme('light')}>Light</button>
             <button className={theme === 'dark' ? 'active' : ''} onClick={() => setTheme('dark')}>Dark</button>
           </div>
+          <a className="signout" href="/">Home page</a>
           <button className="signout" onClick={signOut}>
             Sign Out
           </button>
