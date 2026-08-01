@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getSupabaseServerClient } from '@/lib/supabase';
 import { KELVIN_COOKIE, KELVIN_MAX_AGE, createSessionToken, isAdmin } from '@/lib/kelvinAuth';
-import { verifyCode } from '@/lib/kelvinPassword';
+import { hashCode } from '@/lib/kelvinPassword';
 
-// Verifies the admin email and access code against the stored hash, and on a
-// match sets the signed session cookie. Every failure class returns the same
-// neutral line so the endpoint enumerates nothing.
+// First run. An allowlisted admin sets an access code once. If a code already
+// exists the endpoint refuses, so it cannot be used to overwrite. On success it
+// stores the hash and signs the admin in.
 
 export const runtime = 'nodejs';
 
@@ -27,17 +27,22 @@ export async function POST(request: Request) {
   if (!supabase || !secret) {
     return NextResponse.json({ error: 'Access is not configured.' }, { status: 503 });
   }
-  if (!isAdmin(email) || !code) {
+  if (!isAdmin(email)) {
     return NextResponse.json({ error: NEUTRAL }, { status: 401 });
   }
+  if (code.length < 8) {
+    return NextResponse.json({ error: 'Choose an access code of at least 8 characters.' }, { status: 400 });
+  }
 
-  const { data } = await supabase
-    .from('kelvin_admin_credentials')
-    .select('password_hash')
-    .eq('email', email)
-    .maybeSingle();
-  if (!data || !(await verifyCode(code, data.password_hash))) {
-    return NextResponse.json({ error: NEUTRAL }, { status: 401 });
+  const existing = await supabase.from('kelvin_admin_credentials').select('email').eq('email', email).maybeSingle();
+  if (existing.data) {
+    return NextResponse.json({ error: 'An access code is already set. Sign in instead.' }, { status: 409 });
+  }
+
+  const password_hash = await hashCode(code);
+  const insert = await supabase.from('kelvin_admin_credentials').insert({ email, password_hash });
+  if (insert.error) {
+    return NextResponse.json({ error: 'Could not save the access code.' }, { status: 500 });
   }
 
   const token = await createSessionToken(secret, email);
