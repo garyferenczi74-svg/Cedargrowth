@@ -25,7 +25,7 @@ export function TeamSection() {
               {home.team.headline}
             </h2>
           </div>
-          {/* /about does not exist yet; this link is intentionally pending a real destination. */}
+          {/* /about now exists as a hold page, so this link resolves. */}
           <ButtonLink href="/about" variant="ghost">
             {home.team.cta}
           </ButtonLink>

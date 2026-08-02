@@ -92,3 +92,86 @@ export async function sendCustomerConfirmation(data: ReservationEmailData): Prom
     console.error('Customer confirmation email failed', err);
   }
 }
+
+export type SignupIntent = 'newsletter' | 'dna_kit' | 'find_dispensary' | 'wholesale';
+
+export type SignupEmailData = {
+  intent: SignupIntent;
+  email: string;
+  name: string | null;
+  location: string | null;
+  business: string | null;
+  note: string | null;
+};
+
+const SIGNUP_INTENT_LABEL: Record<SignupIntent, string> = {
+  newsletter: 'Newsletter signup',
+  dna_kit: 'DNA kit interest',
+  find_dispensary: 'Find a dispensary request',
+  wholesale: 'Wholesale account request',
+};
+
+// Internal alert to the CedarGrowth inbox for a capture-form submission.
+// Reuses the reservation alert env so no new env vars are introduced.
+export async function sendSignupAlert(data: SignupEmailData): Promise<void> {
+  const resend = getResend();
+  const to = process.env.RESERVATION_ALERT_TO;
+  const from = process.env.RESERVATION_ALERT_FROM;
+  if (!resend || !to || !from) {
+    console.warn('Signup alert skipped, email env not configured');
+    return;
+  }
+  try {
+    await resend.emails.send({
+      from,
+      to,
+      subject: `${SIGNUP_INTENT_LABEL[data.intent]}, ${data.email}`,
+      html:
+        `<p>New ${escapeHtml(SIGNUP_INTENT_LABEL[data.intent]).toLowerCase()}.</p>` +
+        `<p>Email: ${escapeHtml(data.email)}<br>` +
+        (data.name ? `Name: ${escapeHtml(data.name)}<br>` : '') +
+        (data.location ? `Location: ${escapeHtml(data.location)}<br>` : '') +
+        (data.business ? `Business: ${escapeHtml(data.business)}<br>` : '') +
+        `Source: ${escapeHtml(data.intent)}</p>` +
+        (data.note ? `<p>Note: ${escapeHtml(data.note)}</p>` : ''),
+    });
+  } catch (err) {
+    console.error('Signup alert email failed', err);
+  }
+}
+
+// Confirmation to the submitter. House voice, no compound names, no medical
+// claims, no payment claim, no exclamation marks. States plainly what the
+// address is used for.
+export async function sendSignupConfirmation(data: SignupEmailData): Promise<void> {
+  const resend = getResend();
+  const from = process.env.RESERVATION_ALERT_FROM;
+  if (!resend || !from) {
+    console.warn('Signup confirmation skipped, email env not configured');
+    return;
+  }
+  const body: Record<SignupIntent, string> = {
+    newsletter:
+      'We received your request to join the CedarGrowth newsletter. Your address is used ' +
+      'only to send CedarGrowth updates, and is kept only for that purpose until you unsubscribe.',
+    dna_kit:
+      'We received your interest in the CedarGrowth DNA kit. Your address is used only to ' +
+      'notify you when the kit is available, and is kept only for that purpose.',
+    find_dispensary:
+      'We received your request to find a dispensary that carries CedarGrowth. Your address ' +
+      'is used only to send you the result of that search, and is kept only for that purpose.',
+    wholesale:
+      'We received your wholesale account request. A CedarGrowth coordinator reviews the ' +
+      'request and follows up at this address. Your address is kept only for that purpose.',
+  };
+  try {
+    await resend.emails.send({
+      from,
+      to: data.email,
+      subject: 'Your CedarGrowth request',
+      html: `<p>Thank you.</p><p>${body[data.intent]}</p>`,
+    });
+  } catch (err) {
+    console.error('Signup confirmation email failed', err);
+  }
+}

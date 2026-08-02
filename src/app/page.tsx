@@ -173,7 +173,7 @@ export default function HomePage() {
             <p className="max-w-editorial text-body-m-m md:text-body-l text-secondary">
               {home.dna.body}
             </p>
-            <ButtonLink href="/dna/traits" variant="ghost">
+            <ButtonLink href="/dna" variant="ghost">
               {home.dna.cta}
             </ButtonLink>
           </div>

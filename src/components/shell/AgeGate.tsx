@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ageGate } from '@/content/ageGate';
 
 // Full screen 21 plus age gate (spec Section C item 6). Only mounted when
@@ -17,10 +18,11 @@ import { ageGate } from '@/content/ageGate';
 //
 // The legal and accessibility links are reachable without ever submitting
 // the form, so a visitor can read either page before, or instead of,
-// confirming their age. /legal/terms and /legal/accessibility do not exist
-// as routes yet (same pending-destination pattern as the /about link in
-// src/components/home/TeamSection.tsx); the links still render, no route
-// stub is created here.
+// confirming their age. /legal/terms and /legal/accessibility are real
+// routes (as are /legal/privacy and /legal/compliance). AgeGate also
+// renders null for any pathname starting with /legal (see the early return
+// below), so all four legal pages stay reachable even when the gate is
+// enabled and no passing entry has been recorded yet.
 
 const COOKIE_NAME = 'cg_age_verified';
 const MIN_AGE = 21;
@@ -81,6 +83,7 @@ function setSessionCookie(): void {
 }
 
 export function AgeGate() {
+  const pathname = usePathname();
   const [checkedCookie, setCheckedCookie] = useState(false);
   const [verified, setVerified] = useState(false);
   const [month, setMonth] = useState('');
@@ -92,9 +95,11 @@ export function AgeGate() {
     setCheckedCookie(true);
   }, []);
 
-  // Nothing renders until the cookie check has run once, and nothing
-  // renders once a passing entry has been recorded for this session.
-  if (!checkedCookie || verified) return null;
+  // Nothing renders until the cookie check has run once, nothing renders
+  // once a passing entry has been recorded for this session, and nothing
+  // renders on /legal/* routes: those pages must stay reachable even before
+  // a visitor has confirmed their age.
+  if (!checkedCookie || verified || pathname?.startsWith('/legal')) return null;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
