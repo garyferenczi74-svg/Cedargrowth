@@ -39,8 +39,8 @@ export const PRIMARY_NAV: NavItem[] = [
       {
         heading: 'Understand',
         links: [
-          { label: 'Terpene index', href: '/research/terpenes' },
-          { label: 'The endocannabinoid system', href: '/research/ecs' },
+          { label: 'Terpene index', href: '/research' },
+          { label: 'The endocannabinoid system', href: '/research' },
         ],
       },
       {
@@ -93,10 +93,10 @@ export const PRIMARY_NAV: NavItem[] = [
       {
         heading: 'The test',
         links: [
-          { label: 'How it works', href: '/dna/how-it-works' },
-          { label: 'The thirteen traits', href: '/dna/traits' },
-          { label: 'Sample report', href: '/dna/sample-report' },
-          { label: 'Privacy', href: '/dna/privacy' },
+          { label: 'How it works', href: '/dna' },
+          { label: 'The thirteen traits', href: '/dna' },
+          { label: 'Sample report', href: '/dna' },
+          { label: 'Privacy', href: '/dna' },
         ],
       },
       {
@@ -116,8 +116,8 @@ export const PRIMARY_NAV: NavItem[] = [
       {
         heading: 'Pillars',
         links: [
-          { label: 'Terpene index', href: '/research/terpenes' },
-          { label: 'The endocannabinoid system', href: '/research/ecs' },
+          { label: 'Terpene index', href: '/research' },
+          { label: 'The endocannabinoid system', href: '/research' },
         ],
       },
       {
@@ -170,7 +170,7 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     heading: 'Legal',
     links: [
       { label: 'Terms', href: '/legal/terms' },
-      { label: 'Privacy', href: '/privacy' },
+      { label: 'Privacy', href: '/legal/privacy' },
       { label: 'Accessibility', href: '/legal/accessibility' },
       { label: 'Compliance', href: '/legal/compliance' },
       { label: 'Contact', href: '/contact' },
