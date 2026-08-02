@@ -6,8 +6,9 @@ import { Unknown } from '@/components/atoms/Unknown';
 // page is written, not left as a structure of Unknown atoms: it states only
 // what is verifiable in this codebase today (skip link and focus-visible
 // treatment in src/components/shell/Shell.tsx and globals.css, labeled form
-// fields with aria-describedby/aria-invalid in CaptureForm.tsx, aria-hidden
-// decorative media in HeroVideo.tsx and Placeholder.tsx, and the
+// fields with aria-describedby/aria-invalid in CaptureForm.tsx, the
+// aria-hidden decorative hero video in HeroVideo.tsx, the role="img" plus
+// aria-label treatment of image placeholders in Placeholder.tsx, and the
 // prefers-reduced-motion handling in HeroVideo.tsx and globals.css). It does
 // not assert a certified conformance level, and the contact route is
 // rendered Unknown because no public accessibility contact exists in the
@@ -33,8 +34,8 @@ const IMPLEMENTED = [
     body: 'Every form field on this site has a visible label associated with its input through htmlFor, and validation errors are tied to their field with aria-describedby and aria-invalid, and announced through role="alert".',
   },
   {
-    title: 'Decorative media marked aria-hidden',
-    body: 'The autoplaying hero video and unlabeled image placeholders are marked aria-hidden, so they are not announced as content, and the surrounding text carries the meaning instead.',
+    title: 'Decorative media handled appropriately',
+    body: 'The autoplaying hero video is decorative and is marked aria-hidden, so it is not announced as content. Image placeholders, used until real photography lands, are the opposite case: each carries role="img" with a descriptive aria-label naming the image family and subject, so a screen reader still gets a meaningful description of what will occupy that space.',
   },
   {
     title: 'Reduced motion support',
