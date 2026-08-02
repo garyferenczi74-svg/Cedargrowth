@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { ageGate } from '@/content/ageGate';
 
 // Full screen 21 plus age gate (spec Section C item 6). Only mounted when
@@ -81,6 +82,7 @@ function setSessionCookie(): void {
 }
 
 export function AgeGate() {
+  const pathname = usePathname();
   const [checkedCookie, setCheckedCookie] = useState(false);
   const [verified, setVerified] = useState(false);
   const [month, setMonth] = useState('');
@@ -92,9 +94,11 @@ export function AgeGate() {
     setCheckedCookie(true);
   }, []);
 
-  // Nothing renders until the cookie check has run once, and nothing
-  // renders once a passing entry has been recorded for this session.
-  if (!checkedCookie || verified) return null;
+  // Nothing renders until the cookie check has run once, nothing renders
+  // once a passing entry has been recorded for this session, and nothing
+  // renders on /legal/* routes: those pages must stay reachable even before
+  // a visitor has confirmed their age.
+  if (!checkedCookie || verified || pathname?.startsWith('/legal')) return null;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
