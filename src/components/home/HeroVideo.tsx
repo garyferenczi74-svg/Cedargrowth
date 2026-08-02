@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 
 type HeroVideoProps = {
   src: string;
+  poster?: string;
   className?: string;
 };
 
@@ -13,7 +14,7 @@ type HeroVideoProps = {
 // whenever the element pauses or the page regains focus. Honors
 // prefers-reduced-motion by leaving the first frame static. The video is
 // decorative (aria-hidden); the hero headline and body carry the meaning.
-export function HeroVideo({ src, className }: HeroVideoProps) {
+export function HeroVideo({ src, poster, className }: HeroVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -56,6 +57,7 @@ export function HeroVideo({ src, className }: HeroVideoProps) {
       ref={videoRef}
       className={className}
       src={src}
+      poster={poster}
       autoPlay
       muted
       loop

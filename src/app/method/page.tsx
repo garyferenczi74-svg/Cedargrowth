@@ -49,6 +49,7 @@ export default function MethodPage() {
                     <div className="relative aspect-[5/4] overflow-hidden border border-hairline bg-bone">
                       <HeroVideo
                         src={step.video.src}
+                        poster={step.video.poster}
                         className="absolute inset-0 h-full w-full object-cover"
                       />
                     </div>
