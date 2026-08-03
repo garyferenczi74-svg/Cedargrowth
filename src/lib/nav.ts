@@ -41,6 +41,7 @@ export const PRIMARY_NAV: NavItem[] = [
         links: [
           { label: 'Terpene index', href: '/research' },
           { label: 'The endocannabinoid system', href: '/research' },
+          { label: 'FAQ', href: '/faq' },
         ],
       },
       {
@@ -171,6 +172,7 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: 'Terms', href: '/legal/terms' },
       { label: 'Privacy', href: '/legal/privacy' },
+      { label: 'FAQ', href: '/faq' },
       { label: 'Accessibility', href: '/legal/accessibility' },
       { label: 'Compliance', href: '/legal/compliance' },
       { label: 'Contact', href: '/contact' },
