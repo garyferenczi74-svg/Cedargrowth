@@ -13,7 +13,8 @@ import { LegalDocument } from '@/components/legal/LegalDocument';
 // turns that one occurrence into a real link to /dna/privacy, without
 // changing a word of the module text; it is a presentation-only
 // substitution scoped to this section. Section 9 contains the same
-// backticked reference in a different context and is left as plain text,
+// backticked reference in a different context and is left as plain text
+// (backticks stripped by renderInline like any other backtick span),
 // per the brief's scope (Section 6 only).
 export const metadata: Metadata = {
   title: 'Privacy Policy',
