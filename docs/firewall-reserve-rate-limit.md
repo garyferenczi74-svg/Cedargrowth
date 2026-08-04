@@ -1,6 +1,6 @@
 # Firewall rule: rate limit POST /api/reserve
 
-Status: proposed, not yet applied. Owner (Gary) applies this in the Vercel dashboard or via CLI/API. This file is the tracked reference.
+Status: APPLIED and live in production since 2026-08-04. Live rule id `rule_rate_limit_reservation_endpoint_LzYeGM`, created via the Vercel firewall REST API (5 req / 60s per IP on POST /api/reserve, action deny; enforcement verified). This file is the tracked reference for that rule.
 
 ## Why
 
@@ -21,8 +21,10 @@ The existing honeypot field (`company`) blocks naive bots but does nothing again
 | Algorithm    | `fixed_window`      | Simple, predictable |
 | Window       | `60` seconds        | Per-minute cap |
 | Limit        | `5` requests        | A real user submits 1 to 2 times; 5 per minute is generous headroom |
-| Key          | `ip_address`        | Per-client bucket |
+| Key          | `ip`                | Per-client bucket. The rate-limit key value is `ip`, NOT `ip_address` (see note) |
 | Exceed action| `deny`              | See note below |
+
+IMPORTANT (rate-limit key gotcha): the rate-limit key must be `ip`, not `ip_address`. `ip_address` is a valid firewall CONDITION type but an invalid rate-limit key. Vercel accepts a rule with `keys: ["ip_address"]` as valid (valid=true, no validationErrors) but it silently never enforces, so requests pass through unthrottled. Confirmed 2026-08-04: `ip_address` = inert, `ip` = enforcing.
 
 Use `deny`, not `challenge`. The form calls this endpoint via `fetch`, and a managed challenge page cannot be solved inside a background XHR, so it would just break legitimate retries. `deny` returns a clean block that the form error state can handle. Only switch to `challenge` if a visible captcha step is added later.
 
@@ -45,7 +47,7 @@ vercel firewall rules add "Rate limit reservation endpoint" \
   --action rate_limit \
   --rate-limit-window 60s \
   --rate-limit-requests 5 \
-  --rate-limit-keys ip_address \
+  --rate-limit-keys ip \
   --rate-limit-algo fixed_window \
   --rate-limit-action deny
 ```
@@ -77,7 +79,7 @@ Conditions inside one `conditionGroup` are AND-ed, so this matches path and POST
           "algo": "fixed_window",
           "window": 60,
           "limit": 5,
-          "keys": ["ip_address"],
+          "keys": ["ip"],
           "action": "deny"
         },
         "actionDuration": null,
@@ -114,6 +116,6 @@ Expect `400` (bad body, but the request reached the app) for the first 5, then `
 
 The three seed "findings" that prompted this were checked against the repo:
 
-- Reserve endpoint unthrottled: REAL. Confirmed no rate limit in the route, middleware, or `vercel.json`. This doc is the fix.
+- Reserve endpoint unthrottled: REAL. Confirmed no rate limit in the route, middleware, or `vercel.json`. Fixed live 2026-08-04 by the WAF rule described above (rule id `rule_rate_limit_reservation_endpoint_LzYeGM`).
 - Age gate renders after content: FICTION. The gate is flag-gated off (`src/lib/flags.ts`, `isAgeGateEnabled()` defaults off) and mounts before content when on (`src/app/layout.tsx`). Real open item is the launch policy decision, not a rendering bug.
 - Metrc two key auth unset: DEMO ONLY. Metrc exists only in the KELVIN prototype wing (`src/app/admin/kelvin/wings/production.ts`), not as a real integration.
