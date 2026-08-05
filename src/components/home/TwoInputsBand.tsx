@@ -12,7 +12,7 @@ import { home } from '@/content/home';
 
 export function TwoInputsBand() {
   return (
-    <section className="bg-parchment py-16 md:py-40">
+    <section className="bg-parchment py-16 md:py-24">
       <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-0">
           <div className="reveal flex flex-col items-start gap-6 md:col-span-5">
