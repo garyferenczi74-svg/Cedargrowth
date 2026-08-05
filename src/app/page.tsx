@@ -47,14 +47,14 @@ export default function HomePage() {
       <section className="relative flex min-h-[82vh] flex-col justify-end overflow-hidden bg-ink">
         <HeroVideo
           src={home.hero.videoSrc}
-          className="settle absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         />
         <div
           className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/45 to-transparent"
           aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-content px-page-margin-mobile pb-16 md:px-page-margin md:pb-24">
-          <div className="reveal flex max-w-editorial flex-col gap-6">
+          <div className="flex max-w-editorial flex-col gap-6">
             <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
             <h1 className="font-display text-display-l-m md:text-display-xl text-inverse [text-shadow:0_1px_18px_rgb(28_27_25_/_0.5)]">
               {home.hero.headlineLines.map((line, index) => (
@@ -85,7 +85,7 @@ export default function HomePage() {
       <section className="bg-parchment py-16 md:py-40">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
           <SectionHeader
-            className="reveal mx-auto"
+            className="mx-auto"
             headline={home.position.headline}
             sub={
               <>
@@ -101,8 +101,8 @@ export default function HomePage() {
       {/* Block 3, the five lines */}
       <section className="bg-bone py-16 md:py-40">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <Eyebrow className="reveal mb-10">{home.fiveLines.eyebrow}</Eyebrow>
-          <ul className="reveal flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-5 md:overflow-visible">
+          <Eyebrow className="mb-10">{home.fiveLines.eyebrow}</Eyebrow>
+          <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-5 md:overflow-visible">
             {LINES.map((line) => (
               <li
                 key={line.key}
@@ -138,7 +138,7 @@ export default function HomePage() {
       {/* Block 4, the five absences */}
       <section className="bg-ink py-16 md:py-24">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <ul className="reveal grid grid-cols-1 border-t border-hairline-inverse sm:grid-cols-3 md:grid-cols-5">
+          <ul className="grid grid-cols-1 border-t border-hairline-inverse sm:grid-cols-3 md:grid-cols-5">
             {ABSENCES.map((item) => (
               <li
                 key={item.label}
@@ -151,7 +151,7 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
-          <p className="reveal mt-8 max-w-editorial text-body-m-m md:text-body-m text-inverse/70">
+          <p className="mt-8 max-w-editorial text-body-m-m md:text-body-m text-inverse/70">
             {home.absences.trailing}
           </p>
         </div>
@@ -163,9 +163,9 @@ export default function HomePage() {
           <Placeholder
             family={home.placeholders.dna.family}
             alt={home.placeholders.dna.alt}
-            className="reveal aspect-[4/3]"
+            className="aspect-[4/3]"
           />
-          <div className="reveal flex flex-col items-start gap-6">
+          <div className="flex flex-col items-start gap-6">
             <Eyebrow>{home.dna.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
               {home.dna.headline}
@@ -199,7 +199,7 @@ export default function HomePage() {
       {/* Block 7, research teaser */}
       <section className="bg-parchment py-16 md:py-40">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <div className="reveal flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
             <Eyebrow>{home.research.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
               {home.research.headline}
@@ -219,7 +219,7 @@ export default function HomePage() {
       {/* Block 8, find */}
       <section className="relative overflow-hidden bg-bone">
         <div className="mx-auto grid max-w-content grid-cols-1 items-center gap-10 px-page-margin-mobile py-16 md:grid-cols-2 md:gap-16 md:px-page-margin md:py-40">
-          <div className="reveal order-2 flex flex-col items-start gap-6 md:order-1">
+          <div className="order-2 flex flex-col items-start gap-6 md:order-1">
             <Eyebrow>{home.find.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
               {home.find.headline}
@@ -231,7 +231,7 @@ export default function HomePage() {
           <Placeholder
             family={home.placeholders.find.family}
             alt={home.placeholders.find.alt}
-            className="reveal order-1 aspect-[4/3] md:order-2"
+            className="order-1 aspect-[4/3] md:order-2"
           />
         </div>
       </section>

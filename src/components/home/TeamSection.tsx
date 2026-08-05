@@ -18,7 +18,7 @@ export function TeamSection() {
   return (
     <section className="bg-bone py-16 md:py-40">
       <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-        <div className="reveal flex flex-col gap-6 border-b border-hairline pb-8 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-6 border-b border-hairline pb-8 md:flex-row md:items-end md:justify-between">
           <div className="flex flex-col gap-4">
             <Eyebrow>{home.team.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
@@ -34,7 +34,7 @@ export function TeamSection() {
           {team.map((member, index) => (
             <article
               key={member.name}
-              className={`reveal flex flex-col items-start gap-6 border-t border-hairline pt-8 md:col-span-5 ${
+              className={`flex flex-col items-start gap-6 border-t border-hairline pt-8 md:col-span-5 ${
                 index === 1 ? 'md:col-start-8' : ''
               }`}
             >

@@ -15,7 +15,7 @@ export function TwoInputsBand() {
     <section className="bg-parchment py-16 md:py-24">
       <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:gap-0">
-          <div className="reveal flex flex-col items-start gap-6 md:col-span-5">
+          <div className="flex flex-col items-start gap-6 md:col-span-5">
             <Eyebrow>{home.twoInputs.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
               {home.twoInputs.headline}
@@ -27,7 +27,7 @@ export function TwoInputsBand() {
               {home.twoInputs.cta}
             </ButtonLink>
           </div>
-          <div className="reveal flex flex-col md:col-start-7 md:col-span-6">
+          <div className="flex flex-col md:col-start-7 md:col-span-6">
             {home.twoInputs.entries.map((entry, index) => (
               <div
                 key={entry.heading}
