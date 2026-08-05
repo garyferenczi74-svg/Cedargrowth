@@ -3,6 +3,7 @@ import { Newsreader, Inter_Tight, IBM_Plex_Mono } from 'next/font/google';
 import { Shell } from '@/components/shell/Shell';
 import { AgeGate } from '@/components/shell/AgeGate';
 import { ReservationProvider } from '@/components/reserve/ReservationProvider';
+import { MotionProvider } from '@/components/motion/MotionProvider';
 import { isAgeGateEnabled } from '@/lib/flags';
 import '../../tokens.css';
 import './globals.css';
@@ -59,9 +60,11 @@ export default function RootLayout({
           NEXT_PUBLIC_AGE_GATE_ENABLED on without an explicit go-ahead.
         */}
         {isAgeGateEnabled() ? <AgeGate /> : null}
-        <ReservationProvider>
-          <Shell>{children}</Shell>
-        </ReservationProvider>
+        <MotionProvider>
+          <ReservationProvider>
+            <Shell>{children}</Shell>
+          </ReservationProvider>
+        </MotionProvider>
       </body>
     </html>
   );
