@@ -65,10 +65,10 @@ export const PIGMENT_MARK: Record<Line['pigment'], string> = {
 };
 
 // The five absences (Section 6.1 Block 4).
-export const ABSENCES = [
-  'No solvents.',
-  'No distillate.',
-  'No additives.',
-  'No fillers.',
-  'No shortcuts.',
+export const ABSENCES: { label: string; ceiling: number }[] = [
+  { label: 'No solvents.', ceiling: 12 },
+  { label: 'No distillate.', ceiling: 12 },
+  { label: 'No additives.', ceiling: 12 },
+  { label: 'No fillers.', ceiling: 12 },
+  { label: 'No shortcuts.', ceiling: 12 },
 ];

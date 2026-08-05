@@ -139,14 +139,14 @@ export default function HomePage() {
       <section className="bg-ink py-16 md:py-24">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
           <ul className="reveal grid grid-cols-1 border-t border-hairline-inverse sm:grid-cols-3 md:grid-cols-5">
-            {ABSENCES.map((label) => (
+            {ABSENCES.map((item) => (
               <li
-                key={label}
+                key={item.label}
                 className="flex flex-col gap-3 border-b border-hairline-inverse py-8 md:border-b-0 md:border-l md:first:border-l-0 md:pl-6"
               >
                 <span className="font-mono text-data text-inverse/50">00</span>
                 <span className="text-body-l-m md:text-body-l text-inverse">
-                  {label}
+                  {item.label}
                 </span>
               </li>
             ))}
