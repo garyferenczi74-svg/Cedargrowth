@@ -53,12 +53,12 @@ export default function HomePage() {
           first paint, so that fires as an on-load reveal without any
           initial/animate special-casing. */}
       <section className="relative flex min-h-[82vh] flex-col justify-end overflow-hidden bg-ink">
-        <FrameWipe className="absolute inset-0 h-full w-full">
+        <div className="absolute inset-0 h-full w-full">
           <HeroVideo
             src={home.hero.videoSrc}
             className="h-full w-full object-cover"
           />
-        </FrameWipe>
+        </div>
         <div
           className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/45 to-transparent"
           aria-hidden="true"
