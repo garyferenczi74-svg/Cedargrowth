@@ -1,5 +1,5 @@
 'use client';
-import { m, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion, useInView } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import { MOTION } from '@/lib/motion';
 
@@ -32,6 +32,7 @@ export function LineReveal({ text, delay = 0, className }: { text: string; delay
   const measureRef = useRef<HTMLSpanElement>(null);
   const lastW = useRef(-1);
   const [lines, setLines] = useState<string[] | null>(null);
+  const inView = useInView(wrapRef, { once: true, amount: MOTION.viewport.amount });
   useEffect(() => {
     if (reduced) return;
     const wrap = wrapRef.current;
@@ -65,8 +66,8 @@ export function LineReveal({ text, delay = 0, className }: { text: string; delay
       ) : (
         lines.map((line, i) => (
           <span key={line + i} aria-hidden style={{ display: 'block', overflow: 'hidden' }}>
-            <m.span style={{ display: 'block' }} initial={{ y: '100%' }} whileInView={{ y: '0%' }}
-              viewport={MOTION.viewport}
+            <m.span style={{ display: 'block' }} initial={{ y: '100%' }}
+              animate={inView ? { y: '0%' } : { y: '100%' }}
               transition={{ duration: MOTION.duration.base, ease: MOTION.ease, delay: delay + i * MOTION.stagger }}>
               {line}
             </m.span>
