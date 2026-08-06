@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Fragment } from 'react';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { SectionHeader } from '@/components/atoms/SectionHeader';
@@ -9,7 +8,13 @@ import { BatchTeaser } from '@/components/home/BatchTeaser';
 import { HeroVideo } from '@/components/home/HeroVideo';
 import { TwoInputsBand } from '@/components/home/TwoInputsBand';
 import { TeamSection } from '@/components/home/TeamSection';
+import { Rise } from '@/components/motion/Rise';
+import { LineReveal } from '@/components/motion/LineReveal';
+import { RuleDraw } from '@/components/motion/RuleDraw';
+import { Counter } from '@/components/motion/Counter';
+import { FrameWipe } from '@/components/motion/FrameWipe';
 import { LINES, ABSENCES, PIGMENT_MARK } from '@/lib/lines';
+import { MOTION } from '@/lib/motion';
 import { SITE_URL } from '@/lib/site';
 import { home } from '@/content/home';
 
@@ -43,40 +48,54 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <>
-      {/* Block 1, hero */}
+      {/* Block 1, hero. On-load sequence: frame wipe, then eyebrow, headline,
+          subline, and button rise in on a staggered delay ladder. The
+          primitives use whileInView, and the hero sits in the viewport at
+          first paint, so that fires as an on-load reveal without any
+          initial/animate special-casing. */}
       <section className="relative flex min-h-[82vh] flex-col justify-end overflow-hidden bg-ink">
-        <HeroVideo
-          src={home.hero.videoSrc}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        <FrameWipe className="absolute inset-0 h-full w-full">
+          <HeroVideo
+            src={home.hero.videoSrc}
+            className="h-full w-full object-cover"
+          />
+        </FrameWipe>
         <div
           className="absolute inset-0 bg-gradient-to-r from-ink/85 via-ink/45 to-transparent"
           aria-hidden="true"
         />
         <div className="relative mx-auto w-full max-w-content px-page-margin-mobile pb-16 md:px-page-margin md:pb-24">
           <div className="flex max-w-editorial flex-col gap-6">
-            <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
+            <Rise delay={0.2}>
+              <Eyebrow tone="inverse">{home.hero.eyebrow}</Eyebrow>
+            </Rise>
+            {/* LCP element: LineReveal paints the headline text immediately
+                and animates a transform-only mask over it (no opacity:0), so
+                the largest contentful paint is not deferred behind the
+                reveal animation. */}
             <h1 className="font-display text-display-l-m md:text-display-xl text-inverse [text-shadow:0_1px_18px_rgb(28_27_25_/_0.5)]">
-              {home.hero.headlineLines.map((line, index) => (
-                <Fragment key={line}>
-                  {index > 0 && <br />}
-                  {line}
-                </Fragment>
-              ))}
+              <LineReveal
+                text={home.hero.headlineLines.join(' ')}
+                delay={0.32}
+              />
             </h1>
-            <p className="text-body-m-m md:text-body-l text-inverse/90 [text-shadow:0_1px_14px_rgb(28_27_25_/_0.55)]">
-              {home.hero.body}
-            </p>
-            <div>
-              <ButtonLink
-                href="/method"
-                variant="outline"
-                tone="inverse"
-                className="!border-inverse bg-ink/25 backdrop-blur-sm hover:!bg-inverse hover:!text-primary"
-              >
-                {home.hero.cta}
-              </ButtonLink>
-            </div>
+            <Rise delay={0.64}>
+              <p className="text-body-m-m md:text-body-l text-inverse/90 [text-shadow:0_1px_14px_rgb(28_27_25_/_0.55)]">
+                {home.hero.body}
+              </p>
+            </Rise>
+            <Rise delay={0.8}>
+              <div>
+                <ButtonLink
+                  href="/method"
+                  variant="outline"
+                  tone="inverse"
+                  className="!border-inverse bg-ink/25 backdrop-blur-sm hover:!bg-inverse hover:!text-primary"
+                >
+                  {home.hero.cta}
+                </ButtonLink>
+              </div>
+            </Rise>
           </div>
         </div>
       </section>
@@ -135,25 +154,71 @@ export default function HomePage() {
       {/* Section A, the two inputs band */}
       <TwoInputsBand />
 
-      {/* Block 4, the five absences */}
+      {/* Block 4, the five absences centerpiece. The 4 interior verticals
+          between the 5 cells draw simultaneously (RuleDraw, 720ms), then the
+          five counters count down from their ceiling to 00 staggered 80ms
+          apart, each label rises 240ms after its own counter starts, and the
+          trailing line rises in 400ms after the last counter settles. */}
       <section className="bg-ink py-16 md:py-24">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <ul className="grid grid-cols-1 border-t border-hairline-inverse sm:grid-cols-3 md:grid-cols-5">
-            {ABSENCES.map((item) => (
-              <li
-                key={item.label}
-                className="flex flex-col gap-3 border-b border-hairline-inverse py-8 md:border-b-0 md:border-l md:first:border-l-0 md:pl-6"
-              >
-                <span className="font-mono text-data text-inverse/50">00</span>
-                <span className="text-body-l-m md:text-body-l text-inverse">
-                  {item.label}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-8 max-w-editorial text-body-m-m md:text-body-m text-inverse/70">
+          <div className="relative">
+            <ul className="grid grid-cols-1 border-t border-hairline-inverse sm:grid-cols-3 md:grid-cols-5">
+              {ABSENCES.map((item, index) => (
+                <li
+                  key={item.label}
+                  className="flex flex-col gap-3 border-b border-hairline-inverse py-8 md:border-b-0 md:pl-6"
+                >
+                  <Counter
+                    mode="countDown"
+                    from={item.ceiling}
+                    to={0}
+                    pad={2}
+                    delay={MOTION.duration.slow + index * MOTION.stagger}
+                    className="font-mono text-data text-inverse/50"
+                  />
+                  <Rise
+                    delay={
+                      MOTION.duration.slow +
+                      index * MOTION.stagger +
+                      MOTION.duration.fast
+                    }
+                    className="text-body-l-m md:text-body-l text-inverse"
+                  >
+                    {item.label}
+                  </Rise>
+                </li>
+              ))}
+            </ul>
+            {/* Exactly 4 interior verticals for the 5 cells, md+ only
+                (matches the ul's own grid-cols-5, no gap, so each rule sits
+                flush on a real column boundary and never doubles the old
+                static border). */}
+            <div
+              className="pointer-events-none absolute inset-0 hidden md:grid md:grid-cols-5"
+              aria-hidden="true"
+            >
+              {[0, 1, 2, 3].map((i) => (
+                <div key={i} className="relative" style={{ gridColumnStart: i + 1 }}>
+                  <RuleDraw
+                    axis="y"
+                    duration={MOTION.duration.slow}
+                    className="absolute right-0 top-0 h-full w-px bg-hairline-inverse"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+          <Rise
+            delay={
+              MOTION.duration.slow +
+              4 * MOTION.stagger +
+              MOTION.duration.settle +
+              0.4
+            }
+            className="mt-8 max-w-editorial text-body-m-m md:text-body-m text-inverse/70"
+          >
             {home.absences.trailing}
-          </p>
+          </Rise>
         </div>
       </section>
 
