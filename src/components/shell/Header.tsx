@@ -17,6 +17,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchNotice, setSearchNotice] = useState('');
+  const [scrolled, setScrolled] = useState(false);
   const { count, hydrated } = useReservation();
   const reserveCount = hydrated ? count : 0;
 
@@ -48,6 +49,15 @@ export function Header() {
     };
     document.addEventListener('pointerdown', onDown);
     return () => document.removeEventListener('pointerdown', onDown);
+  }, []);
+
+  // Bottom hairline draws in once the page has scrolled past the header. The
+  // header itself never resizes or slides, only the hairline's scaleX moves.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const onNavKeyDown = (e: React.KeyboardEvent) => {
@@ -290,6 +300,18 @@ export function Header() {
       ) : null}
 
       <MobileMenu open={mobileOpen} onClose={closeMobile} />
+
+      {/*
+        Scroll indicator hairline. Always present at 1px height so the header
+        never changes height; only its horizontal scale animates, drawn in
+        from the left edge over 240ms once the page scrolls past the header.
+      */}
+      <div
+        aria-hidden="true"
+        className={`h-px w-full origin-left bg-hairline transition-transform duration-hover ease-cedar motion-reduce:transition-none ${
+          scrolled ? 'scale-x-100' : 'scale-x-0'
+        }`}
+      />
     </header>
   );
 }

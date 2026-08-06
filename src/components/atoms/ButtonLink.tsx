@@ -26,10 +26,11 @@ export function ButtonLink({
 
   let variantClasses = '';
   if (variant === 'solid') {
+    // Background lightens one step on hover/focus, no lift, no scale.
     variantClasses =
       tone === 'inverse'
-        ? 'bg-parchment text-primary px-6 py-4'
-        : 'bg-ink text-inverse px-6 py-4';
+        ? 'bg-parchment text-primary px-6 py-4 hover:bg-clinical focus-visible:bg-clinical'
+        : 'bg-ink text-inverse px-6 py-4 hover:bg-secondary focus-visible:bg-secondary';
   } else if (variant === 'outline') {
     variantClasses =
       tone === 'inverse'
