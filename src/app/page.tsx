@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
-import { SectionHeader } from '@/components/atoms/SectionHeader';
 import { ButtonLink } from '@/components/atoms/ButtonLink';
 import { BatchTeaser } from '@/components/home/BatchTeaser';
 import { HeroVideo } from '@/components/home/HeroVideo';
@@ -100,20 +99,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Block 2, position statement */}
+      {/* Block 2, position statement. SectionHeader wraps `sub` in a <p>, so
+          Rise (which renders a div) cannot go through that prop without
+          nesting a div inside a p (invalid HTML, hydration mismatch). This
+          block is inlined with SectionHeader's own default classes
+          (as="h2", align="center", tone="light") so the body copy can be a
+          Rise div directly, matching how Task 11+15 already swapped a
+          static <p> for a Rise div in the five-absences trailing line. */}
       <section className="bg-parchment py-16 md:py-40">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <SectionHeader
-            className="mx-auto"
-            headline={home.position.headline}
-            sub={
-              <>
-                {home.position.sub}
-                <br />
-                {home.position.subDetail}
-              </>
-            }
-          />
+          <div className="mx-auto flex flex-col items-center gap-4 text-center">
+            <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
+              <LineReveal text={home.position.headline} />
+            </h2>
+            <Rise
+              delay={0.16}
+              className="max-w-editorial text-body-m-m md:text-body-l text-secondary"
+            >
+              {home.position.sub}
+              <br />
+              {home.position.subDetail}
+            </Rise>
+          </div>
         </div>
       </section>
 
@@ -122,28 +129,40 @@ export default function HomePage() {
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
           <Eyebrow className="mb-10">{home.fiveLines.eyebrow}</Eyebrow>
           <ul className="flex snap-x snap-mandatory gap-6 overflow-x-auto pb-2 md:grid md:grid-cols-5 md:overflow-visible">
-            {LINES.map((line) => (
+            {LINES.map((line, i) => (
               <li
                 key={line.key}
                 className="min-w-[70%] snap-start sm:min-w-[42%] md:min-w-0"
               >
                 <Link href={line.href} className="group block">
-                  <Placeholder
-                    family={home.placeholders.fiveLines.family}
-                    alt={home.placeholders.fiveLines.altFor(line.name)}
-                    className="aspect-[3/4]"
-                    label={false}
-                  />
-                  <div
+                  {/* Border moves from Placeholder's own static edge onto
+                      FrameWipe's className so the wipe reveals the border
+                      instead of doubling it (bordered={false} below drops
+                      Placeholder's internal border-hairline). */}
+                  <FrameWipe
+                    delay={i * 0.08}
+                    className="aspect-[3/4] border border-hairline"
+                  >
+                    <Placeholder
+                      family={home.placeholders.fiveLines.family}
+                      alt={home.placeholders.fiveLines.altFor(line.name)}
+                      className="h-full w-full"
+                      label={false}
+                      bordered={false}
+                    />
+                  </FrameWipe>
+                  <RuleDraw
+                    delay={i * 0.08 + 0.24}
                     className={`mt-4 h-[3px] w-10 ${PIGMENT_MARK[line.pigment]}`}
-                    aria-hidden="true"
                   />
-                  <h3 className="mt-4 font-display text-heading-s-m md:text-heading-s text-primary">
-                    {line.name}
-                  </h3>
-                  <p className="mt-1 text-body-m-m md:text-body-m text-secondary">
-                    {line.descriptor}
-                  </p>
+                  <Rise delay={i * 0.08}>
+                    <h3 className="mt-4 font-display text-heading-s-m md:text-heading-s text-primary">
+                      {line.name}
+                    </h3>
+                    <p className="mt-1 text-body-m-m md:text-body-m text-secondary">
+                      {line.descriptor}
+                    </p>
+                  </Rise>
                 </Link>
               </li>
             ))}
@@ -269,10 +288,18 @@ export default function HomePage() {
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
               {home.research.headline}
             </h2>
-            <div className="border-t border-hairline py-8">
-              <p className="text-body-m-m md:text-body-m text-tertiary">
-                {home.research.emptyNote}
-              </p>
+            {/* Single empty-state row (no published research entries exist
+                in content yet, so there is no repeating list of dated
+                items and no date field to run through Resolve). The
+                border-t moves off the div and onto its own RuleDraw so the
+                hairline draws instead of appearing static. */}
+            <div className="pb-8">
+              <RuleDraw delay={0} className="h-px w-full bg-hairline" />
+              <Rise delay={0} className="pt-8">
+                <p className="text-body-m-m md:text-body-m text-tertiary">
+                  {home.research.emptyNote}
+                </p>
+              </Rise>
             </div>
             <ButtonLink href="/research" variant="ghost">
               {home.research.cta}
@@ -286,18 +313,29 @@ export default function HomePage() {
         <div className="mx-auto grid max-w-content grid-cols-1 items-center gap-10 px-page-margin-mobile py-16 md:grid-cols-2 md:gap-16 md:px-page-margin md:py-40">
           <div className="order-2 flex flex-col items-start gap-6 md:order-1">
             <Eyebrow>{home.find.eyebrow}</Eyebrow>
-            <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
-              {home.find.headline}
-            </h2>
-            <ButtonLink href="/find" variant="outline">
-              {home.find.cta}
-            </ButtonLink>
+            <Rise delay={0}>
+              <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
+                {home.find.headline}
+              </h2>
+            </Rise>
+            <Rise delay={0.16}>
+              <ButtonLink href="/find" variant="outline">
+                {home.find.cta}
+              </ButtonLink>
+            </Rise>
           </div>
-          <Placeholder
-            family={home.placeholders.find.family}
-            alt={home.placeholders.find.alt}
-            className="order-1 aspect-[4/3] md:order-2"
-          />
+          {/* Same border approach as the five-lines cards: border moves onto
+              FrameWipe's className, Placeholder's internal border dropped via
+              bordered={false} so the wipe reveals it once instead of
+              doubling it. */}
+          <FrameWipe className="order-1 aspect-[4/3] border border-hairline md:order-2">
+            <Placeholder
+              family={home.placeholders.find.family}
+              alt={home.placeholders.find.alt}
+              className="h-full w-full"
+              bordered={false}
+            />
+          </FrameWipe>
         </div>
       </section>
     </>
