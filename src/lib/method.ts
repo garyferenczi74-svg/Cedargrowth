@@ -50,7 +50,7 @@ export const METHOD_STEPS: MethodStep[] = [
     title: 'Rosin pressing',
     body: 'The dried hash is pressed between heated plates, held to a stated temperature and pressure window.',
     video: {
-      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/video_of_the_rosin.mp4',
+      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/rosin%20press.mp4',
     },
     unknownFigure: {
       label: 'Press window',
