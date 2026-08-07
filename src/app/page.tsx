@@ -256,7 +256,7 @@ export default function HomePage() {
       <section className="bg-parchment py-16 md:py-40">
         <div className="mx-auto grid max-w-content grid-cols-1 items-center gap-10 px-page-margin-mobile md:grid-cols-2 md:gap-16 md:px-page-margin">
           {home.placeholders.dna.image ? (
-            <div className="relative mx-auto aspect-[3/4] w-full max-w-[22rem] overflow-hidden">
+            <div className="relative mx-auto aspect-[7/8] w-full max-w-[22rem] overflow-hidden">
               <Image
                 src={home.placeholders.dna.image}
                 alt={home.placeholders.dna.alt}
