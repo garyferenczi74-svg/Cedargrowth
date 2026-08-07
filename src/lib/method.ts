@@ -45,6 +45,8 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '05',
     title: 'Freeze drying',
     body: 'The wet hash is freeze dried to pull water without heat, protecting the terpene profile before it is pressed.',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/dry-sift-1024x576.jpeg',
   },
   {
     n: '06',
