@@ -8,6 +8,7 @@ export type MethodStep = {
   title: string;
   body: string;
   video?: { src: string; poster?: string };
+  image?: string;
   unknownFigure?: { label: string; caption: string };
 };
 
@@ -61,6 +62,8 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '07',
     title: 'Cold cure',
     body: 'The fresh rosin is cold cured until it settles into a stable, homogenous consistency.',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cold%20Cure.jpg',
   },
   {
     n: '08',

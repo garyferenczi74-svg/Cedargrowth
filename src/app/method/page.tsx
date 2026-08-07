@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { HeroVideo } from '@/components/home/HeroVideo';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
@@ -51,6 +52,16 @@ export default function MethodPage() {
                         src={step.video.src}
                         poster={step.video.poster}
                         className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : step.image ? (
+                    <div className="relative aspect-[5/4] overflow-hidden border border-hairline bg-bone">
+                      <Image
+                        src={step.image}
+                        alt={`Process documentary of ${step.title.toLowerCase()}`}
+                        fill
+                        sizes="(min-width: 768px) 40vw, 100vw"
+                        className="object-cover"
                       />
                     </div>
                   ) : (
