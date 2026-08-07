@@ -17,6 +17,9 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '01',
     title: 'Input selection',
     body: 'Only dried and cured sugar trim, 100 percent, selected by hand. Nothing grown for flower is diverted into the wash.',
+    video: {
+      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Sugar%20trim.mp4',
+    },
   },
   {
     n: '02',
