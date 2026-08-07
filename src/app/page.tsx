@@ -255,11 +255,23 @@ export default function HomePage() {
       {/* Block 5, the DNA test */}
       <section className="bg-parchment py-16 md:py-40">
         <div className="mx-auto grid max-w-content grid-cols-1 items-center gap-10 px-page-margin-mobile md:grid-cols-2 md:gap-16 md:px-page-margin">
-          <Placeholder
-            family={home.placeholders.dna.family}
-            alt={home.placeholders.dna.alt}
-            className="aspect-[4/3]"
-          />
+          {home.placeholders.dna.image ? (
+            <div className="relative aspect-[4/3] overflow-hidden">
+              <Image
+                src={home.placeholders.dna.image}
+                alt={home.placeholders.dna.alt}
+                fill
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
+            </div>
+          ) : (
+            <Placeholder
+              family={home.placeholders.dna.family}
+              alt={home.placeholders.dna.alt}
+              className="aspect-[4/3]"
+            />
+          )}
           <div className="flex flex-col items-start gap-6">
             <Eyebrow>{home.dna.eyebrow}</Eyebrow>
             <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">

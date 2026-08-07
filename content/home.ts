@@ -105,6 +105,8 @@ export const home = {
     dna: {
       family: 'process documentary',
       alt: 'Placeholder, process documentary of a sample kit on stainless',
+      image:
+        'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Restore%20asset.jpg',
     },
     find: {
       family: 'map still',
