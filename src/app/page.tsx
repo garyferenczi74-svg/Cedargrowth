@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
@@ -141,15 +142,25 @@ export default function HomePage() {
                       Placeholder's internal border-hairline). */}
                   <FrameWipe
                     delay={i * 0.08}
-                    className="aspect-[3/4] border border-hairline"
+                    className="relative aspect-[3/4] overflow-hidden border border-hairline"
                   >
-                    <Placeholder
-                      family={home.placeholders.fiveLines.family}
-                      alt={home.placeholders.fiveLines.altFor(line.name)}
-                      className="h-full w-full"
-                      label={false}
-                      bordered={false}
-                    />
+                    {line.image ? (
+                      <Image
+                        src={line.image}
+                        alt={home.placeholders.fiveLines.altFor(line.name)}
+                        fill
+                        sizes="(min-width: 768px) 20vw, 70vw"
+                        className="object-cover"
+                      />
+                    ) : (
+                      <Placeholder
+                        family={home.placeholders.fiveLines.family}
+                        alt={home.placeholders.fiveLines.altFor(line.name)}
+                        className="h-full w-full"
+                        label={false}
+                        bordered={false}
+                      />
+                    )}
                   </FrameWipe>
                   <RuleDraw
                     delay={i * 0.08 + 0.24}

@@ -9,6 +9,7 @@ export type Line = {
   descriptor: string;
   pigment: 'rest' | 'relief' | 'focus' | 'calm' | 'restore';
   anchor: string;
+  image?: string;
 };
 
 export const LINES: Line[] = [
@@ -19,6 +20,8 @@ export const LINES: Line[] = [
     descriptor: 'For the hours before sleep.',
     pigment: 'rest',
     anchor: 'Myrcene',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Rest%20Asset.jpg',
   },
   {
     key: 'relief',
@@ -27,6 +30,8 @@ export const LINES: Line[] = [
     descriptor: 'For the body after effort.',
     pigment: 'relief',
     anchor: 'Beta caryophyllene, linalool',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Relief%20Asset.jpg',
   },
   {
     key: 'focus',
@@ -35,6 +40,8 @@ export const LINES: Line[] = [
     descriptor: 'For the clear part of the day.',
     pigment: 'focus',
     anchor: 'Pinene, limonene',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Focus%20Asset.jpg',
   },
   {
     key: 'calm',
@@ -43,6 +50,8 @@ export const LINES: Line[] = [
     descriptor: 'For the room full of people.',
     pigment: 'calm',
     anchor: 'Balanced profile',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Calm%20Asset.jpg',
   },
   {
     key: 'restore',
@@ -51,6 +60,8 @@ export const LINES: Line[] = [
     descriptor: 'For the long return.',
     pigment: 'restore',
     anchor: 'Full spectrum',
+    image:
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Restore%20asset.jpg',
   },
 ];
 
