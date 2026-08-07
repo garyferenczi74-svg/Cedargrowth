@@ -36,6 +36,9 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '04',
     title: 'Collection and sieving',
     body: 'Heads are collected, sieved, and graded. Only the full melt fractions carry through to pressing.',
+    video: {
+      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/Collection%20and%20sieving.mp4',
+    },
   },
   {
     n: '05',
