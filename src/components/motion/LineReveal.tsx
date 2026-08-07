@@ -1,33 +1,19 @@
 'use client';
-import { m, useReducedMotion } from 'framer-motion';
-import { MOTION } from '@/lib/motion';
+import type { CSSProperties } from 'react';
+import { useReveal } from '@/lib/reveal';
 
-// Headline reveal: a transform-based mask driven by variants. The OUTER span is
-// the whileInView trigger and never moves, so it stays in view and fires
-// reliably; the INNER span rolls the headline up from below (translateY 110% to
-// 0) inside the overflow-hidden frame. Triggering from the stable outer element
-// (not the translated inner) makes this reliable regardless of headline size.
-// The text is always in the DOM (LCP-safe, screen-reader and SEO readable).
-// This is a whole-headline roll-up, not a per-line stagger, chosen for
-// reliability after clip-path and per-line masks proved flaky under LazyMotion.
-// Reduced motion shows the text immediately with opacity only.
+// Additive headline reveal: a whole-headline roll-up. The text sits in an
+// overflow-hidden frame and rolls up from below (translateY 110% to 0) when
+// revealed. It renders visible (rolled into place) by default, so if it never
+// reveals the headline is still shown, and the text is always in the DOM
+// (LCP-safe, screen-reader and SEO readable). Whole-headline roll-up rather
+// than per-line stagger, chosen for reliability.
 export function LineReveal({ text, delay = 0, className }: { text: string; delay?: number; className?: string }) {
-  const reduced = useReducedMotion();
-  if (reduced) {
-    return (
-      <m.span className={className} style={{ display: 'block' }} initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }} viewport={MOTION.viewport} transition={{ duration: MOTION.reducedMs }}>
-        {text}
-      </m.span>
-    );
-  }
+  const { ref, revealed } = useReveal<HTMLSpanElement>();
+  const style = { display: 'block', overflow: 'hidden', '--cg-delay': `${Math.round(delay * 1000)}ms` } as CSSProperties;
   return (
-    <m.span className={className} style={{ display: 'block', overflow: 'hidden' }}
-      initial="hidden" whileInView="shown" viewport={MOTION.viewport}>
-      <m.span style={{ display: 'block' }} variants={{ hidden: { y: '110%' }, shown: { y: '0%' } }}
-        transition={{ duration: MOTION.duration.base, ease: MOTION.ease, delay }}>
-        {text}
-      </m.span>
-    </m.span>
+    <span ref={ref} className={`cg-rollup${revealed ? ' cg-in' : ''}${className ? ' ' + className : ''}`} style={style}>
+      <span style={{ display: 'block' }}>{text}</span>
+    </span>
   );
 }

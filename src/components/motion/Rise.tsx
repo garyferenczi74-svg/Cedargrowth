@@ -1,22 +1,15 @@
 'use client';
-import { m, useReducedMotion } from 'framer-motion';
-import type { ReactNode } from 'react';
-import { MOTION } from '@/lib/motion';
+import type { CSSProperties, ReactNode } from 'react';
+import { useReveal } from '@/lib/reveal';
 
+// Additive: renders visible by default; the cg-rise CSS animation plays once
+// when the element is revealed. If it never reveals, content stays visible.
 export function Rise({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) {
-  const reduced = useReducedMotion();
-  if (reduced) {
-    return (
-      <m.div className={className} initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-        viewport={MOTION.viewport} transition={{ duration: MOTION.reducedMs }}>
-        {children}
-      </m.div>
-    );
-  }
+  const { ref, revealed } = useReveal<HTMLDivElement>();
+  const style = { '--cg-delay': `${Math.round(delay * 1000)}ms` } as CSSProperties;
   return (
-    <m.div className={className} initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={MOTION.viewport} transition={{ duration: MOTION.duration.base, ease: MOTION.ease, delay }}>
+    <div ref={ref} className={`cg-rise${revealed ? ' cg-in' : ''}${className ? ' ' + className : ''}`} style={style}>
       {children}
-    </m.div>
+    </div>
   );
 }

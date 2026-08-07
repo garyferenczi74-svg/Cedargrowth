@@ -50,3 +50,54 @@
     }
   }
 }
+
+/*
+  Additive reveal system. Replaces framer-motion whileInView, which was racy
+  under LazyMotion and stranded content hidden. Every element renders visible by
+  default; adding the .cg-in class triggers a one-time enhancement animation. If
+  .cg-in is never added, content stays visible, so nothing can be stranded.
+  --cg-delay and --cg-dur are set per element.
+*/
+@keyframes cgRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes cgRollUp {
+  from { transform: translateY(110%); }
+  to { transform: translateY(0); }
+}
+@keyframes cgDrawX {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes cgDrawY {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.cg-rise.cg-in {
+  animation: cgRise var(--cg-dur, 480ms) var(--ease-cedar) both;
+  animation-delay: var(--cg-delay, 0ms);
+}
+.cg-rollup.cg-in > * {
+  animation: cgRollUp var(--cg-dur, 480ms) var(--ease-cedar) both;
+  animation-delay: var(--cg-delay, 0ms);
+}
+.cg-drawx { transform-origin: left center; }
+.cg-drawx.cg-in {
+  animation: cgDrawX var(--cg-dur, 720ms) var(--ease-cedar) both;
+  animation-delay: var(--cg-delay, 0ms);
+}
+.cg-drawy { transform-origin: top center; }
+.cg-drawy.cg-in {
+  animation: cgDrawY var(--cg-dur, 720ms) var(--ease-cedar) both;
+  animation-delay: var(--cg-delay, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .cg-rise.cg-in,
+  .cg-rollup.cg-in > *,
+  .cg-drawx.cg-in,
+  .cg-drawy.cg-in {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+  }
+}

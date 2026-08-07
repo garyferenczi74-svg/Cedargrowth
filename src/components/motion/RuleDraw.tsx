@@ -1,18 +1,14 @@
 'use client';
-import { m, useReducedMotion } from 'framer-motion';
-import { MOTION } from '@/lib/motion';
+import type { CSSProperties } from 'react';
+import { useReveal } from '@/lib/reveal';
 
-export function RuleDraw({ axis = 'x', delay = 0, duration = MOTION.duration.slow, className = '' }:
+// Additive hairline: renders drawn (full) by default; the scaleX/scaleY draw
+// animation plays once when revealed. If it never reveals, the rule stays drawn.
+export function RuleDraw({ axis = 'x', delay = 0, duration, className }:
   { axis?: 'x' | 'y'; delay?: number; duration?: number; className?: string }) {
-  const reduced = useReducedMotion();
-  const origin = axis === 'x' ? 'left' : 'top';
-  const scaleKey = axis === 'x' ? 'scaleX' : 'scaleY';
-  if (reduced) {
-    return <m.div className={className} style={{ transformOrigin: origin }}
-      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={MOTION.viewport}
-      transition={{ duration: MOTION.reducedMs }} />;
-  }
-  return <m.div className={className} style={{ transformOrigin: origin }}
-    initial={{ [scaleKey]: 0 }} whileInView={{ [scaleKey]: 1 }} viewport={MOTION.viewport}
-    transition={{ duration, ease: MOTION.ease, delay }} />;
+  const { ref, revealed } = useReveal<HTMLDivElement>();
+  const base = axis === 'x' ? 'cg-drawx' : 'cg-drawy';
+  const style = { '--cg-delay': `${Math.round(delay * 1000)}ms` } as CSSProperties;
+  if (duration) (style as Record<string, string>)['--cg-dur'] = `${Math.round(duration * 1000)}ms`;
+  return <div ref={ref} className={`${base}${revealed ? ' cg-in' : ''}${className ? ' ' + className : ''}`} style={style} />;
 }
