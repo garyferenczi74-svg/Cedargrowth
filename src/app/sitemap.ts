@@ -3,10 +3,11 @@ import { SITE_URL } from '@/lib/site';
 import { PRODUCTS } from '@/lib/products';
 import { LINES } from '@/lib/lines';
 
-// Indexable routes only. Every HoldPage route (holdPageMetadata / robots
-// index:false: /dna, /dna/privacy, /research, /find, /about, /account,
+// Indexable routes only. Every remaining HoldPage route (holdPageMetadata /
+// robots index:false: /dna/privacy, /research, /find, /about, /account,
 // /cart, /journal, /contact) and everything under /admin is deliberately
-// excluded. No invented lastmod: a single stable date, not Date.now().
+// excluded. /dna is now a full page (CG Prompt 07) and is indexed.
+// No invented lastmod: a single stable date, not Date.now().
 
 const LAST_MODIFIED = new Date('2026-08-01');
 
@@ -19,6 +20,7 @@ const STATIC_ROUTES = [
   '/wholesale',
   '/faq',
   '/reserve',
+  '/dna',
   '/legal/privacy',
   '/legal/terms',
   '/legal/accessibility',
