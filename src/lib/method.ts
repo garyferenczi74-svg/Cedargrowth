@@ -35,6 +35,9 @@ export const METHOD_STEPS: MethodStep[] = [
     n: '03',
     title: 'Micron filtration',
     body: 'The slurry passes through a graded stack of micron screens, isolating the resin heads by size.',
+    video: {
+      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/Micron%20filtration.mp4',
+    },
   },
   {
     n: '04',
