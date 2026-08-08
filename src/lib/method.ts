@@ -9,10 +9,6 @@ export type MethodStep = {
   body: string;
   video?: { src: string; poster?: string };
   image?: string;
-  // How the image fits its 5:4 frame. Defaults to cover (fills, may crop).
-  // Use contain for portrait or full-composition shots that must not be cropped;
-  // it letterboxes on the bone frame background instead.
-  imageFit?: 'cover' | 'contain';
   unknownFigure?: { label: string; caption: string };
 };
 
@@ -74,8 +70,7 @@ export const METHOD_STEPS: MethodStep[] = [
     title: 'Formulation by line',
     body: 'Cured rosin is formulated into one of the five lines by terpene profile and ratio.',
     image:
-      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cedargrowth%20group%20shot.jpg',
-    imageFit: 'contain',
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cedargrowth%20group%20shot%205x4.jpg',
   },
   {
     n: '08',
