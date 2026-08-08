@@ -70,7 +70,7 @@ export const METHOD_STEPS: MethodStep[] = [
     title: 'Formulation by line',
     body: 'Cured rosin is formulated into one of the five lines by terpene profile and ratio.',
     image:
-      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cedargrowth%20group%20shot%205x4.jpg',
+      'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cedargrowth%20group%20shot%205x4.jpg?v=2',
   },
   {
     n: '08',
