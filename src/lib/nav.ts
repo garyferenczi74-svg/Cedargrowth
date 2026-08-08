@@ -87,29 +87,9 @@ export const PRIMARY_NAV: NavItem[] = [
       alt: 'Placeholder, specimen plate of a rosin pressing on bone',
     },
   },
-  {
-    label: 'DNA Test',
-    href: '/dna',
-    columns: [
-      {
-        heading: 'The test',
-        links: [
-          { label: 'How it works', href: '/dna' },
-          { label: 'The thirteen traits', href: '/dna' },
-          { label: 'Sample report', href: '/dna' },
-          { label: 'Privacy', href: '/dna' },
-        ],
-      },
-      {
-        heading: 'Overview',
-        links: [{ label: 'The Cannabis DNA Test', href: '/dna' }],
-      },
-    ],
-    specimen: {
-      family: 'process documentary',
-      alt: 'Placeholder, process documentary of a sample kit on stainless',
-    },
-  },
+  // Direct link to the full DNA page, no mega panel (the page carries its own
+  // sections, so a dropdown of anchors is redundant).
+  { label: 'DNA Test', href: '/dna' },
   {
     label: 'Research',
     href: '/research',
