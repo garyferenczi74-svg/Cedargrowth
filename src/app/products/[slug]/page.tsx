@@ -116,7 +116,7 @@ export default function ProductPage({ params }: Params) {
           <div className="reveal flex max-w-editorial flex-col gap-6">
             <Eyebrow>How it is made</Eyebrow>
             <p className="text-body-m-m md:text-body-l text-secondary">
-              Pressed from ice water hash, freeze dried, and cold cured. Nine
+              Pressed from ice water hash, freeze dried, and cold cured. Eight
               steps, no hydrocarbons, no distillate. Every batch is verified by
               an independent laboratory before it is released.
             </p>

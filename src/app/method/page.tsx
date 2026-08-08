@@ -13,7 +13,7 @@ import {
 export const metadata: Metadata = {
   title: 'Method',
   description:
-    'From trim to rosin. The nine step solventless protocol, written like a protocol document.',
+    'From trim to rosin. The eight step solventless protocol, written like a protocol document.',
 };
 
 export default function MethodPage() {
@@ -28,7 +28,7 @@ export default function MethodPage() {
               From trim to rosin.
             </h1>
             <p className="text-body-m-m md:text-body-l text-secondary">
-              A protocol document, not a story. Nine sequential steps, each one
+              A protocol document, not a story. Eight sequential steps, each one
               stated plainly, from the input material to the third-party
               Certificate of Analysis.
             </p>
@@ -36,7 +36,7 @@ export default function MethodPage() {
         </div>
       </section>
 
-      {/* Nine steps */}
+      {/* Eight steps */}
       <section className="bg-parchment pb-16 md:pb-24">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
           <ol>

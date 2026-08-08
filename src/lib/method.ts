@@ -1,5 +1,5 @@
-// The nine step protocol (Section 6.2). Copy is production intent in the house
-// register, formulation and process only, no physiological claims. Step 06
+// The eight step protocol (Section 6.2). Copy is production intent in the house
+// register, formulation and process only, no physiological claims. Step 05
 // names a temperature and pressure window, but the figures are not confirmed
 // here, so they render as UNKNOWN rather than an invented number.
 
@@ -33,14 +33,6 @@ export const METHOD_STEPS: MethodStep[] = [
   },
   {
     n: '03',
-    title: 'Micron filtration',
-    body: 'The slurry passes through a graded stack of micron screens, isolating the resin heads by size.',
-    video: {
-      src: 'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Videos/Micron%20filtration.mp4',
-    },
-  },
-  {
-    n: '04',
     title: 'Collection and sieving',
     body: 'Heads are collected, sieved, and graded. Only the full melt fractions carry through to pressing.',
     video: {
@@ -48,14 +40,14 @@ export const METHOD_STEPS: MethodStep[] = [
     },
   },
   {
-    n: '05',
+    n: '04',
     title: 'Freeze drying',
     body: 'The wet hash is freeze dried to pull water without heat, protecting the terpene profile before it is pressed.',
     image:
       'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/dry-sift-1024x576.jpeg',
   },
   {
-    n: '06',
+    n: '05',
     title: 'Rosin pressing',
     body: 'The dried hash is pressed between heated plates, held to a stated temperature and pressure window.',
     video: {
@@ -67,19 +59,19 @@ export const METHOD_STEPS: MethodStep[] = [
     },
   },
   {
-    n: '07',
+    n: '06',
     title: 'Cold cure',
     body: 'The fresh rosin is cold cured until it settles into a stable, homogenous consistency.',
     image:
       'https://gncuknpulgzqnpxtxtry.supabase.co/storage/v1/object/public/Hero%20Images/Cold%20Cure.jpg',
   },
   {
-    n: '08',
+    n: '07',
     title: 'Formulation by line',
     body: 'Cured rosin is formulated into one of the five lines by terpene profile and ratio.',
   },
   {
-    n: '09',
+    n: '08',
     title: 'Third-party verification',
     body: 'Every batch is sent to an independent laboratory. Nothing ships before its Certificate of Analysis is complete.',
   },
