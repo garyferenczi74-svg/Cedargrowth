@@ -61,7 +61,11 @@ export default function MethodPage() {
                         alt={`Process documentary of ${step.title.toLowerCase()}`}
                         fill
                         sizes="(min-width: 768px) 40vw, 100vw"
-                        className="object-cover"
+                        className={
+                          step.imageFit === 'contain'
+                            ? 'object-contain'
+                            : 'object-cover'
+                        }
                       />
                     </div>
                   ) : (
