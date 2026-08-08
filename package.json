@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-research-terms.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "check:research": "node scripts/check-research-terms.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

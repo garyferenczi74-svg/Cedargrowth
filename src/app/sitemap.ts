@@ -4,9 +4,11 @@ import { PRODUCTS } from '@/lib/products';
 import { LINES } from '@/lib/lines';
 
 // Indexable routes only. Every remaining HoldPage route (holdPageMetadata /
-// robots index:false: /dna/privacy, /research, /find, /about, /account,
-// /cart, /journal, /contact) and everything under /admin is deliberately
-// excluded. /dna is now a full page (CG Prompt 07) and is indexed.
+// robots index:false: /dna/privacy, /research/practitioner, /find, /about,
+// /account, /cart, /journal, /contact) and everything under /admin is
+// deliberately excluded. /dna (CG Prompt 07) and the /research library
+// (CG Prompt 08) are full pages and are indexed. The note articles that are
+// still COPY PENDING shells are excluded until they carry real copy.
 // No invented lastmod: a single stable date, not Date.now().
 
 const LAST_MODIFIED = new Date('2026-08-01');
@@ -21,6 +23,11 @@ const STATIC_ROUTES = [
   '/faq',
   '/reserve',
   '/dna',
+  '/research',
+  '/research/terpenes',
+  '/research/ecs',
+  '/research/cannabinoids',
+  '/research/notes',
   '/legal/privacy',
   '/legal/terms',
   '/legal/accessibility',

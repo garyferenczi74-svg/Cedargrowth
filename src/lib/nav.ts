@@ -39,8 +39,8 @@ export const PRIMARY_NAV: NavItem[] = [
       {
         heading: 'Understand',
         links: [
-          { label: 'Terpene index', href: '/research' },
-          { label: 'The endocannabinoid system', href: '/research' },
+          { label: 'Terpene index', href: '/research/terpenes' },
+          { label: 'The endocannabinoid system', href: '/research/ecs' },
           { label: 'FAQ', href: '/faq' },
         ],
       },
@@ -97,13 +97,14 @@ export const PRIMARY_NAV: NavItem[] = [
       {
         heading: 'Pillars',
         links: [
-          { label: 'Terpene index', href: '/research' },
-          { label: 'The endocannabinoid system', href: '/research' },
+          { label: 'Terpene index', href: '/research/terpenes' },
+          { label: 'The endocannabinoid system', href: '/research/ecs' },
+          { label: 'The cannabinoid index', href: '/research/cannabinoids' },
         ],
       },
       {
         heading: 'Notes',
-        links: [{ label: 'All research notes', href: '/research' }],
+        links: [{ label: 'All research notes', href: '/research/notes' }],
       },
     ],
     specimen: {
