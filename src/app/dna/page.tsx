@@ -118,9 +118,15 @@ export default function DnaPage() {
             >
               <LineReveal text={domain.title} />
             </h2>
-            <Rise delay={0.12} className="mt-4 max-w-editorial text-body-m-m md:text-body-l text-secondary">
-              {domain.explanation}
-            </Rise>
+            {domain.explanation ? (
+              <Rise delay={0.12} className="mt-4 max-w-editorial text-body-m-m md:text-body-l text-secondary">
+                {domain.explanation}
+              </Rise>
+            ) : (
+              <p className="mt-4 font-mono text-specimen uppercase tracking-specimen text-tertiary">
+                PENDING CLINICAL REVIEW
+              </p>
+            )}
             <div className="mt-10">
               <RuleDraw className="mb-0 h-px w-full bg-hairline" />
               <MarkerTable domain={domain} />
