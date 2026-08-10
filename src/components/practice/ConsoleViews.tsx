@@ -95,7 +95,7 @@ export function ConsoleViews({ docs, drift }: { docs: ConsoleDoc[]; drift: Drift
           <Empty text="NO PEOPLE" />
           <p className="text-body-m-m md:text-body-m text-secondary">
             One row per person: role, assignments outstanding, oldest overdue item, last sign-in. A
-            row opens the person's full record, identical to the record they see themselves.
+            row opens their full record, identical to the record they see themselves.
           </p>
         </Panel>
       ) : null}
