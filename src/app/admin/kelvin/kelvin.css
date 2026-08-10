@@ -23,6 +23,7 @@
   --k-genomics: #3B4457;
   --k-security: #A8761C;
   --k-editorial: #6B5340;
+  --k-warrant: #3F6B4A;
   --k-font-title: var(--font-newsreader), Georgia, serif;
   --k-font-ui: var(--font-inter-tight), system-ui, sans-serif;
   --k-font-mono: var(--font-ibm-plex-mono), ui-monospace, Menlo, monospace;
@@ -59,6 +60,7 @@
   --k-genomics: #7481A0;
   --k-security: #CDA24C;
   --k-editorial: #A98C6E;
+  --k-warrant: #5FA772;
 }
 .kelvin-root *,
 .kelvin-root *::before,

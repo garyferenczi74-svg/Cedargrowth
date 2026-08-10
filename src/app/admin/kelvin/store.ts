@@ -11,7 +11,9 @@ export type EventType =
   | 'TUNING'
   | 'DRAFT'
   | 'AUDIT'
-  | 'DECISION';
+  | 'DECISION'
+  | 'ASSIGNMENT'
+  | 'DRIFT';
 
 export type KEvent = {
   id: number;
@@ -58,6 +60,8 @@ export const EVENT_TYPES: EventType[] = [
   'DRAFT',
   'AUDIT',
   'DECISION',
+  'ASSIGNMENT',
+  'DRIFT',
 ];
 
 export const WINGS: WingDef[] = [
@@ -79,6 +83,7 @@ export const WINGS: WingDef[] = [
   { id: 'evidence', label: 'Evidence', accent: '--k-evidence', routes: ['batches', 'coa-intake', 'publishing', 'terpenes', 'laboratories', 'archive'] },
   { id: 'genomics', label: 'Genomics', accent: '--k-genomics', routes: ['kits', 'fulfillment', 'lab-status', 'consent', 'delivery', 'metrics'] },
   { id: 'security', label: 'Security', accent: '--k-security', routes: ['monitors', 'findings', 'incidents', 'rules', 'waivers', 'audit', 'precheck', 'vendors'] },
+  { id: 'warrant', label: 'WARRANT', accent: '--k-warrant', routes: ['overview', 'decisions', 'blocked', 'review', 'drift', 'authority'] },
   { id: 'editorial', label: 'Editorial', accent: '--k-editorial', routes: ['overview', 'research', 'drafts', 'clearance', 'approval', 'schedule', 'published'] },
 ];
 
@@ -90,6 +95,7 @@ export const AGENTS: Agent[] = [
   { id: 'VERNIER', fn: 'Release management and tuning', status: 'ACTIVE', task: 'Filed a contrast tuning proposal. rc-003 holding at the release gate.', errors: 0, recs: ['Raise tertiary text to AA at body sizes.'] },
   { id: 'SENTINEL', fn: 'Security, compliance, clearance', status: 'HOLDING', task: 'Held a preview build. Age gate rendered after content on one route. P0.', errors: 1, recs: ['Do not promote the held build until the gate order is corrected.'] },
   { id: 'APERTURE', fn: 'Content and editorial', status: 'ACTIVE', task: 'Holding the cold cure research note for an originality check.', errors: 0, recs: [] },
+  { id: 'APEX', fn: 'Training records, drift detection, assignment', status: 'ACTIVE', task: 'Caught PROC-002 revised to v2.0. Re-acknowledgment assigned to nine, due in seven days.', errors: 0, recs: ['One assessment completed in 41 seconds, below plausible time. Flagged for review.'] },
 ];
 
 export const SEED_EVENTS: KEvent[] = [
@@ -105,6 +111,10 @@ export const SEED_EVENTS: KEvent[] = [
   { id: 10, agent: 'LITMUS', time: '11:02', type: 'GATE', summary: 'rc-003 returned to VERNIER', sub: 'First gate clean. Held at the release gate for the tuning decision.' },
   { id: 11, agent: 'FOUNDRY', time: '13:15', type: 'BUILD', summary: 'Preview build minted for rc-004', sub: 'Immutable URL issued. Handed to LITMUS for the first gate.' },
   { id: 12, agent: 'SENTINEL', time: '15:40', type: 'AUDIT', summary: 'Clearance log reconciled', sub: 'Every clearance in the last cycle traced to a named gate.' },
+  { id: 13, agent: 'APEX', time: '07:15', type: 'DRIFT', summary: 'CGO-SOP-PROC-002 revised to v2.0', sub: 'Nine acknowledgments now against a superseded version.', wing: 'warrant' },
+  { id: 14, agent: 'APEX', time: '07:16', type: 'ASSIGNMENT', summary: 'Re-acknowledgment assigned to nine', sub: 'Reason: SOP revised to v2.0. Due in seven days.', wing: 'warrant' },
+  { id: 15, agent: 'APEX', time: '09:00', type: 'AUDIT', summary: 'Daily training audit filed', sub: 'Four items overdue. One certification expires in eleven days.', wing: 'warrant' },
+  { id: 16, agent: 'APEX', time: '11:30', type: 'ALERT', summary: 'Assessment completed in 41 seconds', sub: 'Below plausible completion time. Flagged for review.', wing: 'warrant' },
 ];
 
 export const SEED_REVIEW: ReviewItem[] = [
@@ -175,6 +185,8 @@ const TICK_SUMMARIES: Record<EventType, string[]> = {
   DRAFT: ['Research note advanced to clearance', 'Draft returned for one revision'],
   AUDIT: ['Clearance log reconciled', 'Routing table checked against the roster'],
   DECISION: ['Queue item carried forward', 'Reference line rebalanced the day'],
+  ASSIGNMENT: ['Re-acknowledgment assigned on a revised procedure', 'Training item assigned with a due date and a reason'],
+  DRIFT: ['Acknowledgments now sit against a superseded version', 'Reassignment volume moved beyond its trailing baseline'],
 };
 
 export function mintEvent(nextId: number, agentFilter: string | null, typeFilter: EventType | null): KEvent {

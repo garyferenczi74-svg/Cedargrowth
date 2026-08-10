@@ -6,6 +6,7 @@ import ProductionWing from './wings/ProductionWing';
 import EvidenceWing from './wings/EvidenceWing';
 import GenomicsWing from './wings/GenomicsWing';
 import SecurityWing from './wings/SecurityWing';
+import WarrantWing from './wings/WarrantWing';
 import EditorialWing from './wings/EditorialWing';
 import CommandExtras from './CommandExtras';
 import {
@@ -265,6 +266,8 @@ export default function KelvinConsole() {
             <GenomicsWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : wing === 'security' ? (
             <SecurityWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
+          ) : wing === 'warrant' ? (
+            <WarrantWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : wing === 'editorial' ? (
             <EditorialWing view={view} addEvent={addEvent} flash={flash} now={nowTime} />
           ) : (
