@@ -58,6 +58,35 @@ export default function EcsPage() {
             </section>
           ))}
 
+          {/* The endocannabinoids: made by the body, not the plant. */}
+          <section className="flex flex-col gap-3 border-t border-hairline pt-8">
+            <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
+              The endocannabinoids
+            </h2>
+            <p className="text-body-m-m md:text-body-l text-secondary">
+              These are the cannabinoids the body makes for itself. They sit here rather than in the
+              cannabinoid index because the plant does not produce them.
+            </p>
+            <ul className="border-t border-hairline">
+              {ECS.endocannabinoids.map((e) => (
+                <li
+                  key={e.symbol}
+                  className="grid grid-cols-1 gap-1 border-b border-hairline py-4 md:grid-cols-[7rem_1fr] md:gap-6"
+                >
+                  <span className="font-mono text-data uppercase tracking-specimen text-primary">
+                    {e.symbol}
+                  </span>
+                  <span className="text-body-m-m md:text-body-m text-secondary">
+                    {e.name}. {e.note}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
+              SOURCES CITATION PENDING
+            </p>
+          </section>
+
           {/* References */}
           <section className="mt-6 border-t border-hairline pt-8">
             <h2 className="mb-4 font-mono text-specimen uppercase tracking-specimen text-tertiary">
