@@ -35,9 +35,14 @@ Set these where Practice runs (server env, not committed):
 - `SUPABASE_SECRET_KEY` (server only; never reaches the browser)
 - The publishable/anon key for the auth client (client sign-in), server-scoped
   via the SSR cookie flow.
+- `PRACTICE_ENABLED=true`. Set this LAST, only after the migration is applied and
+  Auth and MFA are configured. It is a dedicated flag on purpose: the marketing
+  site already sets the Supabase URL and secret key for other endpoints, so
+  Practice must not treat their mere presence as being provisioned.
 
-`isPracticeConfigured()` gates on the first two. With them absent the public site
-is unaffected and Practice renders its unavailable state.
+`isPracticeConfigured()` requires `PRACTICE_ENABLED=true` and the Supabase env.
+Until it is set, the public site is unaffected and Practice renders its
+unavailable state.
 
 ## 4. Verify RLS (report both results)
 

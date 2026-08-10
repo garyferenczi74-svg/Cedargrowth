@@ -104,10 +104,19 @@ export class MockPracticeStore implements PracticeStore {
   }
 }
 
-// Whether a real Supabase backend is configured. The public site builds and
-// deploys with these absent; Practice then reports itself unavailable.
+// Whether Practice is provisioned and enabled. This is deliberately a dedicated
+// flag, not the shared Supabase env: the marketing site already sets
+// NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY for the capture and reserve
+// endpoints, so gating on those would show a sign-in for a system that has no
+// tables or Auth yet. The owner sets PRACTICE_ENABLED=true only after applying
+// the migration and configuring Auth and MFA (see docs/practice-supabase-setup).
+// Until then Practice reports itself unavailable and the public site is
+// unaffected.
 export function isPracticeConfigured(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SECRET_KEY);
+  return (
+    process.env.PRACTICE_ENABLED === 'true' &&
+    Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SECRET_KEY)
+  );
 }
 
 // The Supabase-backed store is provisioned once the owner applies the migration
