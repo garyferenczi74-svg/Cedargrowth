@@ -18,6 +18,7 @@ import type {
   Person,
 } from './types';
 import { nextEntry } from './audit';
+import { SEED_DOCUMENTS, SEED_VERSIONS } from './seed';
 
 export type NewAudit = {
   kind: AuditEntry['kind'];
@@ -126,4 +127,28 @@ export function getSupabasePracticeStore(): PracticeStore {
   throw new Error(
     'Practice Supabase store is not provisioned. Apply supabase/migrations and configure Auth and MFA first.',
   );
+}
+
+// Access mode for the Practice screens.
+//  live    : provisioned (PRACTICE_ENABLED plus Supabase env). Uses Supabase.
+//  preview : PRACTICE_PREVIEW=true. Renders the structure against the empty mock
+//            (seeded only with the known controlled documents) so the interface
+//            can be reviewed without provisioning. No auth, no real records.
+//  off     : neither. Screens redirect to the /practice unavailable door.
+export type PracticeMode = 'live' | 'preview' | 'off';
+
+export function practiceMode(): PracticeMode {
+  if (isPracticeConfigured()) return 'live';
+  if (process.env.PRACTICE_PREVIEW === 'true') return 'preview';
+  return 'off';
+}
+
+// Returns the store for the current mode. In preview it is a fresh mock seeded
+// with the known documents only. In live it is the Supabase adapter (a seam stub
+// until provisioned). Callers must have checked practiceMode() !== 'off' first.
+export function getPracticeStore(): PracticeStore {
+  if (isPracticeConfigured()) return getSupabasePracticeStore();
+  const mock = new MockPracticeStore();
+  mock.seedDocuments(SEED_DOCUMENTS, SEED_VERSIONS);
+  return mock;
 }
