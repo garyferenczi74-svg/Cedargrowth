@@ -150,7 +150,7 @@ export default function HomePage() {
                         alt={home.placeholders.fiveLines.altFor(line.name)}
                         fill
                         sizes="(min-width: 768px) 20vw, 70vw"
-                        className="object-cover"
+                        className="object-cover transition-transform duration-[600ms] ease-cedar group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                       />
                     ) : (
                       <Placeholder
