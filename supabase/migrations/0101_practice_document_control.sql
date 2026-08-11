@@ -63,12 +63,17 @@ create table practice_document_sections (
 
 -- Acknowledgments are append only. A correction is a new row citing the one it
 -- corrects. display_language records the language the document was shown in.
+-- source distinguishes a record created in the system from a paper record
+-- imported per 09H: the normal flow can only produce SYSTEM, and a PAPER row can
+-- only arrive through the logged manager import, never the normal flow.
 create table practice_acknowledgments (
   id            uuid primary key default gen_random_uuid(),
   person_id     uuid not null references practice_persons(id),
   version_id    uuid not null references practice_document_versions(id),
   statement     text not null,
   display_language text not null default 'en',
+  source        text not null default 'SYSTEM' check (source in ('SYSTEM','PAPER')),
+  physical_ref  text, -- the physical record location, for a PAPER import
   acknowledged_at timestamptz not null default now(),
   corrects_id   uuid references practice_acknowledgments(id),
   created_at    timestamptz not null default now()

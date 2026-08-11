@@ -6,32 +6,50 @@ standing rule that the Supabase project is yours to change. 09E's own rule says
 the same: migrations are files in the repo, applied through the CLI, nothing
 configured by clicking in the dashboard where a migration can do it instead.
 
-## What is authored so far (installment 1)
+## Applied and verified 2026-08-11
 
-The load-bearing, impossible-to-retrofit part:
+The full set (`0100` through `0109`) was applied to the production project
+gncuknpulgzqnpxtxtry via the Management API, file by file in atomic transactions.
+The six empty, never-populated tables from an earlier `0001` apply (singular
+names, mutable status columns) were dropped first; they held no data and the app
+does not use them.
 
-- `0100_practice_state_and_identity.sql` The append-only state-event pattern, and
-  the identity tables (persons, roles, person roles, person lifecycle,
-  employments, engagements). No mutable status column anywhere.
-- `0101_practice_document_control.sql` Documents, versions with status held as
-  events, acknowledgments recording display language, sections for excerpt pulls.
-- `0102_practice_audit_chain.sql` The insert-only audit log, hash chained, with
-  `practice_verify_chain()`.
-- `0103_practice_rls_core.sql` RLS default deny, role read from a table through
-  SECURITY DEFINER helpers, and the employee-case policies.
+- `0100` state-event pattern plus identity (persons, roles, lifecycle,
+  employments, engagements).
+- `0101` document control (versions with status as events, acknowledgments with
+  display language and a SYSTEM vs PAPER source, sections).
+- `0102` insert-only hash-chained audit log with `practice_verify_chain()`.
+- `0103` RLS core, role read from a table through SECURITY DEFINER helpers, the
+  employee case.
+- `0104` training (modules, versions, blocks with SYNTHETIC or FOOTAGE, curricula
+  with a certifying flag, cohorts, assignments, completions).
+- `0105` assessment (assessments, items, attempts, practical assessments,
+  credentials, all status as events).
+- `0106` equipment, retention, oversight (warrant decisions with the five fields).
+- `0107` support (questions, answers, notification preferences and deliveries).
+- `0108` the 09H layer (scripts as the controlled artifact, launch state,
+  certificates).
+- `0109` RLS for everything above, including the assessor practical-write policy
+  enforced by `practice_holds_current_credential`.
 
-The never-applied `0001` and `0002` shells were removed; they used mutable status
-columns that this pattern supersedes.
+Verified from the Management API (which runs as owner, so it bypasses RLS):
 
-## Still to author (installments 2 and up), same pattern
+- 50 tables, every one with RLS enabled, zero missing.
+- `practice_verify_chain()` returns null (chain intact).
+- `audit_log` UPDATE and DELETE denied even to `service_role`.
+- Point-in-time: a fixture ACTIVE at 2026-01-01 and INACTIVE at 2026-06-01 reads
+  ACTIVE as of March and INACTIVE as of July. Fixture removed.
 
-Training (modules, versions, blocks, curricula, assignments, completions),
-Assessment (assessments, items, banks, attempts, practical assessments, the
-assessor credential write policy, credentials), Equipment (units, commissioning
-events, cleared-operators view), Retention (policies, holds, tombstones),
-Oversight (warrant_decisions, reviews, samples), Support (questions, answers,
-notifications, deliveries). Do not apply the set until these land, or the backend
-is partial. Say the word and I author them next.
+## Still yours (cannot be done from the API)
+
+- Enable Auth email and password with mandatory MFA; anonymous sign-ins off.
+- Create the two private buckets, `documents` and `training-media`.
+- The anon-client and authenticated-employee RLS tests need real Auth users, so
+  they are yours to run and report. The policies are in place; the tests confirm
+  them end to end.
+- The app still talks to the mock store: `getSupabasePracticeStore()` is a stub.
+  Practice is provisioned but not yet wired to the live backend. That wiring is
+  09G (the Supabase adapter and the write flows), gated behind `PRACTICE_ENABLED`.
 
 ## Apply order
 
