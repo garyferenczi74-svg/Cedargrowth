@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { PracticeShell } from '@/components/practice/PracticeShell';
 import { RecognitionPanel } from '@/components/practice/RecognitionPanel';
-import { practiceMode } from '@/lib/practice/store';
+import { practiceMode, hasPracticeSession } from '@/lib/practice/store';
 
 export const metadata: Metadata = { title: 'Floor', robots: { index: false, follow: false } };
 
@@ -28,6 +28,7 @@ function Empty({ text }: { text: string }) {
 export default async function FloorPage() {
   const mode = practiceMode();
   if (mode === 'off') redirect('/practice');
+  if (mode === 'live' && !hasPracticeSession()) redirect('/practice/signin');
 
   return (
     <PracticeShell mode={mode} active="floor">

@@ -19,6 +19,7 @@ import type {
 } from './types';
 import type { Module } from './modules';
 import type { Question, Reply } from './questions';
+import { getSupabaseUserPracticeStore, practiceSessionToken } from './supabaseStore';
 import { nextEntry } from './audit';
 import { SEED_DOCUMENTS, SEED_VERSIONS } from './seed';
 import { SEED_MODULES } from './moduleSeed';
@@ -157,13 +158,10 @@ export function isPracticeConfigured(): boolean {
   );
 }
 
-// The Supabase-backed store is provisioned once the owner applies the migration
-// SQL and configures Auth and MFA. Until then, callers must gate on
-// isPracticeConfigured() and render the unavailable state.
+// The Supabase-backed store (09G). Reads are RLS-scoped to the signed-in user;
+// writes go through the service client with the person resolved from the session.
 export function getSupabasePracticeStore(): PracticeStore {
-  throw new Error(
-    'Practice Supabase store is not provisioned. Apply supabase/migrations and configure Auth and MFA first.',
-  );
+  return getSupabaseUserPracticeStore();
 }
 
 // Access mode for the Practice screens.
@@ -178,6 +176,12 @@ export function practiceMode(): PracticeMode {
   if (isPracticeConfigured()) return 'live';
   if (process.env.PRACTICE_PREVIEW === 'true') return 'preview';
   return 'off';
+}
+
+// In live mode a page must have a signed-in session. A page calls this and
+// redirects to the sign-in door when it returns false.
+export function hasPracticeSession(): boolean {
+  return practiceSessionToken() !== null;
 }
 
 // Returns the store for the current mode. In preview it is a fresh mock seeded

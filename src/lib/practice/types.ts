@@ -50,6 +50,7 @@ export type ControlledDocument = {
   title: string | null; // UNKNOWN until supplied
   category: string | null;
   requiresAck: boolean;
+  language?: string; // the language the document exists in; defaults to English
 };
 
 // A version is the unit everything binds to. Never deleted; superseded instead.
@@ -76,6 +77,7 @@ export type Acknowledgment = {
   timestamp: string; // ISO, recorded by the system, never entered
   statement: string; // the exact text acknowledged
   correctsId: string | null; // a correction cites the record it corrects
+  displayLanguage?: string; // the language the document was displayed in when acknowledged
 };
 
 // Why an assignment exists. Required on every assignment: it is the audit trail
@@ -121,6 +123,7 @@ export type Person = {
   email: string | null;
   role: Role;
   active: boolean;
+  languagePreference?: string; // the language this person reads comfortably
 };
 
 // A drift entry: a person whose most recent acknowledgment of a document is
