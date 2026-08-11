@@ -131,10 +131,14 @@
 .kelvin-root .filters { display: flex; gap: 8px; flex-wrap: wrap; }
 /* Filter chips invert to the ink tone with bone type on hover, and the selected
    chip reads as filled, matching the marketing filter chips. */
-.kelvin-root .pill { border: 1px solid var(--k-tertiary); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
-.kelvin-root .pill:hover { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); }
+.kelvin-root .pill { border: 1px solid var(--k-tertiary); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 160ms var(--k-ease); }
+.kelvin-root .pill:hover { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); transform: translateY(-2px); }
+.kelvin-root .pill:active { transform: translateY(0); }
 .kelvin-root .pill.active { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); }
-.kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-bone); }
+.kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-bone); transform: translateY(-2px); }
+@media (prefers-reduced-motion: reduce) {
+  .kelvin-root .pill:hover, .kelvin-root .pill.active:hover { transform: none; }
+}
 /* Buttons rest as a bone rectangle and flood to the ink tone with bone type and
    a two pixel lift on hover, the same highlight the marketing site uses. Using
    the ink and bone tokens keeps the invert correct in both console themes. */
