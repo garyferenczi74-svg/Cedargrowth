@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { PracticeShell } from '@/components/practice/PracticeShell';
+import { RecognitionPanel } from '@/components/practice/RecognitionPanel';
 import { practiceMode } from '@/lib/practice/store';
 
 export const metadata: Metadata = { title: 'Floor', robots: { index: false, follow: false } };
@@ -32,6 +33,20 @@ export default async function FloorPage() {
     <PracticeShell mode={mode} active="floor">
       <div className="flex flex-col gap-10">
         <h1 className="font-display text-heading-m text-primary">Your floor</h1>
+
+        {/* Recognition panel: the four-line standing view, above Due now. It is
+            computed from the training record and writes nothing. In preview there
+            is no signed-in person and no history, so every figure is UNKNOWN; the
+            values compute once the backend is provisioned. There is deliberately
+            no time-to-complete figure and no comparison to any other person. */}
+        <RecognitionPanel
+          standing={null}
+          credentialsCurrent={null}
+          facilityCurrencyPercent={null}
+          zeroGapDays={null}
+          questionsAsked={null}
+          ledToSopRevision={null}
+        />
 
         {/* Due now: outstanding assignments, ordered by due date, each with its
             required reason. Empty until assignments exist. */}
