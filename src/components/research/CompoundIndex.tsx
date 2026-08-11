@@ -108,7 +108,7 @@ function Entry({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={regionId}
-          className="flex w-full items-center gap-4 py-5 text-left focus-visible:outline-cedar"
+          className="flex w-full items-center gap-4 py-5 text-left transition-colors duration-hover ease-cedar hover:bg-bone focus-visible:outline-cedar"
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-baseline md:gap-4">
             <span className="flex items-baseline gap-2">
@@ -194,7 +194,9 @@ export function CompoundIndex({
               onClick={() => toggleFilter(f.key)}
               aria-pressed={on}
               className={`rounded-[2px] border px-3 py-1 font-mono text-specimen uppercase tracking-specimen transition-colors duration-hover ease-cedar focus-visible:outline-cedar ${
-                on ? 'border-primary text-primary' : 'border-hairline text-tertiary hover:border-primary'
+                on
+                  ? 'border-ink bg-ink text-bone'
+                  : 'border-secondary text-tertiary hover:border-ink hover:bg-ink hover:text-bone'
               }`}
             >
               {f.label}
