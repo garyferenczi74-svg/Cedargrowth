@@ -67,6 +67,12 @@ export default async function ModulesPage() {
                       {assignable.ok ? 'ASSIGNABLE' : `NOT ASSIGNABLE. ${assignable.reason}`}
                     </span>
                   </Link>
+                  <Link
+                    href={`/practice/modules/${encodeURIComponent(m.id)}/questions`}
+                    className="mt-3 inline-block font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
+                  >
+                    QUESTIONS
+                  </Link>
                 </li>
               );
             })}

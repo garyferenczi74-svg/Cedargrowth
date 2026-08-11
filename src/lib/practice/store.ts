@@ -18,6 +18,7 @@ import type {
   Person,
 } from './types';
 import type { Module } from './modules';
+import type { Question, Reply } from './questions';
 import { nextEntry } from './audit';
 import { SEED_DOCUMENTS, SEED_VERSIONS } from './seed';
 import { SEED_MODULES } from './moduleSeed';
@@ -38,10 +39,14 @@ export interface PracticeStore {
   listAssignments(): Promise<Assignment[]>;
   listAudit(): Promise<AuditEntry[]>;
   listModules(): Promise<Module[]>;
+  listQuestions(): Promise<Question[]>;
+  listReplies(): Promise<Reply[]>;
   // Appends (the only writes; no update, no delete)
   appendAcknowledgment(a: Omit<Acknowledgment, 'id'>): Promise<Acknowledgment>;
   appendAssignment(a: Omit<Assignment, 'id'>): Promise<Assignment>;
   appendAudit(entry: NewAudit): Promise<AuditEntry>;
+  appendQuestion(q: Omit<Question, 'id'>): Promise<Question>;
+  appendReply(r: Omit<Reply, 'id'>): Promise<Reply>;
 }
 
 // In-memory mock. Seeded EMPTY: no fabricated employees, completions, dates, or
@@ -54,6 +59,8 @@ export class MockPracticeStore implements PracticeStore {
   private assignments: Assignment[] = [];
   private audit: AuditEntry[] = [];
   private modules: Module[] = [];
+  private questions: Question[] = [];
+  private replies: Reply[] = [];
   private counter = 0;
 
   private id(prefix: string): string {
@@ -96,6 +103,12 @@ export class MockPracticeStore implements PracticeStore {
   async listModules() {
     return this.modules.slice();
   }
+  async listQuestions() {
+    return this.questions.slice();
+  }
+  async listReplies() {
+    return this.replies.slice();
+  }
 
   async appendAcknowledgment(a: Omit<Acknowledgment, 'id'>) {
     const rec: Acknowledgment = { ...a, id: this.id('ack') };
@@ -113,6 +126,18 @@ export class MockPracticeStore implements PracticeStore {
     const prev = this.audit.length ? this.audit[this.audit.length - 1] : null;
     const rec = await nextEntry(prev, entry);
     this.audit.push(rec);
+    return rec;
+  }
+
+  async appendQuestion(q: Omit<Question, 'id'>) {
+    const rec: Question = { ...q, id: this.id('qn') };
+    this.questions.push(rec);
+    return rec;
+  }
+
+  async appendReply(r: Omit<Reply, 'id'>) {
+    const rec: Reply = { ...r, id: this.id('rp') };
+    this.replies.push(rec);
     return rec;
   }
 }

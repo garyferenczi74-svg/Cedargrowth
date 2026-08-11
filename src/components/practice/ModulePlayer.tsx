@@ -109,6 +109,12 @@ export function ModulePlayer({ module, startAt = 0 }: { module: Module; startAt?
       </div>
       <h1 className="font-display text-heading-m text-primary">{module.title ?? 'UNKNOWN'}</h1>
       <span className="font-mono text-data text-secondary">{teaches}</span>
+      <Link
+        href={`/practice/modules/${encodeURIComponent(module.id)}/questions`}
+        className="font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
+      >
+        QUESTIONS
+      </Link>
     </div>
   );
 
