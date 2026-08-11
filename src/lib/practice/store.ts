@@ -17,8 +17,10 @@ import type {
   DocumentVersion,
   Person,
 } from './types';
+import type { Module } from './modules';
 import { nextEntry } from './audit';
 import { SEED_DOCUMENTS, SEED_VERSIONS } from './seed';
+import { SEED_MODULES } from './moduleSeed';
 
 export type NewAudit = {
   kind: AuditEntry['kind'];
@@ -35,6 +37,7 @@ export interface PracticeStore {
   listAcknowledgments(): Promise<Acknowledgment[]>;
   listAssignments(): Promise<Assignment[]>;
   listAudit(): Promise<AuditEntry[]>;
+  listModules(): Promise<Module[]>;
   // Appends (the only writes; no update, no delete)
   appendAcknowledgment(a: Omit<Acknowledgment, 'id'>): Promise<Acknowledgment>;
   appendAssignment(a: Omit<Assignment, 'id'>): Promise<Assignment>;
@@ -50,6 +53,7 @@ export class MockPracticeStore implements PracticeStore {
   private acknowledgments: Acknowledgment[] = [];
   private assignments: Assignment[] = [];
   private audit: AuditEntry[] = [];
+  private modules: Module[] = [];
   private counter = 0;
 
   private id(prefix: string): string {
@@ -64,6 +68,11 @@ export class MockPracticeStore implements PracticeStore {
   }
   seedPersons(persons: Person[]) {
     this.persons = persons.slice();
+  }
+  // Module definitions are configuration, not fabricated training: no
+  // completions or approvals are seeded, only the module list.
+  seedModules(modules: Module[]) {
+    this.modules = modules.slice();
   }
 
   async listDocuments() {
@@ -83,6 +92,9 @@ export class MockPracticeStore implements PracticeStore {
   }
   async listAudit() {
     return this.audit.slice();
+  }
+  async listModules() {
+    return this.modules.slice();
   }
 
   async appendAcknowledgment(a: Omit<Acknowledgment, 'id'>) {
@@ -150,5 +162,6 @@ export function getPracticeStore(): PracticeStore {
   if (isPracticeConfigured()) return getSupabasePracticeStore();
   const mock = new MockPracticeStore();
   mock.seedDocuments(SEED_DOCUMENTS, SEED_VERSIONS);
+  mock.seedModules(SEED_MODULES);
   return mock;
 }

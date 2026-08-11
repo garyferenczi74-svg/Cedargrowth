@@ -12,12 +12,13 @@ export function PracticeShell({
   children,
 }: {
   mode: PracticeMode;
-  active: 'floor' | 'procedures' | 'console';
+  active: 'floor' | 'procedures' | 'modules' | 'console';
   children: ReactNode;
 }) {
   const nav = [
     { key: 'floor', label: 'Floor', href: '/practice/floor' },
     { key: 'procedures', label: 'Procedures', href: '/practice/procedures' },
+    { key: 'modules', label: 'Modules', href: '/practice/modules' },
     { key: 'console', label: 'Console', href: '/practice/console' },
   ];
   return (
