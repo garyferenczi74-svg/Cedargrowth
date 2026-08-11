@@ -129,10 +129,12 @@
 
 .kelvin-root .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
 .kelvin-root .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-.kelvin-root .pill { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
-.kelvin-root .pill:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
-.kelvin-root .pill.active { color: var(--k-surface); background: var(--k-primary); border-color: var(--k-primary); }
-.kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); }
+/* Filter chips invert to the ink tone with bone type on hover, and the selected
+   chip reads as filled, matching the marketing filter chips. */
+.kelvin-root .pill { border: 1px solid var(--k-tertiary); border-radius: 2px; background: var(--k-parchment); padding: 7px 13px; font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase; color: var(--k-tertiary); font-family: var(--k-font-mono); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease); }
+.kelvin-root .pill:hover { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); }
+.kelvin-root .pill.active { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); }
+.kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-bone); }
 /* Buttons rest as a bone rectangle and flood to the ink tone with bone type and
    a two pixel lift on hover, the same highlight the marketing site uses. Using
    the ink and bone tokens keeps the invert correct in both console themes. */
