@@ -8,7 +8,7 @@ import { CANNABINOIDS, cannabinoidIndex } from '@/content/research';
 export const metadata: Metadata = {
   title: 'The cannabinoid index . CedarGrowth Research',
   description:
-    'Fourteen cannabinoids, their chemistry, receptor behavior, and how each survives extraction. Chemistry and mechanism, with sources.',
+    'The cannabinoids, their chemistry, receptor behavior, and how each survives extraction. Chemistry and mechanism, with sources.',
 };
 
 export default function CannabinoidIndexPage() {

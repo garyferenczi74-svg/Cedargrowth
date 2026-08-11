@@ -12,7 +12,7 @@ import { EvidenceChip } from '@/components/dna/EvidenceChip';
 // every entry is addressable by URL fragment so a compound can be cited.
 
 type Filter = { key: string; label: string };
-type Group = { key: string; label: string; band: string };
+type Group = { key: string; label: string; band: string; note?: string };
 
 function Pending({ text }: { text: string }) {
   return (
@@ -220,6 +220,11 @@ export function CompoundIndex({
                   <p className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
                     {g.band}
                   </p>
+                  {g.note ? (
+                    <p className="mt-3 max-w-editorial text-body-m-m md:text-body-m text-secondary">
+                      {g.note}
+                    </p>
+                  ) : null}
                 </div>
                 <div>{rows.map(renderEntry)}</div>
               </section>
