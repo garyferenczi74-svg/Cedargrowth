@@ -119,6 +119,7 @@ export const PRIMARY_NAV: NavItem[] = [
 // Utility, left and right edges (Section 5.2).
 export const UTILITY_LEFT: NavLink[] = [
   { label: 'Wholesale', href: '/wholesale' },
+  { label: 'Access', href: '/practice' },
 ];
 
 // Footer, four columns (Block 9).
