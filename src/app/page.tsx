@@ -90,7 +90,7 @@ export default function HomePage() {
                   href="/method"
                   variant="outline"
                   tone="inverse"
-                  className="!border-inverse bg-ink/25 backdrop-blur-sm hover:!bg-inverse hover:!text-primary"
+                  className="!border-inverse !text-bone bg-ink/25 backdrop-blur-sm hover:!bg-inverse hover:!text-primary"
                 >
                   {home.hero.cta}
                 </ButtonLink>
