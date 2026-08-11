@@ -25,7 +25,7 @@ export function NotesList({
           onClick={() => setActive(null)}
           aria-pressed={active === null}
           className={`rounded-[2px] border px-3 py-1 font-mono text-specimen uppercase tracking-specimen transition-colors duration-hover ease-cedar focus-visible:outline-cedar ${
-            active === null ? 'border-primary text-primary' : 'border-hairline text-tertiary hover:border-primary'
+            active === null ? 'border-ink bg-ink text-bone' : 'border-secondary text-tertiary hover:border-ink hover:bg-ink hover:text-bone'
           }`}
         >
           ALL
@@ -39,7 +39,7 @@ export function NotesList({
               onClick={() => setActive(on ? null : c)}
               aria-pressed={on}
               className={`rounded-[2px] border px-3 py-1 font-mono text-specimen uppercase tracking-specimen transition-colors duration-hover ease-cedar focus-visible:outline-cedar ${
-                on ? 'border-primary text-primary' : 'border-hairline text-tertiary hover:border-primary'
+                on ? 'border-ink bg-ink text-bone' : 'border-secondary text-tertiary hover:border-ink hover:bg-ink hover:text-bone'
               }`}
             >
               {c}
