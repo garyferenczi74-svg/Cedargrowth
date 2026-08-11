@@ -136,7 +136,7 @@
 /* Buttons rest as a bone rectangle and flood to the ink tone with bone type and
    a two pixel lift on hover, the same highlight the marketing site uses. Using
    the ink and bone tokens keeps the invert correct in both console themes. */
-.kelvin-root .btn { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-bone); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 160ms var(--k-ease); }
+.kelvin-root .btn { border: 1px solid var(--k-tertiary); border-radius: 2px; background: var(--k-bone); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 160ms var(--k-ease); }
 .kelvin-root .btn:hover { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); transform: translateY(-2px); }
 .kelvin-root .btn:active { transform: translateY(0); }
 .kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-bone); border-color: var(--k-primary); }
