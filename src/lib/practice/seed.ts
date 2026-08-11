@@ -20,6 +20,13 @@ export const SEED_DOCUMENTS: ControlledDocument[] = [
     category: 'PROCESS',
     requiresAck: true,
   },
+  // Production SOPs the training modules bind to (09C). Version numbers are the
+  // stated ones; titles, effective dates, and approvers are UNKNOWN until
+  // supplied. PROD-002 (KWAD press) carries an open commissioning question, so
+  // its module is held in DRAFT (see moduleSeed).
+  { id: 'doc-prod-001', number: 'CGO-SOP-PROD-001', title: null, category: 'PRODUCTION', requiresAck: true },
+  { id: 'doc-prod-002', number: 'CGO-SOP-PROD-002', title: null, category: 'PRODUCTION', requiresAck: true },
+  { id: 'doc-prod-003', number: 'CGO-SOP-PROD-003', title: null, category: 'PRODUCTION', requiresAck: true },
 ];
 
 export const SEED_VERSIONS: DocumentVersion[] = [
@@ -49,6 +56,39 @@ export const SEED_VERSIONS: DocumentVersion[] = [
     id: 'ver-proc-002-2',
     documentId: 'doc-proc-002',
     version: '2.0',
+    status: 'CURRENT',
+    effectiveDate: null,
+    approvedByName: null,
+    approvalDate: null,
+    supersededByVersionId: null,
+    contentRef: null,
+  },
+  {
+    id: 'ver-prod-001-2',
+    documentId: 'doc-prod-001',
+    version: '2.0',
+    status: 'CURRENT',
+    effectiveDate: null,
+    approvedByName: null,
+    approvalDate: null,
+    supersededByVersionId: null,
+    contentRef: null,
+  },
+  {
+    id: 'ver-prod-002-2',
+    documentId: 'doc-prod-002',
+    version: '2.0',
+    status: 'CURRENT',
+    effectiveDate: null,
+    approvedByName: null,
+    approvalDate: null,
+    supersededByVersionId: null,
+    contentRef: null,
+  },
+  {
+    id: 'ver-prod-003-3',
+    documentId: 'doc-prod-003',
+    version: '3.0',
     status: 'CURRENT',
     effectiveDate: null,
     approvedByName: null,
