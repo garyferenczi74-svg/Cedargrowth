@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { PracticeShell } from '@/components/practice/PracticeShell';
 import { ConsoleViews, type ConsoleDoc } from '@/components/practice/ConsoleViews';
@@ -37,7 +38,15 @@ export default async function ConsolePage() {
   return (
     <PracticeShell mode={mode} active="console">
       <div className="flex flex-col gap-8">
-        <h1 className="font-display text-heading-m text-primary">Review console</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="font-display text-heading-m text-primary">Review console</h1>
+          <Link
+            href="/practice/console/modules"
+            className="font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
+          >
+            MODULE LIBRARY
+          </Link>
+        </div>
         <ConsoleViews docs={docs} drift={drift} />
       </div>
     </PracticeShell>
