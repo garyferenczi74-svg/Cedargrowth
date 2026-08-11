@@ -162,7 +162,7 @@ export function CaptureForm({
       <button
         type="submit"
         disabled={status === 'pending'}
-        className="self-start bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse disabled:opacity-60"
+        className="cg-btn self-start disabled:opacity-60"
       >
         {status === 'pending' ? 'Sending' : submitLabel}
       </button>

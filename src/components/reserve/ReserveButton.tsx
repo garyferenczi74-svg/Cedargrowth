@@ -30,7 +30,7 @@ export function ReserveButton({
           add({ slug, name, spec });
           setAdded(true);
         }}
-        className="group inline-flex items-center justify-center gap-3 bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse transition-colors duration-hover ease-cedar"
+        className="cg-btn group"
       >
         Reserve this product
         <ArrowRight

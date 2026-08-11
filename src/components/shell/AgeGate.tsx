@@ -208,7 +208,7 @@ export function AgeGate() {
 
           <button
             type="submit"
-            className="self-start bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse"
+            className="cg-btn self-start"
           >
             {ageGate.submitCta}
           </button>

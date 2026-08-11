@@ -133,14 +133,20 @@
 .kelvin-root .pill:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
 .kelvin-root .pill.active { color: var(--k-surface); background: var(--k-primary); border-color: var(--k-primary); }
 .kelvin-root .pill.active:hover { background: var(--k-secondary); border-color: var(--k-secondary); }
-.kelvin-root .btn { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-parchment); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 110ms var(--k-ease); }
-.kelvin-root .btn:hover { color: var(--k-primary); background: var(--k-bone); border-color: var(--k-tertiary); }
-.kelvin-root .btn:active { transform: translateY(1px); }
-.kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-surface); border-color: var(--k-primary); }
-.kelvin-root .btn.solid:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-surface); }
-.kelvin-root .btn.active { color: var(--k-primary); border-color: var(--k-primary); background: var(--k-bone); }
+/* Buttons rest as a bone rectangle and flood to the ink tone with bone type and
+   a two pixel lift on hover, the same highlight the marketing site uses. Using
+   the ink and bone tokens keeps the invert correct in both console themes. */
+.kelvin-root .btn { border: 1px solid var(--k-hairline); border-radius: 2px; background: var(--k-bone); padding: 9px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--k-secondary); transition: color 160ms var(--k-ease), background 160ms var(--k-ease), border-color 160ms var(--k-ease), transform 160ms var(--k-ease); }
+.kelvin-root .btn:hover { color: var(--k-bone); background: var(--k-primary); border-color: var(--k-primary); transform: translateY(-2px); }
+.kelvin-root .btn:active { transform: translateY(0); }
+.kelvin-root .btn.solid { background: var(--k-primary); color: var(--k-bone); border-color: var(--k-primary); }
+.kelvin-root .btn.solid:hover { background: var(--k-secondary); border-color: var(--k-secondary); color: var(--k-bone); transform: translateY(-2px); }
+.kelvin-root .btn.active { color: var(--k-bone); border-color: var(--k-primary); background: var(--k-primary); }
 .kelvin-root .btn.disabled { opacity: 0.4; cursor: not-allowed; }
-.kelvin-root .btn.disabled:hover { color: var(--k-secondary); background: var(--k-parchment); border-color: var(--k-hairline); transform: none; }
+.kelvin-root .btn.disabled:hover { color: var(--k-secondary); background: var(--k-bone); border-color: var(--k-hairline); transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .kelvin-root .btn:hover, .kelvin-root .btn.solid:hover { transform: none; }
+}
 
 .kelvin-root .feed { border-top: 1px solid var(--k-hairline); }
 .kelvin-root .row { border-bottom: 1px solid var(--k-hairline); padding: 13px 0; transition: background 150ms var(--k-ease); }

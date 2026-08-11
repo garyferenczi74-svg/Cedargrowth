@@ -22,26 +22,18 @@ export function ButtonLink({
   className?: string;
 }) {
   const base =
-    'group inline-flex items-center gap-3 text-caption uppercase tracking-eyebrow transition-colors duration-hover ease-cedar focus-visible:outline-cedar';
+    'group inline-flex items-center gap-3 text-caption uppercase tracking-eyebrow focus-visible:outline-cedar';
 
   let variantClasses = '';
-  if (variant === 'solid') {
-    // Background lightens one step on hover/focus, no lift, no scale.
-    variantClasses =
-      tone === 'inverse'
-        ? 'bg-parchment text-primary px-6 py-4 hover:bg-clinical focus-visible:bg-clinical'
-        : 'bg-ink text-inverse px-6 py-4 hover:bg-secondary focus-visible:bg-secondary';
-  } else if (variant === 'outline') {
-    variantClasses =
-      tone === 'inverse'
-        ? 'border border-hairline-inverse text-inverse px-6 py-4 hover:border-inverse'
-        : 'border border-hairline text-primary px-6 py-4 hover:border-primary';
+  if (variant === 'ghost') {
+    // Ghost stays a plain label with the arrow and the underline draw on hover;
+    // it is a link, not a rectangle, so it keeps its own treatment.
+    variantClasses = tone === 'inverse' ? 'cedar-underline text-inverse' : 'cedar-underline text-primary';
   } else {
-    // ghost
-    variantClasses =
-      tone === 'inverse'
-        ? 'cedar-underline text-inverse'
-        : 'cedar-underline text-primary';
+    // Outline and solid both adopt the highlight button: a bone rectangle that
+    // floods to near black with bone type and lifts on hover. The tone no longer
+    // splits the color, since the highlight reads on both grounds.
+    variantClasses = 'cg-btn';
   }
 
   return (

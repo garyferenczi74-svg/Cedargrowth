@@ -213,7 +213,7 @@ export function ReserveClient() {
           <button
             type="submit"
             disabled={pending}
-            className="self-start bg-ink px-6 py-4 text-caption uppercase tracking-eyebrow text-inverse disabled:opacity-60"
+            className="cg-btn self-start disabled:opacity-60"
           >
             {pending ? 'Sending' : 'Prepare reservation request'}
           </button>
