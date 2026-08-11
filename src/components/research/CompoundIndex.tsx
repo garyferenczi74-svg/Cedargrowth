@@ -108,20 +108,20 @@ function Entry({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls={regionId}
-          className="flex w-full items-center gap-4 py-5 text-left transition-colors duration-hover ease-cedar hover:bg-bone focus-visible:outline-cedar"
+          className="group flex w-full items-center gap-4 py-5 text-left transition-colors duration-hover ease-cedar hover:bg-ink focus-visible:outline-cedar"
         >
           <span className="flex min-w-0 flex-1 flex-col gap-1 md:flex-row md:items-baseline md:gap-4">
             <span className="flex items-baseline gap-2">
-              <span className="font-display text-heading-s-m md:text-heading-s text-primary">
+              <span className="font-display text-heading-s-m md:text-heading-s text-primary transition-colors duration-hover ease-cedar group-hover:text-bone">
                 {compound.name}
               </span>
               {compound.abbr ? (
-                <span className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
+                <span className="font-mono text-specimen uppercase tracking-specimen text-tertiary transition-colors duration-hover ease-cedar group-hover:text-bone">
                   {compound.abbr}
                 </span>
               ) : null}
             </span>
-            <span className="text-body-m-m md:text-body-m text-secondary md:flex-1">
+            <span className="text-body-m-m md:text-body-m text-secondary md:flex-1 transition-colors duration-hover ease-cedar group-hover:text-bone">
               {compound.summary}
             </span>
           </span>
@@ -130,7 +130,7 @@ function Entry({
             size={18}
             strokeWidth={1.5}
             aria-hidden="true"
-            className={`shrink-0 transition-transform duration-[240ms] ease-cedar motion-reduce:transition-none ${
+            className={`shrink-0 text-primary transition-[transform,color] duration-[240ms] ease-cedar group-hover:text-bone motion-reduce:transition-none ${
               open ? 'rotate-180' : ''
             }`}
           />
