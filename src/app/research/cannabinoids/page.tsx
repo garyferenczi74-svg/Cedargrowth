@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { Rise } from '@/components/motion/Rise';
 import { LineReveal } from '@/components/motion/LineReveal';
@@ -23,6 +24,12 @@ export default function CannabinoidIndexPage() {
           <Rise delay={0.12} className="text-body-m-m md:text-body-l text-secondary">
             {cannabinoidIndex.body}
           </Rise>
+          <Link
+            href="/research/provenance"
+            className="cedar-underline w-fit font-mono text-specimen uppercase tracking-specimen text-primary"
+          >
+            See how well we know each figure
+          </Link>
         </div>
 
         <div className="mt-12">
