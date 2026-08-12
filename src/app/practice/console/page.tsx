@@ -40,12 +40,20 @@ export default async function ConsolePage() {
       <div className="flex flex-col gap-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h1 className="font-display text-heading-m text-primary">Review console</h1>
-          <Link
-            href="/practice/console/modules"
-            className="font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
-          >
-            MODULE LIBRARY
-          </Link>
+          <div className="flex flex-wrap gap-6">
+            <Link
+              href="/practice/console/modules"
+              className="font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
+            >
+              MODULE LIBRARY
+            </Link>
+            <Link
+              href="/practice/console/invite"
+              className="font-mono text-specimen uppercase tracking-specimen text-tertiary hover:text-primary"
+            >
+              INVITE
+            </Link>
+          </div>
         </div>
         <ConsoleViews docs={docs} drift={drift} />
       </div>
