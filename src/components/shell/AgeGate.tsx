@@ -11,10 +11,13 @@ import { ageGate } from '@/content/ageGate';
 // never references this module and adds zero DOM.
 //
 // Entry is month plus year of birth, not a yes/no button. On a passing entry
-// the gate sets a SESSION cookie: the Set-Cookie string below carries no
-// Max-Age and no Expires attribute, so the browser drops it automatically
-// when the browser session ends, i.e. when the user closes their browser.
-// That retention is also stated to the visitor in ageGate.retentionNote.
+// the gate records the pass in sessionStorage, which is scoped to the tab and
+// cleared the moment that tab is closed. Closing the site and reopening it
+// therefore always re-prompts, and a fresh tab always re-prompts, which is the
+// intended behavior. (A session cookie was too sticky here: cookies are shared
+// across every tab, survive a tab close, and Chrome's "continue where you left
+// off" restores them across a full browser restart, so the gate rarely came
+// back.) That retention is also stated to the visitor in ageGate.retentionNote.
 //
 // The legal and accessibility links are reachable without ever submitting
 // the form, so a visitor can read either page before, or instead of,
@@ -24,7 +27,7 @@ import { ageGate } from '@/content/ageGate';
 // below), so all four legal pages stay reachable even when the gate is
 // enabled and no passing entry has been recorded yet.
 
-const COOKIE_NAME = 'cg_age_verified';
+const STORAGE_KEY = 'cg_age_verified';
 const MIN_AGE = 21;
 
 const MONTHS = [
@@ -66,40 +69,46 @@ function ageFromMonthYear(month: number, year: number): number {
   return age;
 }
 
-function hasSessionCookie(): boolean {
-  if (typeof document === 'undefined') return false;
-  return document.cookie
-    .split(';')
-    .map((part) => part.trim())
-    .some((part) => part === `${COOKIE_NAME}=1` || part.startsWith(`${COOKIE_NAME}=1;`));
+function hasSessionPass(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.sessionStorage.getItem(STORAGE_KEY) === '1';
+  } catch {
+    // sessionStorage can throw in hardened privacy modes; treat that as
+    // not-yet-verified so the gate still shows rather than silently passing.
+    return false;
+  }
 }
 
-function setSessionCookie(): void {
-  // No Max-Age, no Expires: this is what makes it a session cookie. Secure
-  // is added only on https so the gate still works over plain http on a
-  // local dev server.
-  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
-  document.cookie = `${COOKIE_NAME}=1; path=/; SameSite=Lax${secure}`;
+function setSessionPass(): void {
+  // sessionStorage is per-tab and cleared on tab close, so a returning visit
+  // re-prompts. Wrapped because it can throw when storage is disabled.
+  try {
+    window.sessionStorage.setItem(STORAGE_KEY, '1');
+  } catch {
+    // If we cannot persist, the in-memory verified state below still lets the
+    // current view through; the next load will simply re-prompt.
+  }
 }
 
 export function AgeGate() {
   const pathname = usePathname();
-  const [checkedCookie, setCheckedCookie] = useState(false);
+  const [checkedStorage, setCheckedStorage] = useState(false);
   const [verified, setVerified] = useState(false);
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setVerified(hasSessionCookie());
-    setCheckedCookie(true);
+    setVerified(hasSessionPass());
+    setCheckedStorage(true);
   }, []);
 
-  // Nothing renders until the cookie check has run once, nothing renders
+  // Nothing renders until the storage check has run once, nothing renders
   // once a passing entry has been recorded for this session, and nothing
   // renders on /legal/* routes: those pages must stay reachable even before
   // a visitor has confirmed their age.
-  if (!checkedCookie || verified || pathname?.startsWith('/legal')) return null;
+  if (!checkedStorage || verified || pathname?.startsWith('/legal')) return null;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -121,7 +130,7 @@ export function AgeGate() {
     }
 
     setError(null);
-    setSessionCookie();
+    setSessionPass();
     setVerified(true);
   }
 
