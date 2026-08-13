@@ -61,7 +61,7 @@ export const manufacturing = {
       title: 'Bulk rosin supply',
       body: 'Solventless rosin by weight, to licensed New York processors and brands. Ice water hash and rosin from two input streams, with a published certificate on every batch.',
       specs: [
-        { label: 'Formats', unknownCaption: 'Formats, pending confirmation.' },
+        { label: 'Formats', value: '1 kg jars' },
         { label: 'Minimum', value: '1 kg and 1 litre' },
         { label: 'Lead time', value: '3 to 4 weeks' },
       ],
