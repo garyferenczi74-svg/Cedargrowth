@@ -63,7 +63,7 @@ export const manufacturing = {
       specs: [
         { label: 'Formats', unknownCaption: 'Formats, pending confirmation.' },
         { label: 'Minimum', value: '1 kg and 1 litre' },
-        { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
+        { label: 'Lead time', value: '3 to 4 weeks' },
       ],
     },
     {
@@ -73,7 +73,7 @@ export const manufacturing = {
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
         { label: 'Minimum', value: '5,000 units per SKU' },
-        { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
+        { label: 'Lead time', value: '3 to 4 weeks' },
       ],
     },
     {
@@ -83,7 +83,7 @@ export const manufacturing = {
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
         { label: 'Minimum', value: '5,000 units per SKU' },
-        { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
+        { label: 'Lead time', value: '3 to 4 weeks' },
       ],
     },
     {
