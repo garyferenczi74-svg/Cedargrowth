@@ -81,7 +81,12 @@ export default function ManufacturingPage() {
                 one line the period convention separates them; at 390 they stack
                 one fact per line without any type-size reduction. The hairline
                 sits above with 24px clear (border-t + pt-6). */}
-            <p className="flex flex-col gap-y-1 border-t border-hairline pt-6 font-mono text-caption-m md:text-caption uppercase tracking-specimen text-tertiary md:flex-row md:flex-wrap md:items-baseline md:gap-x-2">
+            <p
+              style={{ letterSpacing: '0.04em' }}
+              className="flex flex-col gap-y-1 border-t border-hairline pt-6 font-mono text-caption-m md:text-caption uppercase text-tertiary md:flex-row md:flex-wrap md:items-baseline md:gap-x-2"
+            >
+              {/* 0.04em set inline: text-caption bakes in 0.01em letter-spacing
+                  that would otherwise win the cascade over tracking-specimen. */}
               {m.hero.specimen.map((fact, i) => (
                 <Fragment key={fact}>
                   <span className="md:whitespace-nowrap">{fact}</span>
