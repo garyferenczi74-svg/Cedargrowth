@@ -33,6 +33,16 @@ export const manufacturing = {
     eyebrow: 'Manufacturing',
     headline: 'Your brand. Our licence, our floor, our standards.',
     body: 'CedarGrowth manufactures cannabis products in Buffalo under its own New York licence, for brands that do not hold one. You bring the formulation and the identity. We build it here, from New York material, for the New York market.',
+    // The hero specimen line (CG Prompt 10A). Three facts, no qualifier, no
+    // explanatory sentence. Read together they answer the home purity strip
+    // without referencing it, so the contradiction never assembles in a shared
+    // screenshot of the hero. Rendered uppercase. On one line the established
+    // period convention separates them; at 390 they stack one per line.
+    specimen: [
+      'Solventless production',
+      'Post-production on client-owned material',
+      'No extraction',
+    ],
     cta: 'Request a conversation',
     placeholderAlt:
       'Placeholder, process documentary of the CedarGrowth production floor',

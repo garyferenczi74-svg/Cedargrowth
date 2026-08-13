@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Fragment } from 'react';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { Unknown } from '@/components/atoms/Unknown';
 import { ButtonLink } from '@/components/atoms/ButtonLink';
@@ -76,6 +77,22 @@ export default function ManufacturingPage() {
               {m.hero.headline}
             </h1>
             <p className="text-body-m-m md:text-body-l text-secondary">{m.hero.body}</p>
+            {/* Hero specimen line (CG Prompt 10A). Three facts, no qualifier. On
+                one line the period convention separates them; at 390 they stack
+                one fact per line without any type-size reduction. The hairline
+                sits above with 24px clear (border-t + pt-6). */}
+            <p className="flex flex-col gap-y-1 border-t border-hairline pt-6 font-mono text-caption-m md:text-caption uppercase tracking-specimen text-tertiary md:flex-row md:flex-wrap md:items-baseline md:gap-x-2">
+              {m.hero.specimen.map((fact, i) => (
+                <Fragment key={fact}>
+                  <span className="md:whitespace-nowrap">{fact}</span>
+                  {i < m.hero.specimen.length - 1 ? (
+                    <span aria-hidden="true" className="hidden md:inline">
+                      .
+                    </span>
+                  ) : null}
+                </Fragment>
+              ))}
+            </p>
             <div>
               <ButtonLink href="#request" variant="outline">
                 {m.hero.cta}
