@@ -62,7 +62,7 @@ export const manufacturing = {
       body: 'Solventless rosin by weight, to licensed New York processors and brands. Ice water hash and rosin from two input streams, with a published certificate on every batch.',
       specs: [
         { label: 'Formats', unknownCaption: 'Formats, pending confirmation.' },
-        { label: 'Minimum', value: '5,000 units per SKU' },
+        { label: 'Minimum', value: '1 kg or 1 litre' },
         { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
       ],
     },
