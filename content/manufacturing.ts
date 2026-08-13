@@ -79,7 +79,7 @@ export const manufacturing = {
     {
       key: 'post-production',
       title: 'Post-production',
-      body: 'Filling, infusion, and finishing of client-owned distillate. You own the material. We receive it under Metrc, formulate to your specification, fill, infuse, and package. Testing and distribution stay with you.',
+      body: 'Filling, infusion, and finishing of client-owned distillate. You approve the material. We receive it under Metrc, formulate to your specification, fill, infuse, and package.',
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
         { label: 'Minimum', value: '5,000 units per SKU' },
