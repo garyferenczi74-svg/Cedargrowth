@@ -79,7 +79,7 @@ export const manufacturing = {
     {
       key: 'post-production',
       title: 'Post-production',
-      body: 'Filling, infusion, and finishing of client-owned distillate. You own the material. We receive it under Metrc, formulate to your specification, fill, infuse, package, test, and move it to market.',
+      body: 'Filling, infusion, and finishing of client-owned distillate. You own the material. We receive it under Metrc, formulate to your specification, fill, infuse, and package. Testing and distribution stay with you.',
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
         { label: 'Minimum', unknownCaption: 'Minimum, pending confirmation.' },
@@ -89,7 +89,7 @@ export const manufacturing = {
     {
       key: 'launch-support',
       title: 'Launch support',
-      body: 'For brands entering New York for the first time: formulation development, packaging and labelling review against state requirements, Metrc onboarding, certificate management, and introductions to licensed dispensaries.',
+      body: 'For brands entering New York for the first time: formulation development, packaging and labelling review against state requirements, Metrc onboarding, and introductions to licensed dispensaries.',
       specs: [],
     },
   ] as ManufacturingService[],
@@ -118,7 +118,6 @@ export const manufacturing = {
     handlesHeading: 'What CedarGrowth handles as the licensed manufacturer',
     handles: [
       'Metrc reporting',
-      'Third-party testing',
       'Packaging and labelling compliance',
       'Manifest and transfer documentation',
     ],
@@ -127,6 +126,7 @@ export const manufacturing = {
       'Their brand',
       'Their formulation',
       'Their material',
+      'Their third-party testing and distribution',
       'Their commercial relationships',
     ],
   },
