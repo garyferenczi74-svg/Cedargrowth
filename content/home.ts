@@ -53,7 +53,7 @@ export const home = {
   },
   absences: {
     trailing:
-      'Ice water hash and rosin, pressed from two inputs: dried and cured sugar trim, and fresh frozen whole plant.',
+      'In every product that carries the CedarGrowth name. Ice water hash and rosin, pressed from two inputs: dried and cured sugar trim, and fresh frozen whole plant.',
   },
   dna: {
     eyebrow: 'Precision',

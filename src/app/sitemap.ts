@@ -19,7 +19,7 @@ const STATIC_ROUTES = [
   '/wellness',
   '/products',
   '/transparency',
-  '/wholesale',
+  '/manufacturing',
   '/faq',
   '/reserve',
   '/dna',

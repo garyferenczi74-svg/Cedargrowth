@@ -118,7 +118,7 @@ export const PRIMARY_NAV: NavItem[] = [
 
 // Utility, left and right edges (Section 5.2).
 export const UTILITY_LEFT: NavLink[] = [
-  { label: 'Wholesale', href: '/wholesale' },
+  { label: 'Manufacturing', href: '/manufacturing' },
   { label: 'Access', href: '/practice' },
 ];
 
@@ -137,7 +137,7 @@ export const FOOTER_COLUMNS: NavColumn[] = [
     links: [
       { label: 'About', href: '/about' },
       { label: 'Method', href: '/method' },
-      { label: 'Wholesale', href: '/wholesale' },
+      { label: 'Manufacturing', href: '/manufacturing' },
     ],
   },
   {

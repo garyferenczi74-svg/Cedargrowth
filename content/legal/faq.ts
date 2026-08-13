@@ -179,7 +179,7 @@ export const faq: LegalDoc = {
       blocks: [
         {
           kind: 'p',
-          text: 'Write to [WHOLESALE EMAIL], or use the request form on the wholesale page. We will send the line sheet, case configurations, minimums, and lead times.',
+          text: 'Write to [WHOLESALE EMAIL], or use the request path on the manufacturing page. We will send the line sheet, case configurations, minimums, and lead times.',
         },
       ],
     },
