@@ -62,7 +62,7 @@ export const manufacturing = {
       body: 'Solventless rosin by weight, to licensed New York processors and brands. Ice water hash and rosin from two input streams, with a published certificate on every batch.',
       specs: [
         { label: 'Formats', unknownCaption: 'Formats, pending confirmation.' },
-        { label: 'Minimum', unknownCaption: 'Minimum, pending confirmation.' },
+        { label: 'Minimum', value: '5,000 units per SKU' },
         { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
       ],
     },
@@ -72,7 +72,7 @@ export const manufacturing = {
       body: 'Rosin vapes, infused pre-rolls, and gummies, produced to your specification under your brand. The same process, the same equipment, and the same standards as everything we make for ourselves.',
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
-        { label: 'Minimum', unknownCaption: 'Minimum, pending confirmation.' },
+        { label: 'Minimum', value: '5,000 units per SKU' },
         { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
       ],
     },
@@ -82,7 +82,7 @@ export const manufacturing = {
       body: 'Filling, infusion, and finishing of client-owned distillate. You own the material. We receive it under Metrc, formulate to your specification, fill, infuse, and package. Testing and distribution stay with you.',
       specs: [
         { label: 'Formats', value: 'Vapes . Infused pre-rolls . Gummies' },
-        { label: 'Minimum', unknownCaption: 'Minimum, pending confirmation.' },
+        { label: 'Minimum', value: '5,000 units per SKU' },
         { label: 'Lead time', unknownCaption: 'Lead time, pending confirmation.' },
       ],
     },
