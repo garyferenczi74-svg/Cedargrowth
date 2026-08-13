@@ -56,6 +56,7 @@ export type Module = {
   roles: Role[]; // default assignment by role
   expiryPeriodDays: number | null; // period after completion before reassignment, or null for NONE
   source: ModuleSource;
+  language?: string; // the language the content is delivered in; defaults to English
 };
 
 // The evidence a video block records. watchedPercent is true watched coverage,

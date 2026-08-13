@@ -25,14 +25,20 @@ the canonical source, but they will not appear in the live feed or in the APEX
 card event list until they exist in `kelvin_events`. If the `kelvin_events`
 table is provisioned, insert them:
 
+The `id` column is a GENERATED ALWAYS identity, so do not supply it. Let the
+sequence assign the ids (they order after the base events by id):
+
 ```sql
-insert into kelvin_events (id, agent, time, type, summary, sub, wing) values
-  (13, 'APEX', '07:15', 'DRIFT',      'CGO-SOP-PROC-002 revised to v2.0', 'Nine acknowledgments now against a superseded version.', 'warrant'),
-  (14, 'APEX', '07:16', 'ASSIGNMENT', 'Re-acknowledgment assigned to nine', 'Reason: SOP revised to v2.0. Due in seven days.', 'warrant'),
-  (15, 'APEX', '09:00', 'AUDIT',      'Daily training audit filed', 'Four items overdue. One certification expires in eleven days.', 'warrant'),
-  (16, 'APEX', '11:30', 'ALERT',      'Assessment completed in 41 seconds', 'Below plausible completion time. Flagged for review.', 'warrant')
-on conflict (id) do nothing;
+insert into kelvin_events (agent, time, type, summary, sub, wing) values
+  ('APEX', '07:15', 'DRIFT',      'CGO-SOP-PROC-002 revised to v2.0', 'Nine acknowledgments now against a superseded version.', 'warrant'),
+  ('APEX', '07:16', 'ASSIGNMENT', 'Re-acknowledgment assigned to nine', 'Reason: SOP revised to v2.0. Due in seven days.', 'warrant'),
+  ('APEX', '09:00', 'AUDIT',      'Daily training audit filed', 'Four items overdue. One certification expires in eleven days.', 'warrant'),
+  ('APEX', '11:30', 'ALERT',      'Assessment completed in 41 seconds', 'Below plausible completion time. Flagged for review.', 'warrant');
 ```
+
+The write must go through a role that passes the table RLS (the server secret
+key or the Supabase SQL editor). The anon / publishable key is correctly
+refused, so it cannot be used for this insert.
 
 If `kelvin_events` is not provisioned, the whole Command feed is already empty in
 production and this is moot until it is.
