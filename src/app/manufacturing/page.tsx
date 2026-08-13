@@ -210,9 +210,6 @@ export default function ManufacturingPage() {
               </div>
             ))}
           </dl>
-          <div className="mt-10">
-            <Unknown label="Throughput" caption={m.capability.throughputCaption} />
-          </div>
         </div>
       </section>
 

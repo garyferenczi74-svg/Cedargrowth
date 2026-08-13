@@ -109,7 +109,6 @@ export const manufacturing = {
       { name: 'Access Rosin KWAD', role: 'Pressing' },
       { name: 'DDS CFM-1800', role: 'Cartridge filling and infusion' },
     ],
-    throughputCaption: 'Throughput, pending confirmation.',
   },
 
   compliance: {
