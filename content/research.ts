@@ -44,6 +44,25 @@ export const REFERENCES = {
     'Citti C, et al. (2019). A novel phytocannabinoid isolated from Cannabis sativa L. with an in vivo cannabimimetic activity higher than tetrahydrocannabinol: Tetrahydrocannabiphorol. Scientific Reports, 9, 20335.',
 };
 
+// Verified Batch 1 references (CG Prompt 11C), transcribed verbatim from the
+// supplied primer. Each is a mechanism, pharmacology, or discovery title with
+// no indication named, so each is publishable under the library doctrine. Keyed
+// by the identifier the primer cites (F1 through F4) so pages reference them by
+// identifier rather than duplicating the citation text.
+export const BATCH1_REFERENCES: Record<string, string> = {
+  F1: 'Hanuš LO, Meyer SM, Muñoz E, Taglialatela-Scafati O, Appendino G. (2016). Phytocannabinoids: a unified critical inventory. Natural Product Reports 33:1357-1392. PMID 27722705.',
+  F2: 'Munro S, Thomas KL, Abu-Shaar M. (1993). Molecular characterization of a peripheral receptor for cannabinoids. Nature 365:61-65. PMID 7689702.',
+  F3: 'Pertwee RG. (2008). The diverse CB1 and CB2 receptor pharmacology of three plant cannabinoids. British Journal of Pharmacology 153:199-215. PMID 17828291.',
+  F4: 'Shao Z, et al. (2016). High-resolution crystal structure of the human CB1 cannabinoid receptor. Nature 540:602-606. PMID 27851727.',
+};
+
+// The ECS primer (CG Prompt 11C) is a full article, so its sections carry
+// blocks rather than a single string: paragraphs (with an optional citation
+// identifier that renders as a superscript link) and term lists.
+export type EcsBlock =
+  | { kind: 'p'; text: string; cite?: string }
+  | { kind: 'terms'; items: { term: string; text: string }[] };
+
 // ---------------------------------------------------------------------------
 // THE ENDOCANNABINOID SYSTEM (pillar one). From guide Section 2, restricted to
 // receptor location and molecular mechanism. Function is described at the
@@ -51,83 +70,100 @@ export const REFERENCES = {
 // ---------------------------------------------------------------------------
 
 export const ECS = {
-  eyebrow: 'THE ENDOCANNABINOID SYSTEM',
-  headline: 'One system, many settings.',
-  intro:
-    'The endocannabinoid system is a signalling network built from three parts: ' +
-    'the receptors a cannabinoid binds, the molecules the body makes to bind them, ' +
-    'and the enzymes that build and break those molecules down. It is a regulatory ' +
-    'layer, tuning how other systems signal rather than driving them directly. What ' +
-    'follows is what each part is and what it does at the level of the cell.',
+  eyebrow: 'Pharmacology',
+  headline: 'The endocannabinoid system, plainly.',
   tier: 'Established' as EvidenceTier,
-  sources: [REFERENCES.pacher2006],
+  category: 'Pharmacology',
+  // Reference identifiers into BATCH1_REFERENCES, in citation order. F1 is the
+  // general inventory reference; F2 to F4 are cited inline in the sections. The
+  // whole article (CG Prompt 11C primer) is transcribed verbatim.
+  sources: ['F1', 'F2', 'F3', 'F4'],
+  intro: [
+    'Two people take the same product at the same dose and have entirely different afternoons. The reason is not mysterious and it is not a matter of tolerance alone. It is a receptor system that varies considerably from person to person, in how densely it is expressed, how quickly it clears what binds to it, and what else it responds to.',
+    'This is an account of that system: what it is made of, where it sits, and why it behaves differently in different bodies. It describes mechanism. It does not describe outcomes, and nothing here should be read as advice.',
+  ],
   sections: [
     {
+      key: 'what-the-body-makes',
+      heading: 'What the body already makes',
+      blocks: [
+        { kind: 'p' as const, text: 'The system is named for compounds the body produces itself. Two are well characterized: anandamide and 2-arachidonoylglycerol, usually shortened to 2-AG. Both are lipids, built from fatty acids in cell membranes, and both are unusual in how they are handled.' },
+        { kind: 'p' as const, text: 'Most signalling molecules are manufactured in advance and held in vesicles until they are needed. Endocannabinoids are not. They are synthesized on demand, at the moment of the signal, from material already present in the membrane. They act, and then they are broken down quickly by dedicated enzymes.' },
+        { kind: 'p' as const, text: 'That production-on-demand pattern is the first reason the system varies between people. There is no reservoir to measure. What matters is how readily a given body builds these compounds and how quickly it takes them apart, and both are under genetic and physiological influence.' },
+      ],
+    },
+    {
       key: 'cb1',
-      heading: 'CB1',
-      body:
-        'CB1 is expressed predominantly in the central nervous system, in the brain ' +
-        'and spinal cord, with a smaller presence in peripheral nerves. It sits on the ' +
-        'sending side of a synapse. When activated it reduces the release of ' +
-        'neurotransmitters, which is how a single receptor can turn the volume down ' +
-        'across many different circuits. Its endogenous ligand is anandamide, and THC ' +
-        'binds it as a partial agonist.',
+      heading: 'CB1, and where it sits',
+      blocks: [
+        { kind: 'p' as const, text: 'The first cannabinoid receptor is among the most abundant receptors of its type in the mammalian brain.' },
+        { kind: 'p' as const, text: 'CB1 is concentrated in the central nervous system: the cortex, the hippocampus, the basal ganglia, the cerebellum, and the hypothalamus. It also appears in the peripheral nervous system and in a range of other tissues at lower density. Its structure has been resolved at high resolution, which is how the shape of its binding pocket is known rather than inferred.', cite: 'F4' },
+        { kind: 'p' as const, text: 'Its position in a circuit is what makes it distinctive. CB1 typically sits on the presynaptic terminal, the sending side of a junction between two neurons. Most signalling runs forward, from sending cell to receiving cell. Endocannabinoid signalling runs backward: the receiving cell produces the compound, it travels back across the gap, and it binds CB1 on the cell that just fired.' },
+        { kind: 'p' as const, text: "The effect is to reduce that cell's subsequent release of whatever it was releasing, which may be an excitatory signal, an inhibitory one, or a modulatory one. CB1 is therefore not a switch with a single function. It is a volume control fitted to many different circuits, and what it does depends entirely on which circuit it is fitted to." },
+        { kind: 'p' as const, text: "THC binds CB1 as a partial agonist, meaning it occupies the receptor and activates it, but less completely than the body's own compounds do at full effect.", cite: 'F3' },
+      ],
     },
     {
       key: 'cb2',
-      heading: 'CB2',
-      body:
-        'CB2 is expressed predominantly in immune tissue, in the spleen, tonsils, and ' +
-        'thymus, and on the microglia of the central nervous system. Because it sits ' +
-        'largely outside the brain, a compound selective for CB2 can act at the ' +
-        'receptor without the central effects that follow CB1 activation. Its ' +
-        'endogenous ligand is 2-AG.',
+      heading: 'CB2, and the rest of the body',
+      blocks: [
+        { kind: 'p' as const, text: 'The second receptor was identified three years after the first and it is distributed quite differently.', cite: 'F2' },
+        { kind: 'p' as const, text: 'CB2 is expressed mainly outside the central nervous system, in immune tissue: the spleen, the tonsils, the thymus, and circulating immune cells. It also appears on microglia, the immune cells resident in the brain, which is why the boundary between the two receptors is less clean than a simple central-and-peripheral division suggests.' },
+        { kind: 'p' as const, text: 'CB2 activation does not produce intoxication. Compounds that bind it selectively do not produce the effects associated with CB1, which is the pharmacological basis for the interest in cannabinoids that act at one receptor and not the other.' },
+      ],
     },
     {
       key: 'other-targets',
       heading: 'The other targets',
-      body:
-        'Cannabinoids do not act at CB1 and CB2 alone. GPR55 is a related receptor ' +
-        'studied in bone and signalling. TRPV1 is an ion channel that responds to ' +
-        'several cannabinoids. 5-HT1A is a serotonin receptor at which CBD acts as an ' +
-        'agonist. PPAR is a nuclear receptor, sitting inside the cell and acting on ' +
-        'gene expression, engaged by several cannabinoids. The point is that a single ' +
-        'molecule usually touches more than one target, which is why two compounds ' +
-        'with similar names can behave differently.',
+      blocks: [
+        { kind: 'p' as const, text: 'Describing this as a two-receptor system is a simplification that stopped being accurate some time ago. Several cannabinoids act at receptors outside the cannabinoid family entirely.', cite: 'F3' },
+        {
+          kind: 'terms' as const,
+          items: [
+            { term: 'TRPV1', text: 'is a vanilloid receptor, the same channel that responds to capsaicin and to heat. Several cannabinoids and several terpenes act here.' },
+            { term: '5-HT1A', text: "is a serotonin receptor. CBD acts at it, which is part of why CBD's pharmacology looks so unlike THC's despite the two sharing a molecular formula." },
+            { term: 'GPR55', text: 'is sometimes called an orphan receptor, because it was identified before its natural ligand was agreed. It responds to several cannabinoids, and CBD appears to block it.' },
+            { term: 'PPAR gamma', text: 'is a nuclear receptor, which is a different class again: rather than sitting in the membrane and passing a signal inward, it acts on gene expression directly.' },
+          ],
+        },
+        { kind: 'p' as const, text: "The practical consequence is that a compound's behaviour cannot be predicted from its cannabinoid receptor binding alone. CBD binds the cannabinoid receptors weakly and is pharmacologically active, because most of what it does happens elsewhere." },
+      ],
     },
     {
-      key: 'ligands-enzymes',
-      heading: 'Ligands and enzymes',
-      body:
-        'The body makes its own cannabinoids. Anandamide and 2-arachidonoylglycerol, ' +
-        'called 2-AG, are the two best characterized. They are made on demand rather ' +
-        'than stored, and they are cleared quickly by two enzymes: FAAH breaks down ' +
-        'anandamide, and MGLL breaks down 2-AG. The tone of the whole system depends ' +
-        'as much on how fast these enzymes clear its signals as on how much signal is ' +
-        'made.',
+      key: 'enzymes',
+      heading: 'The enzymes, which are where the variation lives',
+      blocks: [
+        { kind: 'p' as const, text: 'Two enzymes do most of the disassembly. FAAH breaks down anandamide. MAGL breaks down 2-AG.' },
+        { kind: 'p' as const, text: 'These are the least visible part of the system and arguably the most consequential. If synthesis is on demand and degradation is enzymatic, then the concentration of endocannabinoids present at any moment is set by the balance between the two. A body that degrades anandamide slowly maintains a higher baseline than one that degrades it quickly, with no difference in how much it produces.' },
+        { kind: 'p' as const, text: 'That baseline has a name in the literature: endocannabinoid tone. It is not directly measurable in a clinical setting, and it is the most likely explanation for a substantial part of the variation between people.' },
+      ],
     },
     {
-      key: 'variation',
-      heading: 'Why response varies',
-      body:
-        'The genes that build this system vary from person to person: the receptors, ' +
-        'the enzymes, and the metabolic machinery that clears cannabinoids afterward. ' +
-        'Two people can take the same compound at the same amount and reach it at ' +
-        'different levels for different lengths of time. That variation is measurable, ' +
-        'and reading it is what our CannabisIQ panel is for. It is also the reason ' +
-        'this library states an evidence tier on every claim rather than one confident ' +
-        'voice for all of them.',
+      key: 'why-different',
+      heading: 'So why do two people respond differently',
+      blocks: [
+        { kind: 'p' as const, text: 'Four sources of variation, none of which involve tolerance or expectation.' },
+        {
+          kind: 'terms' as const,
+          items: [
+            { term: 'Receptor density', text: 'How many CB1 and CB2 receptors are expressed, and where. This varies between individuals and is under genetic influence.' },
+            { term: 'Receptor sensitivity', text: 'How readily a given receptor responds once occupied, which is a function of its structure and of variation in the gene encoding it.' },
+            { term: 'Enzyme activity', text: 'How quickly FAAH and MAGL clear what is present, which sets baseline tone.' },
+            { term: 'Metabolism', text: 'How quickly the liver processes what was consumed, which determines how much reaches the receptors and for how long. This is the work of enzymes in the cytochrome P450 family, and it varies widely between people.' },
+          ],
+        },
+        { kind: 'p' as const, text: 'None of these are visible from the outside. Two people of similar size and similar experience can differ substantially on all four, which is why dose recommendations derived from population averages describe a middle that many individuals do not occupy.' },
+      ],
     },
-  ],
-  // The endocannabinoids live here, not in the cannabinoid index, because the
-  // body makes them rather than the plant. Sources CITATION PENDING pending
-  // primary references. Noladin ether, virodhamine, and lysophosphatidylinositol
-  // are held: their status is contested and each needs a primary reference
-  // before it appears, or it is omitted rather than hedged.
-  endocannabinoids: [
-    { symbol: 'AEA', name: 'Anandamide', note: 'CB1 and CB2 ligand.' },
-    { symbol: '2-AG', name: '2-arachidonoylglycerol', note: 'CB1 and CB2 ligand, the most abundant.' },
-    { symbol: 'NADA', name: 'N-arachidonoyl dopamine', note: 'CB1 and TRPV1 ligand.' },
+    {
+      key: 'what-this-does-not-tell-you',
+      heading: 'What this does not tell you',
+      blocks: [
+        { kind: 'p' as const, text: 'This is an account of a signalling system. It is not a guide to what any product will do, and it is not medical information.' },
+        { kind: 'p' as const, text: 'The system described here participates in a great many physiological processes, and that breadth is often presented as evidence that acting on it produces broad benefit. It is not evidence of that. A system involved in many things is a system where intervention has many consequences, some of them unintended, and the honest position is that the mechanism is reasonably well characterized while the clinical picture in most areas is not.' },
+        { kind: 'p' as const, text: 'Where we can measure something, we publish it. Where the evidence is thin, we say so.' },
+      ],
+    },
   ],
 };
 

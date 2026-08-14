@@ -3,7 +3,7 @@ import { Eyebrow } from '@/components/atoms/Eyebrow';
 import { Rise } from '@/components/motion/Rise';
 import { LineReveal } from '@/components/motion/LineReveal';
 import { EvidenceChip } from '@/components/dna/EvidenceChip';
-import { ECS } from '@/content/research';
+import { ECS, BATCH1_REFERENCES } from '@/content/research';
 
 export const metadata: Metadata = {
   title: 'The endocannabinoid system . CedarGrowth Research',
@@ -11,8 +11,11 @@ export const metadata: Metadata = {
     'The receptors a cannabinoid binds, the molecules the body makes to bind them, and the enzymes that clear them. Mechanism, at the level of the cell.',
 };
 
-const LAST_REVIEWED = '2026-08-08';
-
+// The endocannabinoid system primer (CG Prompt 11C), transcribed verbatim.
+// Sections carry blocks: paragraphs (with optional superscript citation into the
+// references block) and term lists. The four Batch 1 references are referenced
+// by identifier from BATCH1_REFERENCES rather than duplicated here. Thin-line
+// diagrams called for by 11C are omitted and reported rather than approximated.
 export default function EcsPage() {
   return (
     <article className="bg-parchment py-16 md:py-24">
@@ -23,7 +26,7 @@ export default function EcsPage() {
             <LineReveal text={ECS.headline} />
           </h1>
 
-          {/* Evidence header */}
+          {/* Evidence header: evidence tier, source count, category. */}
           <dl className="grid grid-cols-1 gap-3 border border-hairline bg-clinical p-6 sm:grid-cols-3">
             <div className="flex flex-col gap-2">
               <dt className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
@@ -41,62 +44,76 @@ export default function EcsPage() {
             </div>
             <div className="flex flex-col gap-2">
               <dt className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
-                Last reviewed
+                Category
               </dt>
-              <dd className="font-mono text-data text-primary">{LAST_REVIEWED}</dd>
+              <dd className="font-mono text-data uppercase tracking-specimen text-primary">
+                {ECS.category}
+              </dd>
             </div>
           </dl>
 
-          <Rise className="text-body-m-m md:text-body-l text-secondary">{ECS.intro}</Rise>
+          {ECS.intro.map((p, i) => (
+            <Rise key={i} className="text-body-m-m md:text-body-l text-secondary">
+              {p}
+            </Rise>
+          ))}
 
           {ECS.sections.map((s) => (
-            <section key={s.key} className="flex flex-col gap-3 border-t border-hairline pt-8">
+            <section key={s.key} className="flex flex-col gap-4 border-t border-hairline pt-8">
               <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
                 {s.heading}
               </h2>
-              <Rise className="text-body-m-m md:text-body-l text-secondary">{s.body}</Rise>
+              {s.blocks.map((block, bi) => {
+                if (block.kind === 'terms') {
+                  return (
+                    <dl key={bi} className="flex flex-col gap-3">
+                      {block.items.map((item) => (
+                        <div key={item.term} className="flex flex-col gap-1">
+                          <dt className="font-mono text-specimen uppercase tracking-specimen text-primary">
+                            {item.term}
+                          </dt>
+                          <dd className="text-body-m-m md:text-body-m text-secondary">
+                            {item.text}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  );
+                }
+                return (
+                  <Rise key={bi} className="text-body-m-m md:text-body-l text-secondary">
+                    {block.text}
+                    {block.cite ? (
+                      <sup className="ml-0.5">
+                        <a
+                          href={`#ref-${block.cite}`}
+                          className="cedar-underline font-mono text-specimen text-cedar"
+                        >
+                          {block.cite}
+                        </a>
+                      </sup>
+                    ) : null}
+                  </Rise>
+                );
+              })}
             </section>
           ))}
 
-          {/* The endocannabinoids: made by the body, not the plant. */}
-          <section className="flex flex-col gap-3 border-t border-hairline pt-8">
-            <h2 className="font-display text-heading-m-m md:text-heading-m text-primary">
-              The endocannabinoids
-            </h2>
-            <p className="text-body-m-m md:text-body-l text-secondary">
-              These are the cannabinoids the body makes for itself. They sit here rather than in the
-              cannabinoid index because the plant does not produce them.
-            </p>
-            <ul className="border-t border-hairline">
-              {ECS.endocannabinoids.map((e) => (
-                <li
-                  key={e.symbol}
-                  className="grid grid-cols-1 gap-1 border-b border-hairline py-4 md:grid-cols-[7rem_1fr] md:gap-6"
-                >
-                  <span className="font-mono text-data uppercase tracking-specimen text-primary">
-                    {e.symbol}
-                  </span>
-                  <span className="text-body-m-m md:text-body-m text-secondary">
-                    {e.name}. {e.note}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="font-mono text-specimen uppercase tracking-specimen text-tertiary">
-              SOURCES CITATION PENDING
-            </p>
-          </section>
-
-          {/* References */}
+          {/* References, keyed by their Batch 1 identifier so the superscripts
+              above resolve to them. */}
           <section className="mt-6 border-t border-hairline pt-8">
             <h2 className="mb-4 font-mono text-specimen uppercase tracking-specimen text-tertiary">
               References
             </h2>
             <ol className="flex flex-col gap-3">
-              {ECS.sources.map((s, i) => (
-                <li key={i} id={`ref-${i + 1}`} className="flex gap-3 text-body-m-m md:text-body-m text-secondary">
-                  <span className="font-mono text-specimen text-tertiary">{i + 1}</span>
-                  <span>{s}</span>
+              {ECS.sources.map((id) => (
+                <li
+                  key={id}
+                  id={`ref-${id}`}
+                  className="flex gap-3 scroll-mt-28 text-body-m-m md:text-body-m text-secondary"
+                >
+                  <span className="font-mono text-specimen text-tertiary">{id}</span>
+                  <span>{BATCH1_REFERENCES[id]}</span>
                 </li>
               ))}
             </ol>
