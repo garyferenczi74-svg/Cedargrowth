@@ -17,6 +17,12 @@ export type Product = {
   spec: string; // mono specification for the index card
   netWeight: string; // known from the SKU
   potency?: string; // labeled milligram total, gummies only
+  // Supplied later (CG Prompt 11 "what I need" 2). Until a value is given each
+  // renders UNKNOWN on the index and the product is excluded from filtered
+  // views rather than guessed into a line or input it does not carry.
+  line?: string; // wellness line name, e.g. 'Rest'
+  input?: string; // input stream: 'Cured trim' or 'Fresh frozen'
+  terpenes?: string; // dominant terpenes
 };
 
 export const FORMAT_GROUPS: { format: Format; label: string }[] = [

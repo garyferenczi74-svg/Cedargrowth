@@ -1,68 +1,62 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
-import { Placeholder } from '@/components/shell/Placeholder';
 import { Eyebrow } from '@/components/atoms/Eyebrow';
-import { PRODUCTS, FORMAT_GROUPS } from '@/lib/products';
+import { ButtonLink } from '@/components/atoms/ButtonLink';
+import { LineReveal } from '@/components/motion/LineReveal';
+import { ProductsGrid } from '@/components/products/ProductsGrid';
 
 export const metadata: Metadata = {
   title: 'Products',
   description:
-    'Eight products across three formats. Vape, infused pre-roll, and gummy, each pressed to one solventless standard.',
+    'Eight products in three formats: vape, infused pre-roll, and gummy. Every format begins as the same material, separated with ice, water, and pressure.',
 };
 
+// The Products index (CG Prompt 11). All eight products on one page, no
+// pagination, in three fixed format groups. No cart, no price, no per-product
+// action: the commerce constraint means the only page action is finding a
+// dispensary. Filtering lives in ProductsGrid (client). Detail pages at
+// /products/[slug] are real routes.
 export default function ProductsPage() {
   return (
     <>
-      <section className="bg-parchment py-16 md:py-40">
+      <section className="bg-parchment py-16 md:py-32">
         <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
-          <div className="reveal flex max-w-editorial flex-col gap-6">
-            <Eyebrow>By format</Eyebrow>
-            <h1 className="font-display text-display-l-m md:text-display-xl text-primary">
-              Eight products, one standard.
-            </h1>
+          <div className="flex max-w-editorial flex-col gap-6">
+            <Eyebrow>Products</Eyebrow>
+            <LineReveal
+              text="Eight products. One process."
+              className="font-display text-display-l-m md:text-display-xl text-primary"
+            />
             <p className="text-body-m-m md:text-body-l text-secondary">
-              Every format begins as the same solventless rosin. Reserve a
-              product to hold it for delivery to the nearest dispensary that
-              carries CedarGrowth.
+              Every format begins as the same material: resin separated with
+              ice, water, and pressure, then formulated around an intended state
+              rather than a strain name.
             </p>
           </div>
         </div>
       </section>
 
-      {FORMAT_GROUPS.map((group, gi) => {
-        const items = PRODUCTS.filter((p) => p.format === group.format);
-        const tone = gi % 2 === 0 ? 'bg-bone' : 'bg-parchment';
-        return (
-          <section key={group.format} className={tone}>
-            <div className="mx-auto max-w-content px-page-margin-mobile py-16 md:px-page-margin md:py-24">
-              <Eyebrow className="reveal mb-10">{group.label}</Eyebrow>
-              <ul className="reveal grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 md:grid-cols-3">
-                {items.map((product) => (
-                  <li key={product.slug}>
-                    <Link href={`/products/${product.slug}`} className="group block">
-                      <Placeholder
-                        family="specimen plate"
-                        alt={`Placeholder, specimen plate of ${product.name}`}
-                        className="aspect-[4/5]"
-                        label={false}
-                      />
-                      <h2 className="mt-4 font-display text-heading-s-m md:text-heading-s text-primary">
-                        {product.name}
-                      </h2>
-                      <p className="mt-1 text-body-m-m md:text-body-m text-secondary">
-                        {product.descriptor}
-                      </p>
-                      <p className="mt-3 font-mono text-specimen uppercase tracking-specimen text-tertiary">
-                        {product.spec}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+      <section className="bg-parchment pb-16 md:pb-24">
+        <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
+          <ProductsGrid />
+        </div>
+      </section>
+
+      <section className="bg-bone py-16 md:py-24">
+        <div className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin">
+          <div className="flex flex-col gap-6">
+            <Eyebrow>Where to buy</Eyebrow>
+            <p className="text-body-m-m md:text-body-l text-secondary max-w-editorial">
+              CedarGrowth does not sell directly. Find the nearest licensed
+              dispensary that carries these products.
+            </p>
+            <div>
+              <ButtonLink href="/find" variant="outline">
+                Find these products
+              </ButtonLink>
             </div>
-          </section>
-        );
-      })}
+          </div>
+        </div>
+      </section>
     </>
   );
 }

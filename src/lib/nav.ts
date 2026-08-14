@@ -15,103 +15,17 @@ export type ImageFamily =
 export type NavItem = {
   label: string;
   href: string;
-  columns?: NavColumn[];
-  specimen?: { family: ImageFamily; alt: string };
 };
 
-// Primary row order per Section 5.2.
+// Primary row order per Section 5.2. Every item is a plain link to its route:
+// the mega panel was removed in Prompt 11 because each destination is a real
+// page that fits on one screen, so there is nothing a dropdown would save.
 export const PRIMARY_NAV: NavItem[] = [
   { label: 'Method', href: '/method' },
-  {
-    label: 'Wellness',
-    href: '/wellness',
-    columns: [
-      {
-        heading: 'The five lines',
-        links: [
-          { label: 'Rest', href: '/wellness/rest' },
-          { label: 'Relief', href: '/wellness/relief' },
-          { label: 'Focus', href: '/wellness/focus' },
-          { label: 'Calm', href: '/wellness/calm' },
-          { label: 'Restore', href: '/wellness/restore' },
-        ],
-      },
-      {
-        heading: 'Understand',
-        links: [
-          { label: 'Terpene index', href: '/research/terpenes' },
-          { label: 'The endocannabinoid system', href: '/research/ecs' },
-          { label: 'FAQ', href: '/faq' },
-        ],
-      },
-      {
-        heading: 'Overview',
-        links: [{ label: 'All five lines', href: '/wellness' }],
-      },
-    ],
-    specimen: {
-      family: 'raw material macro',
-      alt: 'Placeholder, raw material macro of a botanical terpene source',
-    },
-  },
-  {
-    label: 'Products',
-    href: '/products',
-    columns: [
-      {
-        heading: 'Vapes',
-        links: [
-          { label: '0.5g Vape', href: '/products/vape-05g' },
-          { label: '1g Vape', href: '/products/vape-1g' },
-        ],
-      },
-      {
-        heading: 'Infused pre-rolls',
-        links: [
-          { label: '1g Pre-roll', href: '/products/preroll-1g' },
-          { label: 'Pre-roll, 5 count', href: '/products/preroll-5pk' },
-          { label: 'Dog Walker, 5 count', href: '/products/dog-walker-5pk' },
-        ],
-      },
-      {
-        heading: 'Gummies',
-        links: [
-          { label: '10 count, 100mg', href: '/products/gummies-10ct-100' },
-          { label: '10 count, 200mg', href: '/products/gummies-10ct-200' },
-          { label: '20 count, 200mg', href: '/products/gummies-20ct-200' },
-        ],
-      },
-    ],
-    specimen: {
-      family: 'specimen plate',
-      alt: 'Placeholder, specimen plate of a rosin pressing on bone',
-    },
-  },
-  // Direct link to the full DNA page, no mega panel (the page carries its own
-  // sections, so a dropdown of anchors is redundant).
+  { label: 'Wellness', href: '/wellness' },
+  { label: 'Products', href: '/products' },
   { label: 'DNA Test', href: '/dna' },
-  {
-    label: 'Research',
-    href: '/research',
-    columns: [
-      {
-        heading: 'Pillars',
-        links: [
-          { label: 'Terpene index', href: '/research/terpenes' },
-          { label: 'The endocannabinoid system', href: '/research/ecs' },
-          { label: 'The cannabinoid index', href: '/research/cannabinoids' },
-        ],
-      },
-      {
-        heading: 'Notes',
-        links: [{ label: 'All research notes', href: '/research/notes' }],
-      },
-    ],
-    specimen: {
-      family: 'facility',
-      alt: 'Placeholder, facility interior in winter light',
-    },
-  },
+  { label: 'Research', href: '/research' },
   { label: 'Transparency', href: '/transparency' },
   { label: 'Find', href: '/find' },
 ];

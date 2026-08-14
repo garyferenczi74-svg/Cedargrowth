@@ -10,6 +10,9 @@ export type Line = {
   pigment: 'rest' | 'relief' | 'focus' | 'calm' | 'restore';
   anchor: string;
   image?: string;
+  // The formats this line comes in (CG Prompt 11A "what I need" 3). Renders
+  // UNKNOWN on the wellness index until supplied.
+  formats?: string;
 };
 
 export const LINES: Line[] = [

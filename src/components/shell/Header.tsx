@@ -2,54 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Menu, Search, User, ShoppingBag } from 'lucide-react';
-import { PRIMARY_NAV, UTILITY_LEFT, type NavItem } from '@/lib/nav';
+import { Menu, ShoppingBag } from 'lucide-react';
+import { PRIMARY_NAV, UTILITY_LEFT } from '@/lib/nav';
 import { useReservation } from '@/components/reserve/ReservationProvider';
 import { Wordmark } from './Wordmark';
-import { MegaPanel } from './MegaPanel';
 import { MobileMenu } from './MobileMenu';
 
-const panelId = (label: string) =>
-  `mega-${label.replace(/\s+/g, '-').toLowerCase()}`;
-
+// Header. The mega panel was removed in Prompt 11: every primary item is now a
+// plain link to a real page, with no dropdown, disclosure, chevron, or hover
+// state beyond the established underline draw. SEARCH and ACCOUNT were removed
+// with it (no index to search, no consumer accounts). RESERVE stays: it is a
+// real reservation subsystem (ReservationProvider, /reserve, /api/reserve).
 export function Header() {
-  const [active, setActive] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchNotice, setSearchNotice] = useState('');
   const [scrolled, setScrolled] = useState(false);
   const { count, hydrated } = useReservation();
   const reserveCount = hydrated ? count : 0;
 
-  const navWrapRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
-  const triggersRef = useRef<Record<string, HTMLButtonElement | null>>({});
-  const focusPanelOnOpen = useRef(false);
-
-  const activeItem: NavItem | undefined = PRIMARY_NAV.find(
-    (i) => i.label === active && i.columns?.length,
-  );
-
-  const close = useCallback(() => setActive(null), []);
-
-  // Keyboard open moves focus into the panel. Hover open does not.
-  useEffect(() => {
-    if (activeItem && focusPanelOnOpen.current) {
-      const first = panelRef.current?.querySelector<HTMLElement>('a[href]');
-      first?.focus();
-      focusPanelOnOpen.current = false;
-    }
-  }, [activeItem]);
-
-  // Close the panel on outside pointer down.
-  useEffect(() => {
-    const onDown = (e: PointerEvent) => {
-      if (!navWrapRef.current?.contains(e.target as Node)) setActive(null);
-    };
-    document.addEventListener('pointerdown', onDown);
-    return () => document.removeEventListener('pointerdown', onDown);
-  }, []);
 
   // Bottom hairline draws in once the page has scrolled past the header. The
   // header itself never resizes or slides, only the hairline's scaleX moves.
@@ -60,41 +30,16 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const onNavKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape' && active) {
-      e.preventDefault();
-      const trigger = triggersRef.current[active];
-      setActive(null);
-      trigger?.focus();
-    }
-  };
-
-  // Close when focus leaves the nav region entirely (keyboard tab out).
-  const onNavBlur = (e: React.FocusEvent) => {
-    if (!navWrapRef.current?.contains(e.relatedTarget as Node)) setActive(null);
-  };
-
   const closeMobile = useCallback(() => {
     setMobileOpen(false);
     menuBtnRef.current?.focus();
   }, []);
 
-  const onSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // No search backend yet. Never fabricate results, state it plainly.
-    setSearchNotice('Search is not yet available.');
-  };
-
-  const toggleSearch = () => {
-    setSearchOpen((v) => {
-      if (v) setSearchNotice('');
-      return !v;
-    });
-  };
-
   return (
     <header className="bg-parchment">
-      {/* Desktop masthead */}
+      {/* Desktop masthead. Three columns: utility links left, wordmark centre,
+          the reservation link right, so the row reads balanced rather than
+          half-empty. */}
       <div className="hidden md:block">
         <div className="border-b border-hairline">
           <div className="mx-auto grid max-w-content grid-cols-3 items-center px-page-margin py-4">
@@ -115,27 +60,6 @@ export function Header() {
             </div>
             <ul className="flex items-center justify-end gap-6">
               <li>
-                <button
-                  type="button"
-                  onClick={toggleSearch}
-                  aria-expanded={searchOpen}
-                  aria-controls="site-search"
-                  className="flex items-center gap-2 text-caption uppercase tracking-eyebrow text-tertiary"
-                >
-                  <Search size={16} strokeWidth={1.5} aria-hidden="true" />
-                  Search
-                </button>
-              </li>
-              <li>
-                <Link
-                  href="/account"
-                  className="flex items-center gap-2 text-caption uppercase tracking-eyebrow text-tertiary cedar-underline"
-                >
-                  <User size={16} strokeWidth={1.5} aria-hidden="true" />
-                  Account
-                </Link>
-              </li>
-              <li>
                 <Link
                   href="/reserve"
                   className="flex items-center gap-2 text-caption uppercase tracking-eyebrow text-tertiary cedar-underline"
@@ -151,74 +75,20 @@ export function Header() {
           </div>
         </div>
 
-        <div
-          ref={navWrapRef}
-          className="relative"
-          onMouseLeave={close}
-          onKeyDown={onNavKeyDown}
-          onBlur={onNavBlur}
-        >
-          <nav aria-label="Primary" className="border-b border-hairline">
-            <ul className="mx-auto flex max-w-content items-center justify-center gap-8 px-page-margin py-4">
-              {PRIMARY_NAV.map((item) => {
-                const hasColumns = Boolean(item.columns?.length);
-                const isOpen = active === item.label;
-                if (!hasColumns) {
-                  return (
-                    <li key={item.label}>
-                      <Link
-                        href={item.href}
-                        onMouseEnter={close}
-                        onFocus={close}
-                        className="cedar-underline text-body-m tracking-nav text-primary"
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                }
-                return (
-                  <li key={item.label}>
-                    <button
-                      type="button"
-                      ref={(el) => {
-                        triggersRef.current[item.label] = el;
-                      }}
-                      aria-expanded={isOpen}
-                      aria-haspopup="true"
-                      aria-controls={panelId(item.label)}
-                      onMouseEnter={() => {
-                        focusPanelOnOpen.current = false;
-                        setActive(item.label);
-                      }}
-                      onClick={() => {
-                        if (isOpen) {
-                          setActive(null);
-                        } else {
-                          focusPanelOnOpen.current = true;
-                          setActive(item.label);
-                        }
-                      }}
-                      className="cedar-underline text-body-m tracking-nav text-primary"
-                    >
-                      {item.label}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-
-            {activeItem ? (
-              <div ref={panelRef}>
-                <MegaPanel
-                  item={activeItem}
-                  id={panelId(activeItem.label)}
-                  onNavigate={close}
-                />
-              </div>
-            ) : null}
-          </nav>
-        </div>
+        <nav aria-label="Primary" className="border-b border-hairline">
+          <ul className="mx-auto flex max-w-content items-center justify-center gap-8 px-page-margin py-4">
+            {PRIMARY_NAV.map((item) => (
+              <li key={item.label}>
+                <Link
+                  href={item.href}
+                  className="cedar-underline text-body-m tracking-nav text-primary"
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
       {/* Mobile bar */}
@@ -236,68 +106,18 @@ export function Header() {
             <Menu size={20} strokeWidth={1.5} aria-hidden="true" />
           </button>
           <Wordmark />
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={toggleSearch}
-              aria-expanded={searchOpen}
-              aria-controls="site-search"
-              aria-label="Search"
-              className="p-1 text-primary"
-            >
-              <Search size={20} strokeWidth={1.5} aria-hidden="true" />
-            </button>
-            <Link
-              href="/reserve"
-              aria-label={`Reservations, ${reserveCount} items`}
-              className="relative p-1 text-primary"
-            >
-              <ShoppingBag size={20} strokeWidth={1.5} aria-hidden="true" />
-              <span className="ml-1 font-mono text-specimen text-tertiary">
-                ({reserveCount})
-              </span>
-            </Link>
-          </div>
+          <Link
+            href="/reserve"
+            aria-label={`Reservations, ${reserveCount} items`}
+            className="relative p-1 text-primary"
+          >
+            <ShoppingBag size={20} strokeWidth={1.5} aria-hidden="true" />
+            <span className="ml-1 font-mono text-specimen text-tertiary">
+              ({reserveCount})
+            </span>
+          </Link>
         </div>
       </div>
-
-      {/* Search bar, shared. Honest empty state, no fabricated results. */}
-      {searchOpen ? (
-        <div
-          id="site-search"
-          className="border-b border-hairline bg-bone animate-fade motion-reduce:animate-none"
-        >
-          <form
-            role="search"
-            onSubmit={onSearchSubmit}
-            className="mx-auto flex max-w-content items-center gap-3 px-page-margin-mobile md:px-page-margin py-4"
-          >
-            <label htmlFor="site-search-input" className="sr-only">
-              Search CedarGrowth
-            </label>
-            <input
-              id="site-search-input"
-              type="search"
-              name="q"
-              autoComplete="off"
-              placeholder="Search"
-              className="flex-1 border-b border-hairline bg-transparent py-2 text-body-m-m md:text-body-m text-primary placeholder:text-tertiary focus-visible:outline-none focus-visible:border-cedar"
-            />
-            <button
-              type="submit"
-              className="text-caption uppercase tracking-eyebrow text-tertiary cedar-underline"
-            >
-              Search
-            </button>
-          </form>
-          <p
-            aria-live="polite"
-            className="mx-auto max-w-content px-page-margin-mobile md:px-page-margin pb-4 text-caption-m md:text-caption text-tertiary"
-          >
-            {searchNotice}
-          </p>
-        </div>
-      ) : null}
 
       <MobileMenu open={mobileOpen} onClose={closeMobile} />
 
